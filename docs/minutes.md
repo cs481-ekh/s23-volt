@@ -1,3 +1,18 @@
+# Minutes 2/7/2022
+## Scribe: Seth
+## Present: Madeline, Zarek, Seth, Andrew
+## Absent: N/A
+## Items: 
+* Discussed Sprint 0
+* Discussed the Project Plan Template and what still needs to be completed
+* Evaluation of wireframe draft
+* Discussed ideas for how frames will work later on in the project
+## A/I: 
+* Seth - project plan 5
+* Andrew - project plan 1.5
+* Zarek - project plan 3.3, 3.4
+* Everyone - brainstorm framework
+
 # Minutes 2/1/2022
 ## Scribe: Madeline
 ## Present: Madeline, Andrew, Seth
