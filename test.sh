@@ -1,2 +1,3 @@
 #!/bin/bash
-exit 127
+echo Testing
+exit 0
