@@ -1,3 +1,18 @@
+# Minutes 2/10/2022
+## Scribe: Andrew
+## Present: Madeline, Andrew, Seth, Zarek
+## Absent: N/A
+## Items:
+* Discussed the implementation of the status badge, build.sh, and test.sh
+* Created tasks and user stories for sprint 0
+* Began working on the index.html and basic wireframe structure
+## A/I:
+* Madeline - creating tasks and implented the workflows yml
+* Andrew - creating tasks and implemented basic index.html and status badge
+* Seth - creating tasks and researching build.sh/test.sh
+* Zarek - creating tasks and researching build.sh/test.sh
+* Everyone - research potential frameworks to use including Bootstrap and Vue
+
 # Minutes 2/7/2022
 ## Scribe: Seth
 ## Present: Madeline, Zarek, Seth, Andrew
