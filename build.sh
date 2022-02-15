@@ -1,3 +1,7 @@
 #!/bin/bash
-echo Hello World!
+echo Building...
+
+npm install htmlhint -g
+htmlhint /src/index.html
+
 exit 0
