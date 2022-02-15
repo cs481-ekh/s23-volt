@@ -1,3 +1,17 @@
+# Minutes 2/15/2022
+## Scribe: Madeline
+## Present: Madeline, Andrew, Seth, Zarek
+## Absent: N/A
+## Items:
+* Worked on finalizing build.sh and test.sh setup
+* Sprint 0 Retrospective
+* Discussed framework options
+## A/I:
+* Madeline - brainstorm sprint 1 tasks and GSAP setup / finalize framework research
+* Andrew - brainstorm sprint 1 tasks and GSAP setup / finalize framework research
+* Seth - brainstorm sprint 1 tasks and GSAP setup / finalize framework research
+* Zarek - brainstorm sprint 1 tasks and GSAP setup / finalize framework research
+
 # Minutes 2/10/2022
 ## Scribe: Andrew
 ## Present: Madeline, Andrew, Seth, Zarek
