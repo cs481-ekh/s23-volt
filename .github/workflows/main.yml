@@ -38,6 +38,11 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
+        
+        # Runs a single command using the runners shell
+      - name: Build
+        run: ./build.sh
+        
       # Runs a set of commands using the runners shell
       - name: Test
         run: ./test.sh
