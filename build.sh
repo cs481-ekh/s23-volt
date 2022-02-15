@@ -8,4 +8,6 @@ npm install htmlinter
 eslint *.js
 htmlhint *.html
 
+zip -r EMA.zip src
+
 exit 0
