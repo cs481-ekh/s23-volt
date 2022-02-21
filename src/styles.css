@@ -1,0 +1,35 @@
+#grid-container {
+    display: grid;
+    grid-gap: 1px;
+    grid-template-columns: auto auto 275px;
+    grid-template-rows: 75px 200% 150px;
+}
+ 
+#grid-container > #main-canvas {
+    text-align: center;
+    grid-column: 1/3;
+    grid-row: 1/3;
+    border: 2px solid blue;
+    padding: 20px;
+}
+#grid-container > #playback-controls {
+    text-align: center;
+    grid-column: 3/4;
+    grid-row: 1/2;
+    border: 2px solid black;
+    padding: 20px;
+}
+#grid-container > #object-menu {
+    text-align: center;
+    grid-column: 3/4;
+    grid-row: 2/3;
+    border: 2px solid orange;
+    padding: 20px;
+} 
+#grid-container > #frame-controls {
+    text-align: center;
+    grid-column: 1/4;
+    grid-row: 3/4;
+    border: 2px solid red;
+    padding: 20px;
+} 
