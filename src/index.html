@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <link href="styles.css" rel="stylesheet">
-
     <title>
         Crown Joules
     </title>
@@ -12,6 +11,16 @@
             </div>
             <div id="playback-controls">
                 PLAYBACK CONTROLS
+                <div id="playback-grid">
+                    <div>
+                        <button id="play-pause">Play</button>
+                        
+                    </div>
+                    <div class="speed-slider">
+                        Playback Speed:
+                        <input type="range" min="1" max="10" value="5" class="slider" id="playback-speed">
+                      </div>
+                </div>
             </div>
             <div id="object-menu">
                 OBJECT MENU
@@ -19,6 +28,28 @@
             <div id="frame-controls">
                 FRAME CONTROLS
             </div>
-        </div>      
+        </div>  
+
+        <script>
+            var testButton = 0;
+            var playPauseButton = document.getElementById("play-pause");
+            playPauseButton.addEventListener("click", playPause);
+            //annimation = document.getElementById("physics-annimation");
+            function playPause() { 
+
+                //DELETE THIS IF/ELSE
+                if(testButton == 0){
+                    playPauseButton.innerHTML = "Play";
+                    testButton = 1;
+                }
+                else{
+                    playPauseButton.innerHTML = "Pause";
+                    testButton = 0;
+                }
+                //CODE FOR CANVAS ANNIMATION GOES HERE
+
+            } 
+        </script>    
+        </div> 
     </body>
 </html>
