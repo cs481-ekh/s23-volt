@@ -1,3 +1,18 @@
+# Minutes 2/28/2022
+## Scribe: Andrew
+## Present: Madeline, Andrew, Seth, Zarek
+## Absent: N/A
+## Items:
+* This meeting was used as our sprint retrospective as we finished up some last minute tasks
+* Discussed the data structures to be implemented in the next sprint
+* Discussed what research must be done to prepare for sprint 2
+## A/I:
+* Madeline - Finish up last task for sprint 1
+* Andrew - Finish up last task for sprint 1
+* Seth - Finish up last task for sprint 1
+* Zarek - Finish up last couple tasks for sprint 1
+* Everyone - Prepare for sprint 2 planing meeting on Tuesday
+
 # Minutes 2/15/2022
 ## Scribe: Madeline
 ## Present: Madeline, Andrew, Seth, Zarek
