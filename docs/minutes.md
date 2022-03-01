@@ -1,3 +1,18 @@
+# Minutes 3/1/2022
+## Scribe: Madeline
+## Present: Madeline, Andrew, Seth, Zarek
+## Absent: N/A
+## Items:
+* This meeting was used as our sprint planning for sprint 2
+* Discussed logistics for task completion for upcoming sprint, specifically avoiding task overlapping, task scope creep as we're working on things, and processes for communicating what we'll be working on before we start
+* Discussed goals and milestones for completion by sprint 2 end
+## A/I:
+* Madeline - Finish up sprint 1 work and create/implement sprint 2 tasks
+* Andrew - Finish up sprint 1 work and create/implement sprint 2 tasks
+* Seth - Finish up sprint 1 work and create/implement sprint 2 tasks
+* Zarek - Finish up sprint 1 work and create/implement sprint 2 tasks
+* Everyone - brainstorm sprint 2 task division and direction
+
 # Minutes 2/28/2022
 ## Scribe: Andrew
 ## Present: Madeline, Andrew, Seth, Zarek
