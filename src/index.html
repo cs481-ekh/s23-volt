@@ -48,7 +48,9 @@
 					<tr>
 						<tfoot>
 							<button style="margin:2px;" id="add-frame-button" onclick="addFrame()">+</button>
-							<label for="add-frame-button">Add Frame</label>
+							<label for="add-frame-button">Add Frame&nbsp;</label>
+							<button style="margin:2px;" id="remove-frame-button" onclick="removeFrame()">-</button>
+							<label for="remove-frame-button">Remove Frame</label>
 						</tfoot>
 					</tr>
 				</table>
@@ -111,6 +113,18 @@
                 var newRow = table.insertRow(tableSize - 2);
                 var newCell1 = newRow.insertCell(0);
                 newCell1.innerHTML = "Frame: " + (tableSize - 1);
+            }
+        </script>
+		
+		<script>
+            function removeFrame() {
+                var table = document.getElementById("frames-table");
+                var rowCount = document.getElementById("frames-table").rows.length;
+				
+				table.deleteRow(rowCount - 2);
+				//works and deletes the last row in the frame table
+				//but if remove is clicked early
+				//add frame will add Frame 0 and this will be stuck on the bottom of all the new frames
             }
         </script>
 
