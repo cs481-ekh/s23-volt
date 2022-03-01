@@ -1,15 +1,120 @@
 <!DOCTYPE html>
 
+<html>
     <title>
         Crown Joules
     </title>
-
+    <head>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+        <link href="styles.css" rel="stylesheet">
+    </head>
     <body>
-        <h1>
-            Hello World!
-        </h1>
-        
+        <div id="grid-container">
+            <div id="main-canvas">
+                CANVAS
+            </div>
+            <div id="playback-controls">
+                PLAYBACK CONTROLS
+                <div id="playback-grid">
+                    <div>
+                        <button id="play-pause">Play</button>
+                        
+                    </div>
+                    <div id="speed-slider">
+                        Playback Speed:
+                        <input type="range" min="1" max="10" value="5" class="slider" id="playback-speed">
+                    </div>
+                </div>
+            </div>
+            
+            <div id="object-menu">
+                OBJECT MENU
+                <table id="objects-table">
+                    <tr>
+                        <td>
+                            <button id="add-object-button" onclick="addObject()">+</button>
+                            <label for="add-object-button">Add Object</label>
+                        </td>
+                        <td>
+
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div id="frame-controls">
+                FRAME CONTROLS
+				<table id="frames-table">
+					<tr>
+						<tfoot>
+							<button style="margin:2px;" id="add-frame-button" onclick="addFrame()">+</button>
+							<label for="add-frame-button">Add Frame</label>
+						</tfoot>
+					</tr>
+				</table>
+            </div>
+			
+        </div>  
+
+
+
+
+        <script>
+            var testButton = 0;
+            var playPauseButton = document.getElementById("play-pause");
+            playPauseButton.addEventListener("click", playPause);
+            //annimation = document.getElementById("physics-annimation");
+            function playPause() { 
+
+                //DELETE THIS IF/ELSE
+                if(testButton == 0){
+                    playPauseButton.innerHTML = "Play";
+                    testButton = 1;
+                }
+                else{
+                    playPauseButton.innerHTML = "Pause";
+                    testButton = 0;
+                }
+                //CODE FOR CANVAS ANNIMATION GOES HERE
+
+            } 
+        </script>
+
+        <script>
+            function addObject() {
+                var table = document.getElementById("objects-table");
+                var tableSize = document.getElementById("objects-table").rows.length;
+
+                var newRow = table.insertRow(tableSize);
+                var newCell1 = newRow.insertCell(0);
+                newCell1.innerHTML = "<button id=\"add-object-button\" onclick=\"myCreateFunction()\">+</button><label for=\"add-object-button\">Add Object</label>";
+
+                var tableSize = document.getElementById("objects-table").rows.length;
+                document.getElementById("objects-table").deleteRow(tableSize - 1);
+                var newRow = table.insertRow(tableSize - 2);
+                var newCell1 = newRow.insertCell(0);
+                newCell1.innerHTML = "Test: " + (tableSize - 1);
+            }
+        </script>
+		
+		<script>
+            function addFrame() {
+                var table = document.getElementById("frames-table");
+                var tableSize = document.getElementById("frames-table").rows.length;
+
+                var newRow = table.insertRow(tableSize);
+                var newCell1 = newRow.insertCell(0);
+                newCell1.innerHTML = "<button id=\"add-frame-button\" onclick=\"myCreateFunction()\">+</button><label for=\"add-frame-button\">Add Frame</label>";
+
+                var tableSize = document.getElementById("frames-table").rows.length;
+                document.getElementById("frames-table").deleteRow(tableSize - 1);
+                var newRow = table.insertRow(tableSize - 2);
+                var newCell1 = newRow.insertCell(0);
+                newCell1.innerHTML = "Frame: " + (tableSize - 1);
+            }
+        </script>
+
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
     </body>
-
-
 </html>
