@@ -11,6 +11,7 @@
                 <!-- below objects are for testing, will be changed/removed later -->
                 <div class="cube gsaptest" style="background-color:rgb(115, 255, 243)"></div>
                 <div class="cube dragtest" style="background-color:rgb(128, 255, 43)"></div>
+                <div class="cube pathtest" style="background-color: rgb(204, 127, 255)"></div>
             </div>
             <div id="playback-controls">
                 PLAYBACK CONTROLS
@@ -35,6 +36,7 @@
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/Draggable.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/MotionPathPlugin.min.js"></script>
 
         <script>
             var testButton = 0;
@@ -46,6 +48,14 @@
                 {x:700, y:400},
                     {x:400, y:200, duration:3});
             Draggable.create(".dragtest");
+            gsap.to(".pathtest", {
+                motionPath: {
+                    path: [{x:100, y:50}, {x:200, y:0}, {x:300, y:100}]
+                },
+                transformOrigin: "50% 50%",
+                duration: 5,
+                ease: "power1.inOut"
+            });
             // ---- end of test / example code
 
             //annimation = document.getElementById("physics-annimation");
