@@ -65,3 +65,9 @@
     margin-bottom: 15px;
     border: 1px solid black;
   }
+  
+#frames-table {
+    border: 3px solid black;
+    width: 10%;
+    text-align: left;
+}
