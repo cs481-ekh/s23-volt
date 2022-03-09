@@ -54,15 +54,17 @@
             
             <div id="frame-controls">
                 FRAME CONTROLS
-				<tr>
-					<tfoot>
-						<button style="margin:2px;" id="add-frame-button">+</button>
-						<label for="add-frame-button">Add Frame&nbsp;</label>
-						<button style="margin:2px;" id="remove-frame-button">-</button>
-						<label for="remove-frame-button">Remove Frame</label>
-					</tfoot>
-				</tr>
-            </div>
+				<table id="frames-table">
+					<tr>
+						<tfoot>
+							<button style="margin:2px;" id="add-frame-button" onclick="addFrame()">+</button>
+							<label for="add-frame-button">Add Frame&nbsp;</label>
+							<button style="margin:2px;" id="remove-frame-button">-</button>
+							<label for="remove-frame-button">Remove Frame</label>
+						</tfoot>
+					</tr>
+				</table>
+			</div>
         </div>  
 
 
@@ -101,7 +103,6 @@
                 ease: "power1.inOut"
             });
             // ---- end of test / example code
-
             //annimation = document.getElementById("physics-annimation");
             function playPause() { 
 
@@ -149,6 +150,16 @@
 
                 return returnString;
 
+            }
+        </script>
+		
+		<script>
+            function addFrame() {
+                var table = document.getElementById("frames-table");
+                var tableSize = document.getElementById("frames-table").rows[0].cells.length;
+                var newCol = table.rows[0].insertCell(tableSize);
+                var tableSize = document.getElementById("frames-table").rows[0].cells.length;
+				newCol.innerHTML = "<button id=\"select-frame-button\" onclick=\"doNothing()\">" + (tableSize) + "</button>"; //make do something later
             }
         </script>
 
