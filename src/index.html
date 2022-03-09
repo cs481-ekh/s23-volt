@@ -65,16 +65,24 @@
         <script>
             //Defining templates for frame data
             var objectDataTemplate = {
-                x:0,
-                y:0
+                position:[0,0],
+                bounds:[0,0]
             };
 
             var energyCubeDataTemplate = {
-                x:0,
-                y:0,
-                type:"energy",
+                position:[0,0],
+                bounds:[0,0],
+                name: "",
+                type:"gravitational"
             };
-            
+
+            var frameStateTemplate = {};
+
+            var frameData = [];
+            var frame = 0;
+
+            var nextObjectID = 0; // keeps track of the last object id assigned
+
             var testButton = 0;
             var playPauseButton = document.getElementById("play-pause");
             playPauseButton.addEventListener("click", playPause);
@@ -93,6 +101,72 @@
                 ease: "power1.inOut"
             });
             // ---- end of test / example code
+
+            //add object with given data
+            function addEntity(position, bounds, name, isEnergy, energyType) { 
+                if (!position || !bounds){
+                    console.log("no position or bounds! invalid objects");
+                    return;
+                }
+
+                let newObj;
+
+                //choose whether or not we're static or energy
+                if (isEnergy) {
+                    newObj = JSON.parse(JSON.stringify(energyCubeDataTemplate)); //deep copy our energy cube
+                    
+                }
+                else
+                {
+                    newObj = JSON.parse(JSON.stringify(objectDataTemplate)); //deep copy our static object
+                }
+
+                //assigning new object properties
+                newObj.position = position;
+                newObj.bounds = bounds; 
+
+                if (name){
+                    newObj.name = name;
+                }                
+                if (energyType){
+                    newObj.type = energyType;
+                }  
+
+                let first = frameData[0];
+
+                if (first){
+                    first[toString(nextObjectID)] = newObj; //create new key in state dictionary
+                    nextObjectID += 1;
+                }
+            }
+
+            //removes object based on key
+            function removeEntity(key) { 
+                let first = frameData[0];
+                if (first){
+                    delete first[key];
+                }
+            }
+
+            //adds new frame with previous state
+            function addFrame(){
+                let newFrame;
+                
+                if (frameData < 0){
+                    newFrame = JSON.parse(JSON.stringify(frameStateTemplate)); //deep copy our frame state
+                }else{
+                    newFrame = JSON.parse(JSON.stringify(frameData[frameData.length - 1])); //deep copy our frame state
+                }
+
+                frameData.push(newFrame);
+                frame = frameData.length - 1;
+            }
+            
+            //removes the last frame
+            function removeLastFrame(){
+                frameData.pop();
+                frame = frameData.length - 1;
+            }
 
             //annimation = document.getElementById("physics-annimation");
             function playPause() { 
