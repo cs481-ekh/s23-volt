@@ -16,10 +16,11 @@
             <div id="main-canvas">
                 <div>CANVAS</div>
                 <!-- below objects are for testing, will be changed/removed later -->
-                <div class="cube dragtest" style="background-color:rgb(128, 255, 43)"></div>
-                <div class="cube pathtest" style="background-color: rgb(204, 127, 255)"></div>
+                <!-- <div class="cube dragtest" style="background-color:rgb(128, 255, 43)"></div>
+                <div class="cube pathtest" style="background-color: rgb(204, 127, 255)"></div> -->
                 <div class="circle" id="maincircle">
-                    <div class="cube"></div>
+                    <canvas id="can"></canvas>
+                    <div class="circlecenter"></div>
                 </div>
             </div>
             <div id="playback-controls">
@@ -89,16 +90,43 @@
             var playPauseButton = document.getElementById("play-pause");
             playPauseButton.addEventListener("click", playPause);
 
+            // create canvas, set to fill main circle
+            var canvas = document.getElementById('can'),
+                context = canvas.getContext('2d');
+            canvas.style.width='100%';
+            canvas.style.height='100%';
+            canvas.width  = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            // method to redraw separating lines in circle
+            function divideCircle() {
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                var numObjects = nextObjectID;
+                var radius = (canvas.width)/2;
+                var slice = Math.PI * (2/numObjects);
+                if(numObjects == 1) {
+                    return;
+                }
+                context.beginPath();
+                context.moveTo(radius, radius);
+                for(let i = 0; i<numObjects; i++) {
+                    var x = radius + (radius * Math.sin(i*slice));
+                    var y = radius + (radius * Math.cos(i*slice));
+                    context.lineTo(x, y);
+                    context.lineTo(radius, radius);
+                }
+                context.stroke();
+            }
+
             // ---- start of test / example code
-            Draggable.create(".dragtest");
-            gsap.to(".pathtest", {
-                motionPath: {
-                    path: [{x:100, y:50}, {x:200, y:0}, {x:300, y:100}]
-                },
-                transformOrigin: "50% 50%",
-                duration: 5,
-                ease: "power1.inOut"
-            });
+            // Draggable.create(".dragtest");
+            // gsap.to(".pathtest", {
+            //     motionPath: {
+            //         path: [{x:100, y:50}, {x:200, y:0}, {x:300, y:100}]
+            //     },
+            //     transformOrigin: "50% 50%",
+            //     duration: 5,
+            //     ease: "power1.inOut"
+            // });
             // ---- end of test / example code
 
             //add object with given data
@@ -185,9 +213,7 @@
 
 
             } 
-        </script>
 
-        <script>
             function addObject(){
                 var table = document.getElementById("objects-table");
                 var tableSize = document.getElementById("objects-table").rows.length;
@@ -201,10 +227,10 @@
                 var newRow = table.insertRow(tableSize - 2);
                 var newCell1 = newRow.insertCell(0);
                 newCell1.innerHTML = createNewObject();
+                nextObjectID++;
+                divideCircle();
             }
-        </script>
 
-        <script>
             function createNewObject(){
                 var returnString;  
 
