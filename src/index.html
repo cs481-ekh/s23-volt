@@ -14,11 +14,13 @@
     <body>
         <div id="grid-container">
             <div id="main-canvas">
-                CANVAS
+                <div>CANVAS</div>
                 <!-- below objects are for testing, will be changed/removed later -->
-                <div class="cube gsaptest" style="background-color:rgb(115, 255, 243)"></div>
                 <div class="cube dragtest" style="background-color:rgb(128, 255, 43)"></div>
                 <div class="cube pathtest" style="background-color: rgb(204, 127, 255)"></div>
+                <div class="circle" id="maincircle">
+                    <div class="cube"></div>
+                </div>
             </div>
             <div id="playback-controls">
                 PLAYBACK CONTROLS
@@ -88,9 +90,6 @@
             playPauseButton.addEventListener("click", playPause);
 
             // ---- start of test / example code
-            gsap.fromTo(".gsaptest", 
-                {x:700, y:400},
-                    {x:400, y:200, duration:3});
             Draggable.create(".dragtest");
             gsap.to(".pathtest", {
                 motionPath: {
