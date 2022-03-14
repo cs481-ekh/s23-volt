@@ -1,3 +1,20 @@
+# Minutes 3/14/2022
+## Scribe: Seth
+## Present: Madeline, Andrew, Seth, Zarek
+## Absent: N/A
+## Items:
+* This meeting was used to talk about any final touches for Sprint 2 as well as plan for Sprint 3
+* Discussed if we wanted to make some potential changes to the initial page due to the wireframes not showing the controls right away
+* Discussed how custom objects would be added using the drop down menu created by Andrew, decided that we would use a form style process in order to get information for creation
+* Discussed the difference and usability of the add object and add entity methods
+* Discussed the potential of a scaling factor that could be used for energy cubes depending on if the user has many objects at once, stretch goals
+## A/I:
+* Madeline - Finish up sprint 2 work
+* Andrew - Finish up sprint 2 work 
+* Seth - Finish up sprint 2 work
+* Zarek - Finish up sprint 2 work
+* Everyone - brainstorm sprint 3 task division and direction. Have them prepared for Tuesday's meeting
+
 # Minutes 3/1/2022
 ## Scribe: Madeline
 ## Present: Madeline, Andrew, Seth, Zarek
