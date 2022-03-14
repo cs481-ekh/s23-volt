@@ -6,8 +6,8 @@
     </title>
     <head>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" crossorigin="anonymous">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" crossorigin="anonymous"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
         <link href="styles.css" rel="stylesheet">
     </head>
@@ -86,8 +86,18 @@
 
             var nextObjectID = 0; // keeps track of the last object id assigned
 
+            var table = document.getElementById("objects-table");
+            var tableSize;
+
             var testButton = 0;
+            var numObjectButtons = 0;
+            var objectExpandButton = [20];
+            var expand = [20];
+            var zeroObjects = true;
+            var energySpinnerIndexes = [10];
+
             var playPauseButton = document.getElementById("play-pause");
+            
             playPauseButton.addEventListener("click", playPause);
 
             // create canvas, set to fill main circle
@@ -115,6 +125,7 @@
                     context.lineTo(radius, radius);
                 }
                 context.stroke();
+                
             }
 
             // ---- start of test / example code
@@ -198,51 +209,99 @@
             //annimation = document.getElementById("physics-annimation");
             function playPause() { 
 
-                //DELETE THIS IF/ELSE
                 if(testButton == 0){
                     playPauseButton.innerHTML = "Play";
+                    //Functional goes here
                     testButton = 1;
                 }
                 else{
                     playPauseButton.innerHTML = "Pause";
+                    //Functional goes here
                     testButton = 0;
                 }
-                //CODE FOR CANVAS ANNIMATION GOES HERE
+            } 
 
+            function expandMenu(i) { 
+                button = document.getElementById("expand" + i);
+                if(expand[i] == 0){
+                    button.innerHTML = "/\\";
+
+                    expand[i] = 1;
+                }
+                else{
+                    button.innerHTML = "\\/";
+
+                    expand[i] = 0;
+                }
                 
-
 
             } 
 
             function addObject(){
-                var table = document.getElementById("objects-table");
-                var tableSize = document.getElementById("objects-table").rows.length;
+                numObjectButtons++;
+                var currentIndex = numObjectButtons - 1;
+                expand[currentIndex] = 0;
+                
+                tableSize = document.getElementById("objects-table").rows.length;
 
                 var newRow = table.insertRow(tableSize);
                 var newCell1 = newRow.insertCell(0);
-                newCell1.innerHTML = "<button id=\"add-object-button\" onclick=\"myCreateFunction()\">+</button><label for=\"add-object-button\">Add Object</label>";
+                newCell1.innerHTML = "<button id=\"add-object-button\" onclick=\"addObject()\">+</button><label for=\"add-object-button\">Add Object</label>";
 
                 var tableSize = document.getElementById("objects-table").rows.length;
                 document.getElementById("objects-table").deleteRow(tableSize - 1);
+
                 var newRow = table.insertRow(tableSize - 2);
                 var newCell1 = newRow.insertCell(0);
                 newCell1.innerHTML = createNewObject();
+
                 nextObjectID++;
                 divideCircle();
+
+            }
+
+            function addEnergy(i){
+                energySpinnerIndexes[i]++;
+                var energyTable = document.getElementById("energy-table" + i);
+                var energyTableSize = document.getElementById("energy-table" + i).rows.length;
+                var newRow = energyTable.insertRow(energyTableSize);
+                var newCellContent = "<select name=\"energy-names\" class=\"energy-type\" id=\"energy-type\" text-align=\"center\">";
+                newCellContent = newCellContent + "<option hidden=\"\">Energy Type</option><option value=\"kinetic\">Kinetic</option><option value=\"thermal\">Thermal</option><option value=\"gravitational\">Gravitational</option><option value=\"custom\">Custom</option></select>";
+                newCellContent = newCellContent + "<input placeholder=\"Number\" required type=\"number\" value=\"\" min=\"0\" max=\"10\"/ id=\"energy-spin" + energySpinnerIndexes[i] + "\"></div>";
+                var newCell = newRow.insertCell(0);
+                newCell.innerHTML = newCellContent;
             }
 
             function createNewObject(){
-                var returnString;  
-
-                //returnString = "";
+                var returnString;
+                var currentIndex = numObjectButtons - 1;
                 returnString = "<input type=\"text\" class=\"obj_name_box\"  placeholder=\"Object Name\"></input> ";
-                returnString = returnString + "<div class=\"text-right\"><button type=\"button\" class=\"btn btn-primary\">\\/</button></div>";
+                returnString = returnString + "<div class=\"text-right\"><button id=\"expand" + currentIndex + "\" class=\"btn btn-primary\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#collapseExample" + currentIndex + "\" aria-expanded=\"false\" aria-controls=\"collapseExample\" onclick=\"expandMenu(currentIndex)\">\\/</button></div>";
+                returnString = returnString +  "<div class=\"collapse\" id=\"collapseExample" + currentIndex + "\"><div class=\"card card-body\">" + newEnergyMenu() + "</div></div>";
+                return returnString;
+            }
+
+            function newEnergyMenu(){
+                var returnString;
+                var currentIndex = numObjectButtons - 1;
+                energySpinnerIndexes[currentIndex] = 0;
+
+                returnString = "<div id=\"energy-menu\"><table id=\"energy-table" + currentIndex + "\"><tr><td>";
+                returnString = returnString + "<select name=\"energy-names\" class=\"energy-type\" id=\"energy-type\" text-align=\"center\">";
+                returnString = returnString + "<option hidden=\"\">Energy Type</option><option value=\"kinetic\">Kinetic</option><option value=\"thermal\">Thermal</option><option value=\"gravitational\">Gravitational</option><option value=\"custom\">Custom</option></select>";
+                returnString = returnString + "<input placeholder=\"Number\" required type=\"number\" value=\"\" min=\"0\" max=\"10\"/ id=\"energy-spin" + energySpinnerIndexes[currentIndex] + "\"></div>"
+                returnString = returnString + "</td><td></td></tr></table>";
+                returnString = returnString + "<br><button id=\"add-energy-button\" onclick=\"addEnergy(" + currentIndex + ")\">+</button><label for=\"add-energy-button\">Add Energy Type</label>";
 
                 return returnString;
-
             }
+
+            $("input[type='number']").inputSpinner()
+
         </script>
 
+        
+        
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
