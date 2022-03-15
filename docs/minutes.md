@@ -1,3 +1,13 @@
+# Minutes 3/15/2022
+## Scribe: Seth
+## Present: Madeline, Andrew, Seth, Zarek
+## Absent: N/A
+## Items:
+* This meeting was used to talk about upcoming user stories and tasks for Sprint 3, decided we needed a little more time to think about some good stories and tasks and bumped a new meeting to Thursday.
+## A/I:
+* Madeline - Feel better
+* Everyone - brainstorm sprint 3 task division and direction. Have them prepared for Thursday's meeting
+
 # Minutes 3/14/2022
 ## Scribe: Seth
 ## Present: Madeline, Andrew, Seth, Zarek
