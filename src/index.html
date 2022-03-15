@@ -100,9 +100,13 @@
             
             playPauseButton.addEventListener("click", playPause);
 
+
             // create canvas, set to fill main circle
             var canvas = document.getElementById('can'),
                 context = canvas.getContext('2d');
+            canvas.addEventListener('click', function(e) {
+                calculateQuadrant(canvas, e)
+            })
             canvas.style.width='100%';
             canvas.style.height='100%';
             canvas.width  = canvas.offsetWidth;
@@ -126,6 +130,29 @@
                 }
                 context.stroke();
                 
+            }
+
+            function calculateQuadrant(canvas, event) {
+                const numObjects = nextObjectID;
+                const slice = (2*Math.PI) / numObjects;
+                const rect = canvas.getBoundingClientRect()
+                const relx = (event.clientX - rect.left);
+                const rely = (event.clientY - rect.top);
+                const x = relx - (canvas.width)/2;
+                const y = (rely - (canvas.height)/2) * -1;
+                console.log("x: " + x + " y: " + y);
+                const distance = Math.sqrt(x*x + y*y);
+                const radians = Math.atan2(y,x);
+                var obj = (radians+(Math.PI / 2))/(slice);
+                console.log(obj);
+                // console.log(radians);
+                // var clickObj = (Math.asin((relx-distance)/distance))/slice;
+                // var obj = 0;
+                // while(clickObj < obj) {
+                //     obj++;
+                // }
+                // console.log("tmp = " + tmpRadians);
+                // console.log("click detected in quadrant " + obj);
             }
 
             // ---- start of test / example code
