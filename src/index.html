@@ -59,7 +59,7 @@
 						<tfoot>
 							<button style="margin:2px;" id="add-frame-button" onclick="addFrame()">+</button>
 							<label for="add-frame-button">Add Frame&nbsp;</label>
-							<button style="margin:2px;" id="remove-frame-button">-</button>
+							<button style="margin:2px;" id="remove-frame-button" onclick="removeFrame()">-</button>
 							<label for="remove-frame-button">Remove Frame</label>
 						</tfoot>
 					</tr>
@@ -162,6 +162,14 @@
 				newCol.innerHTML = "<button id=\"select-frame-button\" onclick=\"doNothing()\">" + (tableSize) + "</button>"; //make do something later
             }
         </script>
+		
+		<script>
+			function removeFrame() {
+				var table = document.getElementById("frames-table");
+				var tableSize = (document.getElementById("frames-table").rows[0].cells.length) - 1;
+				var delCol = table.rows[0].deleteCell(tableSize);
+			}
+		</script>
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" crossorigin="anonymous"></script>
