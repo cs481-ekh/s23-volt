@@ -57,7 +57,17 @@
             
             <div id="frame-controls">
                 FRAME CONTROLS
-            </div>
+				<table id="frames-table">
+					<tr>
+						<tfoot>
+							<button style="margin:2px;" id="add-frame-button" onclick="addFrame()">+</button>
+							<label for="add-frame-button">Add Frame&nbsp;</label>
+							<button style="margin:2px;" id="remove-frame-button" onclick="removeFrame()">-</button>
+							<label for="remove-frame-button">Remove Frame</label>
+						</tfoot>
+					</tr>
+				</table>
+			</div>
         </div>  
 
 
@@ -139,7 +149,6 @@
             //     ease: "power1.inOut"
             // });
             // ---- end of test / example code
-
             //add object with given data
             function addEntity(position, bounds, name, isEnergy, energyType) { 
                 if (!position || !bounds){
@@ -205,7 +214,6 @@
                 frameData.pop();
                 frame = frameData.length - 1;
             }
-
             //annimation = document.getElementById("physics-annimation");
             function playPause() { 
 
@@ -299,6 +307,24 @@
             $("input[type='number']").inputSpinner()
 
         </script>
+		
+		<script>
+            function addFrame() {
+                var table = document.getElementById("frames-table");
+                var tableSize = document.getElementById("frames-table").rows[0].cells.length;
+                var newCol = table.rows[0].insertCell(tableSize);
+                var tableSize = document.getElementById("frames-table").rows[0].cells.length;
+				newCol.innerHTML = "<button id=\"select-frame-button\" onclick=\"doNothing()\">" + (tableSize) + "</button>"; //make do something later
+            }
+        </script>
+		
+		<script>
+			function removeFrame() {
+				var table = document.getElementById("frames-table");
+				var tableSize = (document.getElementById("frames-table").rows[0].cells.length) - 1;
+				var delCol = table.rows[0].deleteCell(tableSize);
+			}
+		</script>
 
         
         
