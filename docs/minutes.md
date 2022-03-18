@@ -1,3 +1,16 @@
+# Minutes 3/18/2022
+## Scribe: Seth
+## Present: Madeline, Andrew, Seth, Zarek
+## Absent: N/A
+## Items:
+* This meeting was used to talk about our user stories for Sprint 3.
+## A/I:
+* Madeline - Energy cube initialization story
+* Andrew - Energy cube editing story
+* Seth - Frame panel contents story
+* Zarek - Play through functionality story
+* Everyone - create user stories and tasks by Sunday, (somewhat) enjoy spring break
+
 # Minutes 3/15/2022
 ## Scribe: Seth
 ## Present: Madeline, Andrew, Seth, Zarek
