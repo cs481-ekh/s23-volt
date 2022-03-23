@@ -75,6 +75,14 @@ canvas {
     height: 20px;
     width: 20px;
     border: 1px solid black;
+  }
+  
+#frames-table {
+    border: 0px solid black;
+    width: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .circlecenter {

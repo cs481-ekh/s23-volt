@@ -1,3 +1,43 @@
+# Minutes 3/18/2022
+## Scribe: Seth
+## Present: Madeline, Andrew, Seth, Zarek
+## Absent: N/A
+## Items:
+* This meeting was used to talk about our user stories for Sprint 3.
+## A/I:
+* Madeline - Energy cube initialization story
+* Andrew - Energy cube editing story
+* Seth - Frame panel contents story
+* Zarek - Play through functionality story
+* Everyone - create user stories and tasks by Sunday, (somewhat) enjoy spring break
+
+# Minutes 3/15/2022
+## Scribe: Seth
+## Present: Madeline, Andrew, Seth, Zarek
+## Absent: N/A
+## Items:
+* This meeting was used to talk about upcoming user stories and tasks for Sprint 3, decided we needed a little more time to think about some good stories and tasks and bumped a new meeting to Thursday.
+## A/I:
+* Madeline - Feel better
+* Everyone - brainstorm sprint 3 task division and direction. Have them prepared for Thursday's meeting
+
+# Minutes 3/14/2022
+## Scribe: Seth
+## Present: Madeline, Andrew, Seth, Zarek
+## Absent: N/A
+## Items:
+* This meeting was used to talk about any final touches for Sprint 2 as well as plan for Sprint 3
+* Discussed if we wanted to make some potential changes to the initial page due to the wireframes not showing the controls right away
+* Discussed how custom objects would be added using the drop down menu created by Andrew, decided that we would use a form style process in order to get information for creation
+* Discussed the difference and usability of the add object and add entity methods
+* Discussed the potential of a scaling factor that could be used for energy cubes depending on if the user has many objects at once, stretch goals
+## A/I:
+* Madeline - Finish up sprint 2 work
+* Andrew - Finish up sprint 2 work 
+* Seth - Finish up sprint 2 work
+* Zarek - Finish up sprint 2 work
+* Everyone - brainstorm sprint 3 task division and direction. Have them prepared for Tuesday's meeting
+
 # Minutes 3/1/2022
 ## Scribe: Madeline
 ## Present: Madeline, Andrew, Seth, Zarek
