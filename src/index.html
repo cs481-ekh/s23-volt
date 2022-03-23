@@ -109,9 +109,13 @@
             
             playPauseButton.addEventListener("click", playPause);
 
+
             // create canvas, set to fill main circle
             var canvas = document.getElementById('can'),
                 context = canvas.getContext('2d');
+            canvas.addEventListener('click', function(e) {
+                calculateQuadrant(canvas, e)
+            })
             canvas.style.width='100%';
             canvas.style.height='100%';
             canvas.width  = canvas.offsetWidth;
@@ -135,6 +139,41 @@
                 }
                 context.stroke();
                 
+            }
+
+            function polarToObjectRadians(radians) {
+                if(radians >= 0) {
+                    return ((3 * Math.PI) / 2) - radians;
+                }
+                if (radians <= 0-(Math.PI / 2)) {
+                    return (radians * (-1)) - Math.PI / 2;
+                }
+                return (radians * (-1)) + (3 * Math.PI) / 2;
+            }
+
+            function objectToPolarRadians(radians) {
+                if(radians >= Math.PI / 2 && radians <= (3 * Math.PI) / 2) {
+                    return (3 * Math.PI) / 2 - radians;
+                }
+                if (radians <= Math.PI / 2) {
+                    return (radians + Math.PI / 2) * (-1);
+                }
+                return (radians - (3 * Math.PI) / 2) * (-1);
+            }
+
+            function calculateQuadrant(canvas, event) {
+                const numObjects = nextObjectID;
+                const slice = (2*Math.PI) / numObjects;
+                const rect = canvas.getBoundingClientRect()
+                const relx = (event.clientX - rect.left);
+                const rely = (event.clientY - rect.top);
+                const x = relx - (canvas.width)/2;
+                const y = (rely - (canvas.height)/2) * -1;
+                const polarDistance = Math.sqrt(x*x + y*y);
+                const polarRadians = Math.atan2(y,x);
+                const objRadians = polarToObjectRadians(polarRadians);
+                const obj = Math.trunc(objRadians/((2 * Math.PI)/numObjects));
+                console.log("objRadians = " + objRadians + ", obj = " + obj);
             }
 
             // ---- start of test / example code
