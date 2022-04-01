@@ -20,7 +20,7 @@
                 <div class="cube pathtest" style="background-color: rgb(204, 127, 255)"></div> -->
                 <div class="circle" id="maincircle">
                     <canvas id="can"></canvas>
-                    <div class="circlecenter"></div>
+                    <div class="circlecenter" id="circlecenter"></div>
                 </div>
             </div>
             <div id="playback-controls">
@@ -77,6 +77,82 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/MotionPathPlugin.min.js"></script>
 
         <script>
+            // START TEST DATA
+            var objects = [
+                {
+                    name: "hand",
+                    startingRad: 0,
+                    endingRad: Math.PI/2
+                },
+                {
+                    name: "floor",
+                    startingRad: Math.PI/2,
+                    endingRad: Math.PI
+                },
+                {
+                    name: "ball",
+                    startingRad: Math.PI,
+                    endingRad: (3*Math.PI)/2
+                },
+                {
+                    name: "air",
+                    startingRad: (3*Math.PI)/2,
+                    endingRad: 2*Math.PI
+                },
+            ]
+
+            var frames = [
+                [
+                    {
+                        "type": "gravitational",
+                        "radians": 3.7,
+                        "radius": 50,
+                        "color": "green",
+                        "label": "GPE",
+                        "edited": false,
+                        "object": 3
+                    },
+                    {
+                        "type": "gravitational",
+                        "radians": 3.7,
+                        "radius": 50,
+                        "color": "green",
+                        "label": "GPE",
+                        "edited": false,
+                        "object": 3
+                    },
+                    {
+                        "type": "gravitational",
+                        "radians": 3.7,
+                        "radius": 50,
+                        "color": "green",
+                        "label": "GPE",
+                        "edited": false,
+                        "object": 3
+                    },
+                    {
+                        "type": "gravitational",
+                        "radians": 3.7,
+                        "radius": 50,
+                        "color": "green",
+                        "label": "GPE",
+                        "edited": false,
+                        "object": 3
+                    },
+                    {
+                        "type": "gravitational",
+                        "radians": 3.7,
+                        "radius": 50,
+                        "color": "green",
+                        "label": "GPE",
+                        "edited": false,
+                        "object": 3
+                    }
+                ]
+            ]
+            // END TEST DATA
+
+
             //Defining templates for frame data
             var objectDataTemplate = {
                 position:[0,0],
@@ -178,7 +254,9 @@
             }
 
             // ---- start of test / example code
-            // Draggable.create(".dragtest");
+            // Draggable.create(".cube", {
+            //     bounds: document.getElementById("maincircle")
+            // });
             // gsap.to(".pathtest", {
             //     motionPath: {
             //         path: [{x:100, y:50}, {x:200, y:0}, {x:300, y:100}]
@@ -189,6 +267,32 @@
             // });
             // ---- end of test / example code
             //add object with given data
+            function getOffset(el) {
+                const rect = el.getBoundingClientRect();
+                return {
+                    left: rect.left + window.scrollX,
+                    top: rect.top + window.scrollY
+                };
+            }
+            var centerx = getOffset( document.getElementById('circlecenter') ).left;
+            var centery = getOffset( document.getElementById('circlecenter') ).top;
+            var clipper = clipAtRadius((canvas.width)/2, 0, 0);
+            // TODO: fix this
+            function clipAtRadius(radius, offsetX, offsetY) {
+                return point => {
+                    let x = centerx - offsetX,
+                        y = centery - offsetY,
+                        length = Math.sqrt(x * x + y * y),
+                        angle;
+                    if (length > radius) {
+                    angle = Math.atan2(y, x);
+                    centerx = radius * Math.cos(angle);
+                    centery = radius * Math.sin(angle);
+                    }
+                    return point;
+                };
+            }
+            
             function addObject(position, bounds) { 
                 if (!position || !bounds){
                     console.log("no position or bounds! invalid objects");
@@ -229,7 +333,27 @@
             }
 
             function initCubes() {
-                
+                var appendstr = "";
+                frames[frame].forEach(cube => {
+                    appendStr = "";
+                    var min = objects[cube["object"]]["startingRad"];
+                    var max = objects[cube["object"]]["endingRad"];
+                    var nextObjRadians = Math.random() * (max - min) + min;
+                    var nextRadians = objectToPolarRadians(nextObjRadians);
+                    var nextRadius = Math.random() * ((canvas.width)/2);
+                    console.log("nextRadians="+nextRadians+" nextRadius="+nextRadius);
+                    var x = nextRadius + (nextRadius * Math.sin(nextRadians));
+                    var y = nextRadius + (nextRadius * Math.cos(nextRadians));
+                    appendstr = "<div class=cube style=\"top: "+y+"px; left: "+x+"px;\"></div>";
+                    // console.log(appendstr);
+                    $( "#maincircle" ).append( appendstr );
+                });
+                Draggable.create(".cube", {
+                    /*liveSnap:{
+                        points: clipper
+                    },*/
+                    bounds: "#maincircle"
+                });
             }
 
             //removes object based on key
