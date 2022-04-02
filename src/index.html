@@ -53,7 +53,7 @@
                         </td>
                     </tr>
                 </table>
-                <button type="button" id="init-cubes-button" class="btn btn-primary" onclick="initCubes()">Draw</button>
+                <button type="button" id="init-cubes-button" class="btn btn-primary" onclick="drawCubes()">Draw Cubes</button>
             </div>
             
             <div id="frame-controls">
@@ -82,11 +82,11 @@
                 {
                     name: "hand",
                     startingRad: 0,
-                    endingRad: Math.PI/2
+                    endingRad: Math.PI / 2
                 },
                 {
                     name: "floor",
-                    startingRad: Math.PI/2,
+                    startingRad: Math.PI / 2,
                     endingRad: Math.PI
                 },
                 {
@@ -104,49 +104,49 @@
             var frames = [
                 [
                     {
-                        "type": "gravitational",
-                        "radians": 3.7,
-                        "radius": 50,
+                        "type": "chemical",
+                        "radians": 1,
+                        "radius": 0.5,
+                        "color": "blue",
+                        "label": "CPE",
+                        "edited": false,
+                        "object": 0
+                    },
+                    {
+                        "type": "kinetic",
+                        "radians": 2.3,
+                        "radius": 0.5,
                         "color": "green",
+                        "label": "KE",
+                        "edited": false,
+                        "object": 1
+                    },
+                    {
+                        "type": "gravitational",
+                        "radians": 3.9,
+                        "radius": 0.5,
+                        "color": "yellow",
                         "label": "GPE",
                         "edited": false,
                         "object": 2
                     },
                     {
-                        "type": "gravitational",
-                        "radians": 2.7,
-                        "radius": 10,
-                        "color": "green",
-                        "label": "GPE",
+                        "type": "heat",
+                        "radians": 5.7,
+                        "radius": 0.5,
+                        "color": "red",
+                        "label": "HE",
                         "edited": false,
-                        "object": 2
+                        "object": 3
                     },
                     {
-                        "type": "gravitational",
-                        "radians": 3,
-                        "radius": 20,
-                        "color": "green",
-                        "label": "GPE",
-                        "edited": false,
-                        "object": 2
-                    },
-                    {
-                        "type": "gravitational",
+                        "type": "kinetic",
                         "radians": 2,
-                        "radius": 30,
+                        "radius": 0.3,
                         "color": "green",
-                        "label": "GPE",
+                        "label": "KE",
                         "edited": false,
-                        "object": 2
-                    },
-                    {
-                        "type": "gravitational",
-                        "radians": 1.7,
-                        "radius": 40,
-                        "color": "green",
-                        "label": "GPE",
-                        "edited": false,
-                        "object": 2
+                        "object": 1
                     }
                 ]
             ]
@@ -252,21 +252,7 @@
                 const obj = Math.trunc(objRadians/((2 * Math.PI)/numObjects));
                 console.log("objRadians = " + objRadians + ", obj = " + obj);
             }
-
-            // ---- start of test / example code
-            // Draggable.create(".cube", {
-            //     bounds: document.getElementById("maincircle")
-            // });
-            // gsap.to(".pathtest", {
-            //     motionPath: {
-            //         path: [{x:100, y:50}, {x:200, y:0}, {x:300, y:100}]
-            //     },
-            //     transformOrigin: "50% 50%",
-            //     duration: 5,
-            //     ease: "power1.inOut"
-            // });
-            // ---- end of test / example code
-            //add object with given data
+            
             function getOffset(el) {
                 const rect = el.getBoundingClientRect();
                 return {
@@ -293,6 +279,7 @@
                 };
             }
             
+            //add object with given data
             function addObject(position, bounds) { 
                 if (!position || !bounds){
                     console.log("no position or bounds! invalid objects");
@@ -332,20 +319,31 @@
 
             }
 
-            function initCubes() {
+            function getRandomLocation(objectNum) {
+                var min = objects[objectNum]["startingRad"] + 0.2;
+                var max = objects[objectNum]["endingRad"] - 0.2;
+                var radians = Math.random() * (max - min) + min;
+                var radius = Math.random() * (0.8) + 0.1;
+                return {"radius": radius, "radians": radians}
+            }
+
+            function drawCubes() {
+                $( ".cube" ).remove();
                 var appendstr = "";
                 frames[frame].forEach(cube => {
                     appendStr = "";
-                    var min = objects[cube["object"]]["startingRad"];
-                    var max = objects[cube["object"]]["endingRad"];
-                    var nextObjRadians = Math.random() * (max - min) + min;
-                    var nextRadians = objectToPolarRadians(nextObjRadians);
-                    var nextRadius = Math.random() * ((canvas.width)/2);
-                    console.log("nextRadians="+nextRadians+" nextRadius="+nextRadius);
-                    var x = nextRadius + (nextRadius * Math.sin(nextRadians));
-                    var y = nextRadius + (nextRadius * Math.cos(nextRadians));
-                    appendstr = "<div class=cube style=\"top: "+y+"px; left: "+x+"px;\"></div>";
-                    // console.log(appendstr);
+                    // TODO: test enabling code, remove later
+                    // var loc = getRandomLocation(cube["object"]);
+                    // cube["radians"] = loc["radians"];
+                    // cube["radius"] = loc["radius"];
+                    // end test code
+                    var nextRadians = (2 * Math.PI) - cube["radians"];
+                    var nextRadius = cube["radius"] * ((canvas.width)/2);
+                    var relx = nextRadius * Math.sin(nextRadians);
+                    var rely = nextRadius * Math.cos(nextRadians);
+                    var x = relx + (canvas.width)/2;
+                    var y = rely + (canvas.height)/2;
+                    appendstr = "<div class=cube style=\"top: "+y+"px; left: "+x+"px; opacity: 50%; background-color: "+cube["color"]+";\"></div>";
                     $( "#maincircle" ).append( appendstr );
                 });
                 Draggable.create(".cube", {
@@ -355,6 +353,15 @@
                     bounds: "#maincircle"
                 });
             }
+            window.addEventListener("resize", function() {
+                context = canvas.getContext('2d');
+                canvas.width  = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                var centerx = getOffset( document.getElementById('circlecenter') ).left;
+                var centery = getOffset( document.getElementById('circlecenter') ).top;
+                var clipper = clipAtRadius((canvas.width)/2, 0, 0);
+                drawCubes();
+            });
 
             //removes object based on key
             function removeObject(key) { 
