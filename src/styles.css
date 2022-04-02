@@ -49,6 +49,7 @@ canvas {
 }
 
 #grid-container > #object-menu {
+    position: relative;
     font-size:x-small;
     text-align: center;
     grid-column: 3/4;
@@ -71,7 +72,15 @@ canvas {
     border: 2px solid black;
     padding: 20px;
 }
+
+#init-cubes-button {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}
+
 .cube {
+    position: absolute;
     height: 20px;
     width: 20px;
     border: 1px solid black;
