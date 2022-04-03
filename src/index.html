@@ -61,9 +61,10 @@
 					<tr>
 						<tfoot>
 							<button style="margin:2px;" id="add-frame-button" onclick="addFrame()">+</button>
-							<label for="add-frame-button">Add Frame&nbsp;</label>
+							<label id="add-frame-button-label" for="add-frame-button">Add Frame&nbsp;</label>
 							<button style="margin:2px;" id="remove-frame-button" onclick="removeFrame()">-</button>
-							<label for="remove-frame-button">Remove Frame</label>
+							<label id="remove-frame-button-label" for="remove-frame-button">Remove Frame</label>
+							<button style="margin:2px;" id="hide-frame-controls-button" onclick="hideFrameControls()">Hide Frame Controls</button>
 						</tfoot>
 					</tr>
 				</table>
@@ -312,27 +313,43 @@
         </script>
 		
 		<script>
-            function addFrame() {
+			function addFrame() {
                 var table = document.getElementById("frames-table");
                 var tableSize = document.getElementById("frames-table").rows[0].cells.length;
                 var newCol = table.rows[0].insertCell(tableSize);
                 var tableSize = document.getElementById("frames-table").rows[0].cells.length;
 				newCol.innerHTML = "<button id=\"select-frame-button\" onclick=\"doNothing()\">" + (tableSize) + "</button>"; //make do something later
             }
-        </script>
-		<script>
-		addFrame(); //add initial frame button
-		</script>
-		
-		<script>
+			
 			function removeFrame() {
 				var table = document.getElementById("frames-table");
 				var tableSize = (document.getElementById("frames-table").rows[0].cells.length) - 1;
 				var delCol = table.rows[0].deleteCell(tableSize);
 			}
+        </script>
+		<script>
+		addFrame(); //add initial frame button
 		</script>
-
-        
+		
+		<script>		
+			function hideFrameControls() {
+				if (document.getElementById("frames-table").style.display === "none") { // if not showing, show all frame controls
+					document.getElementById("frames-table").style.display="flex"; //show using flex, the old preset
+					document.getElementById("hide-frame-controls-button").innerHTML = "Hide Frame Controls"; //change text
+					document.getElementById("add-frame-button").style.display="inline-block";
+					document.getElementById("add-frame-button-label").innerHTML = "Add Frame&nbsp;";
+					document.getElementById("remove-frame-button").style.display="inline-block";
+					document.getElementById("remove-frame-button-label").innerHTML = "Remove Frame";
+				} else { // if showing, hide all frame controls
+					document.getElementById("frames-table").style.display="none"; //hide
+					document.getElementById("hide-frame-controls-button").innerHTML = "Show Frame Controls"; //change text
+					document.getElementById("add-frame-button").style.display="none";
+					document.getElementById("add-frame-button-label").innerHTML = "";
+					document.getElementById("remove-frame-button").style.display="none";
+					document.getElementById("remove-frame-button-label").innerHTML = "";
+				}
+			}			
+		</script>
         
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" crossorigin="anonymous"></script>
