@@ -60,9 +60,9 @@
 				<table id="frames-table">
 					<tr>
 						<tfoot>
-							<button style="margin:2px;" id="add-frame-button" onclick="addFrame()">+</button>
+							<button style="margin:2px;" id="add-frame-button" onclick="addFrameButton()">+</button>
 							<label id="add-frame-button-label" for="add-frame-button">Add Frame&nbsp;</label>
-							<button style="margin:2px;" id="remove-frame-button" onclick="removeFrame()">-</button>
+							<button style="margin:2px;" id="remove-frame-button" onclick="removeFrameButton()">-</button>
 							<label id="remove-frame-button-label" for="remove-frame-button">Remove Frame</label>
 							<button style="margin:2px;" id="hide-frame-controls-button" onclick="hideFrameControls()">Hide Frame Controls</button>
 						</tfoot>
@@ -110,6 +110,8 @@
             
             playPauseButton.addEventListener("click", playPause);
 
+
+			addFrameButton(); //add initial frame button
             // create canvas, set to fill main circle
             var canvas = document.getElementById('can'),
                 context = canvas.getContext('2d');
@@ -310,10 +312,7 @@
 
             $("input[type='number']").inputSpinner()
 
-        </script>
-		
-		<script>
-			function addFrame() {
+			function addFrameButton() {
                 var table = document.getElementById("frames-table");
                 var tableSize = document.getElementById("frames-table").rows[0].cells.length;
                 var newCol = table.rows[0].insertCell(tableSize);
@@ -321,17 +320,13 @@
 				newCol.innerHTML = "<button id=\"select-frame-button\" onclick=\"doNothing()\">" + (tableSize) + "</button>"; //make do something later
             }
 			
-			function removeFrame() {
+			function removeFrameButton() {
 				var table = document.getElementById("frames-table");
 				var tableSize = (document.getElementById("frames-table").rows[0].cells.length) - 1;
 				var delCol = table.rows[0].deleteCell(tableSize);
 			}
-        </script>
-		<script>
-		addFrame(); //add initial frame button
-		</script>
-		
-		<script>		
+			
+			
 			function hideFrameControls() {
 				if (document.getElementById("frames-table").style.display === "none") { // if not showing, show all frame controls
 					document.getElementById("frames-table").style.display="flex"; //show using flex, the old preset
@@ -348,8 +343,9 @@
 					document.getElementById("remove-frame-button").style.display="none";
 					document.getElementById("remove-frame-button-label").innerHTML = "";
 				}
-			}			
-		</script>
+			}
+			
+        </script>
         
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" crossorigin="anonymous"></script>
