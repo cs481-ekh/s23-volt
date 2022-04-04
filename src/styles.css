@@ -11,8 +11,8 @@ canvas {
 #grid-container {
     display: grid;
     grid-gap: 1px;
-    grid-template-columns: auto auto 275px;
-    grid-template-rows: 100px 100% 150px;
+    grid-template-columns: auto auto 225px;
+    grid-template-rows: minmax(75px, 10vh) 69vh minmax(100px, 15vh);
 }
  
 #grid-container > #main-canvas {
@@ -24,6 +24,7 @@ canvas {
     grid-row: 1/3;
     border: 2px solid black;
     padding: 20px;
+    overflow: auto;
 }
 #grid-container > #playback-controls {
     font-size:x-small;
@@ -56,6 +57,7 @@ canvas {
     grid-row: 2/3;
     border: 2px solid black;
     padding: 10px;
+    overflow: auto;
 } 
 
 #objects-table {
@@ -107,7 +109,7 @@ canvas {
     justify-content: center;
     align-self: center;
     background-color:#fff;
-    border:1px solid black;    
+    border:1px solid black;  
     border-radius:50%;
     width:64%;
     height:0;
