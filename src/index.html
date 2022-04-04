@@ -353,6 +353,15 @@
                     bounds: "#maincircle"
                 });
             }
+
+            $("head").append('<style id="style_changer" type="text/css"></style>');
+            function updateCubeSize() {
+                var maxHeight = (canvas.height)/30;
+                if(maxHeight < 20) {
+                    $('#style_changer').html('.cube{height:'+maxHeight+'px; width:'+maxHeight+'px;}');
+                }
+            }
+
             window.addEventListener("resize", function() {
                 context = canvas.getContext('2d');
                 canvas.width  = canvas.offsetWidth;
@@ -360,7 +369,9 @@
                 var centerx = getOffset( document.getElementById('circlecenter') ).left;
                 var centery = getOffset( document.getElementById('circlecenter') ).top;
                 var clipper = clipAtRadius((canvas.width)/2, 0, 0);
+                divideCircle();
                 drawCubes();
+                updateCubeSize();
             });
 
             //removes object based on key
