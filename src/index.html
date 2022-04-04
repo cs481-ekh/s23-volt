@@ -330,6 +330,7 @@
             function drawCubes() {
                 $( ".cube" ).remove();
                 var appendstr = "";
+                var count = 0;
                 frames[frame].forEach(cube => {
                     appendStr = "";
                     // TODO: test enabling code, remove later
@@ -343,8 +344,9 @@
                     var rely = nextRadius * Math.cos(nextRadians);
                     var x = relx + (canvas.width)/2;
                     var y = rely + (canvas.height)/2;
-                    appendstr = "<div class=cube style=\"top: "+y+"px; left: "+x+"px; opacity: 50%; background-color: "+cube["color"]+";\"></div>";
+                    appendstr = "<div id=\"cube"+count+"\" class=cube style=\"top: "+y+"px; left: "+x+"px; opacity: 50%; background-color: "+cube["color"]+";\"></div>";
                     $( "#maincircle" ).append( appendstr );
+                    count++;
                 });
                 Draggable.create(".cube", {
                     /*liveSnap:{
