@@ -349,7 +349,15 @@
 			
 
 			function showGraphButton() {
-
+				if (graphClicked === 0) {
+					//add some graph stuff here
+					document.getElementById("graph-control-button").innerHTML = "Hide Graph";
+					graphClicked = 1;
+				} else {
+					document.getElementById("graph-control-button").innerHTML = "Show Graph";
+					//add some graph stuff here, but different
+					graphClicked = 0;
+				}
 			}
 			
         </script>
