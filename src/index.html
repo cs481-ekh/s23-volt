@@ -14,7 +14,7 @@
     <body>
         <div id="grid-container">
             <div id="main-canvas">
-                <div>CANVAS</div>
+                <div></div>
                 <!-- below objects are for testing, will be changed/removed later -->
                 <!-- <div class="cube dragtest" style="background-color:rgb(128, 255, 43)"></div>
                 <div class="cube pathtest" style="background-color: rgb(204, 127, 255)"></div> -->
@@ -57,7 +57,7 @@
             </div>
             
             <div id="frame-controls">
-                FRAME CONTROLS
+                
 				<table id="frames-table">
 					<tr>
 						<tfoot>
@@ -490,11 +490,21 @@
 		
 		<script>
             function addFrame() {
+                
                 var table = document.getElementById("frames-table");
                 var tableSize = document.getElementById("frames-table").rows[0].cells.length;
                 var newCol = table.rows[0].insertCell(tableSize);
                 var tableSize = document.getElementById("frames-table").rows[0].cells.length;
 				newCol.innerHTML = "<button id=\"select-frame-button\" onclick=\"doNothing()\">" + (tableSize) + "</button>"; //make do something later
+
+                //hides Object menu and displays playback menu if more than one frame is added
+                if(tableSize == 1){
+                    document.getElementById("object-menu").style.display = "block";
+                }
+                if(tableSize >= 2){
+                    document.getElementById("object-menu").style.display = "none";
+                    document.getElementById("playback-controls").style.display = "block";
+                }
             }
         </script>
 		
@@ -503,6 +513,17 @@
 				var table = document.getElementById("frames-table");
 				var tableSize = (document.getElementById("frames-table").rows[0].cells.length) - 1;
 				var delCol = table.rows[0].deleteCell(tableSize);
+
+                //hides playback menu and displays object menu if only one frame exists
+                if(tableSize == 1){
+                    document.getElementById("object-menu").style.display = "block";
+                    document.getElementById("playback-controls").style.display = "none";
+                }
+                //hides main canvas, playback controls, and object menu when no frames exist
+                if(tableSize < 1){
+                    document.getElementById("object-menu").style.display = "none";
+                    document.getElementById("playback-controls").style.display = "none";
+                }
 			}
 		</script>
 
