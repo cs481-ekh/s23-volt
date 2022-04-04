@@ -65,6 +65,7 @@
 							<button style="margin:2px;" id="remove-frame-button" onclick="removeFrameButton()">-</button>
 							<label id="remove-frame-button-label" for="remove-frame-button">Remove Frame</label>
 							<button style="margin:2px;" id="hide-frame-controls-button" onclick="hideFrameControls()">Hide Frame Controls</button>
+							<button style="margin:2px;" id="graph-control-button" onclick="showGraphButton()">Show Graph</button>
 						</tfoot>
 					</tr>
 				</table>
@@ -112,6 +113,7 @@
 
 
 			addFrameButton(); //add initial frame button
+			var graphClicked = 0;
             // create canvas, set to fill main circle
             var canvas = document.getElementById('can'),
                 context = canvas.getContext('2d');
@@ -343,6 +345,11 @@
 					document.getElementById("remove-frame-button").style.display="none";
 					document.getElementById("remove-frame-button-label").innerHTML = "";
 				}
+			}
+			
+
+			function showGraphButton() {
+
 			}
 			
         </script>
