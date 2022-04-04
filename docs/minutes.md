@@ -1,3 +1,15 @@
+# Minutes 4/4/2022
+## Scribe: Seth
+## Present: Madeline, Andrew, Seth, Zarek
+## Absent: N/A
+## Items:
+* This meeting was used to talk about wrapping up Sprint 3 and what still needs to be done, and any questions anyone had about certain functions of the program.
+## A/I:
+* Madeline - Implement character ID to energy cubes
+* Andrew - Remove object using last character in ID of energy cube
+* Seth - Link frame buttons to frame selection, work on graph, brainstorm caching
+* Zarek - Finish wrapping up final tasks
+
 # Minutes 3/18/2022
 ## Scribe: Seth
 ## Present: Madeline, Andrew, Seth, Zarek
