@@ -325,7 +325,11 @@
 			function removeFrameButton() {
 				var table = document.getElementById("frames-table");
 				var tableSize = (document.getElementById("frames-table").rows[0].cells.length) - 1;
+				if (tableSize === 0) {
+					//do nothing
+				} else {
 				var delCol = table.rows[0].deleteCell(tableSize);
+				}
 			}
 			
 			
