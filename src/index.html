@@ -61,10 +61,12 @@
 				<table id="frames-table">
 					<tr>
 						<tfoot>
-							<button style="margin:2px;" id="add-frame-button" onclick="addFrame()">+</button>
-							<label for="add-frame-button">Add Frame&nbsp;</label>
-							<button style="margin:2px;" id="remove-frame-button" onclick="removeFrame()">-</button>
-							<label for="remove-frame-button">Remove Frame</label>
+							<button style="margin:2px;" id="add-frame-button" onclick="addFrameButton()">+</button>
+							<label id="add-frame-button-label" for="add-frame-button">Add Frame&nbsp;</label>
+							<button style="margin:2px;" id="remove-frame-button" onclick="removeFrameButton()">-</button>
+							<label id="remove-frame-button-label" for="remove-frame-button">Remove Frame</label>
+							<button style="margin:2px;" id="hide-frame-controls-button" onclick="hideFrameControls()">Hide Frame Controls</button>
+							<button style="margin:2px;" id="graph-control-button" onclick="showGraphButton()">Show Graph</button>
 						</tfoot>
 					</tr>
 				</table>
@@ -186,6 +188,10 @@
             
             playPauseButton.addEventListener("click", playPause);
 
+
+
+		      	addFrameButton(); //add initial frame button
+	      		var graphClicked = 0;
 
             // create canvas, set to fill main circle
             var canvas = document.getElementById('can'),
@@ -499,17 +505,13 @@
 
             $("input[type='number']").inputSpinner()
 
-        </script>
-		
-		<script>
-            function addFrame() {
-                
+
+			function addFrameButton() {
                 var table = document.getElementById("frames-table");
                 var tableSize = document.getElementById("frames-table").rows[0].cells.length;
                 var newCol = table.rows[0].insertCell(tableSize);
                 var tableSize = document.getElementById("frames-table").rows[0].cells.length;
-				newCol.innerHTML = "<button id=\"select-frame-button\" onclick=\"doNothing()\">" + (tableSize) + "</button>"; //make do something later
-
+				        newCol.innerHTML = "<button id=\"select-frame-button\" onclick=\"selectFrameButton(tableSize)\">" + (tableSize) + "</button>"; //make do something later
                 //hides Object menu and displays playback menu if more than one frame is added
                 if(tableSize == 1){
                     document.getElementById("object-menu").style.display = "block";
@@ -519,28 +521,64 @@
                     document.getElementById("playback-controls").style.display = "block";
                 }
             }
-        </script>
-		
-		<script>
-			function removeFrame() {
+			
+			function removeFrameButton() {
 				var table = document.getElementById("frames-table");
 				var tableSize = (document.getElementById("frames-table").rows[0].cells.length) - 1;
+				if (tableSize === 0) {
+					//do nothing
+				} else {
 				var delCol = table.rows[0].deleteCell(tableSize);
-
-                //hides playback menu and displays object menu if only one frame exists
-                if(tableSize == 1){
-                    document.getElementById("object-menu").style.display = "block";
-                    document.getElementById("playback-controls").style.display = "none";
-                }
-                //hides main canvas, playback controls, and object menu when no frames exist
-                if(tableSize < 1){
-                    document.getElementById("object-menu").style.display = "none";
-                    document.getElementById("playback-controls").style.display = "none";
-                }
+        //hides playback menu and displays object menu if only one frame exists
+        if(tableSize == 1){
+        document.getElementById("object-menu").style.display = "block";
+        document.getElementById("playback-controls").style.display = "none";
+           }
+        //hides main canvas, playback controls, and object menu when no frames exist
+        if(tableSize < 1){
+        document.getElementById("object-menu").style.display = "none";
+        document.getElementById("playback-controls").style.display = "none";
+           }
+				 }
 			}
-		</script>
+			
+			
+			function hideFrameControls() {
+				if (document.getElementById("frames-table").style.display === "none") { // if not showing, show all frame controls
+					document.getElementById("frames-table").style.display="flex"; //show using flex, the old preset
+					document.getElementById("hide-frame-controls-button").innerHTML = "Hide Frame Controls"; //change text
+					document.getElementById("add-frame-button").style.display="inline-block";
+					document.getElementById("add-frame-button-label").innerHTML = "Add Frame&nbsp;";
+					document.getElementById("remove-frame-button").style.display="inline-block";
+					document.getElementById("remove-frame-button-label").innerHTML = "Remove Frame";
+				} else { // if showing, hide all frame controls
+					document.getElementById("frames-table").style.display="none"; //hide
+					document.getElementById("hide-frame-controls-button").innerHTML = "Show Frame Controls"; //change text
+					document.getElementById("add-frame-button").style.display="none";
+					document.getElementById("add-frame-button-label").innerHTML = "";
+					document.getElementById("remove-frame-button").style.display="none";
+					document.getElementById("remove-frame-button-label").innerHTML = "";
+				}
+			}
+			
 
-        
+			function showGraphButton() {
+				if (graphClicked === 0) {
+					//add some graph stuff here
+					document.getElementById("graph-control-button").innerHTML = "Hide Graph";
+					graphClicked = 1;
+				} else {
+					document.getElementById("graph-control-button").innerHTML = "Show Graph";
+					//add some graph stuff here, but different
+					graphClicked = 0;
+				}
+			}
+			
+			function selectFrameButton(i) {
+				frames[i] //should grab frame data, doesnt display yet
+			}
+			
+        </script>
         
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" crossorigin="anonymous"></script>
