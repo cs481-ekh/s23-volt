@@ -319,7 +319,7 @@
                 var tableSize = document.getElementById("frames-table").rows[0].cells.length;
                 var newCol = table.rows[0].insertCell(tableSize);
                 var tableSize = document.getElementById("frames-table").rows[0].cells.length;
-				newCol.innerHTML = "<button id=\"select-frame-button\" onclick=\"doNothing()\">" + (tableSize) + "</button>"; //make do something later
+				newCol.innerHTML = "<button id=\"select-frame-button\" onclick=\"selectFrameButton(tableSize)\">" + (tableSize) + "</button>"; //make do something later
             }
 			
 			function removeFrameButton() {
@@ -358,6 +358,10 @@
 					//add some graph stuff here, but different
 					graphClicked = 0;
 				}
+			}
+			
+			function selectFrameButton(i) {
+				frames[i] //should grab frame data, doesnt display yet
 			}
 			
         </script>
