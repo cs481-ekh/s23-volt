@@ -14,13 +14,13 @@
     <body>
         <div id="grid-container">
             <div id="main-canvas">
-                <div>CANVAS</div>
+                <div></div>
                 <!-- below objects are for testing, will be changed/removed later -->
                 <!-- <div class="cube dragtest" style="background-color:rgb(128, 255, 43)"></div>
                 <div class="cube pathtest" style="background-color: rgb(204, 127, 255)"></div> -->
                 <div class="circle" id="maincircle">
                     <canvas id="can"></canvas>
-                    <div class="circlecenter"></div>
+                    <div class="circlecenter" id="circlecenter"></div>
                 </div>
             </div>
             <div id="playback-controls">
@@ -53,10 +53,11 @@
                         </td>
                     </tr>
                 </table>
+                <button type="button" id="init-cubes-button" class="btn btn-primary" onclick="drawCubes()">Draw Cubes</button>
             </div>
             
             <div id="frame-controls">
-                FRAME CONTROLS
+                
 				<table id="frames-table">
 					<tr>
 						<tfoot>
@@ -78,6 +79,82 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/MotionPathPlugin.min.js"></script>
 
         <script>
+            // START TEST DATA
+            var objects = [
+                {
+                    name: "hand",
+                    startingRad: 0,
+                    endingRad: Math.PI / 2
+                },
+                {
+                    name: "floor",
+                    startingRad: Math.PI / 2,
+                    endingRad: Math.PI
+                },
+                {
+                    name: "ball",
+                    startingRad: Math.PI,
+                    endingRad: (3*Math.PI)/2
+                },
+                {
+                    name: "air",
+                    startingRad: (3*Math.PI)/2,
+                    endingRad: 2*Math.PI
+                },
+            ]
+
+            var frames = [
+                [
+                    {
+                        "type": "chemical",
+                        "radians": 1,
+                        "radius": 0.5,
+                        "color": "blue",
+                        "label": "CPE",
+                        "edited": false,
+                        "object": 0
+                    },
+                    {
+                        "type": "kinetic",
+                        "radians": 2.3,
+                        "radius": 0.5,
+                        "color": "green",
+                        "label": "KE",
+                        "edited": false,
+                        "object": 1
+                    },
+                    {
+                        "type": "gravitational",
+                        "radians": 3.9,
+                        "radius": 0.5,
+                        "color": "yellow",
+                        "label": "GPE",
+                        "edited": false,
+                        "object": 2
+                    },
+                    {
+                        "type": "heat",
+                        "radians": 5.7,
+                        "radius": 0.5,
+                        "color": "red",
+                        "label": "HE",
+                        "edited": false,
+                        "object": 3
+                    },
+                    {
+                        "type": "kinetic",
+                        "radians": 2,
+                        "radius": 0.3,
+                        "color": "green",
+                        "label": "KE",
+                        "edited": false,
+                        "object": 1
+                    }
+                ]
+            ]
+            // END TEST DATA
+
+
             //Defining templates for frame data
             var objectDataTemplate = {
                 position:[0,0],
@@ -112,11 +189,16 @@
             playPauseButton.addEventListener("click", playPause);
 
 
-			addFrameButton(); //add initial frame button
-			var graphClicked = 0;
+
+		      	addFrameButton(); //add initial frame button
+	      		var graphClicked = 0;
+
             // create canvas, set to fill main circle
             var canvas = document.getElementById('can'),
                 context = canvas.getContext('2d');
+            canvas.addEventListener('click', function(e) {
+                calculateQuadrant(canvas, e)
+            })
             canvas.style.width='100%';
             canvas.style.height='100%';
             canvas.width  = canvas.offsetWidth;
@@ -142,17 +224,67 @@
                 
             }
 
-            // ---- start of test / example code
-            // Draggable.create(".dragtest");
-            // gsap.to(".pathtest", {
-            //     motionPath: {
-            //         path: [{x:100, y:50}, {x:200, y:0}, {x:300, y:100}]
-            //     },
-            //     transformOrigin: "50% 50%",
-            //     duration: 5,
-            //     ease: "power1.inOut"
-            // });
-            // ---- end of test / example code
+            function polarToObjectRadians(radians) {
+                if(radians >= 0) {
+                    return ((3 * Math.PI) / 2) - radians;
+                }
+                if (radians <= 0-(Math.PI / 2)) {
+                    return (radians * (-1)) - Math.PI / 2;
+                }
+                return (radians * (-1)) + (3 * Math.PI) / 2;
+            }
+
+            function objectToPolarRadians(radians) {
+                if(radians >= Math.PI / 2 && radians <= (3 * Math.PI) / 2) {
+                    return (3 * Math.PI) / 2 - radians;
+                }
+                if (radians <= Math.PI / 2) {
+                    return (radians + Math.PI / 2) * (-1);
+                }
+                return (radians - (3 * Math.PI) / 2) * (-1);
+            }
+
+            function calculateQuadrant(canvas, event) {
+                const numObjects = nextObjectID;
+                const slice = (2*Math.PI) / numObjects;
+                const rect = canvas.getBoundingClientRect()
+                const relx = (event.clientX - rect.left);
+                const rely = (event.clientY - rect.top);
+                const x = relx - (canvas.width)/2;
+                const y = (rely - (canvas.height)/2) * -1;
+                const polarDistance = Math.sqrt(x*x + y*y);
+                const polarRadians = Math.atan2(y,x);
+                const objRadians = polarToObjectRadians(polarRadians);
+                const obj = Math.trunc(objRadians/((2 * Math.PI)/numObjects));
+                console.log("objRadians = " + objRadians + ", obj = " + obj);
+            }
+            
+            function getOffset(el) {
+                const rect = el.getBoundingClientRect();
+                return {
+                    left: rect.left + window.scrollX,
+                    top: rect.top + window.scrollY
+                };
+            }
+            var centerx = getOffset( document.getElementById('circlecenter') ).left;
+            var centery = getOffset( document.getElementById('circlecenter') ).top;
+            var clipper = clipAtRadius((canvas.width)/2, 0, 0);
+            // TODO: fix this
+            function clipAtRadius(radius, offsetX, offsetY) {
+                return point => {
+                    let x = centerx - offsetX,
+                        y = centery - offsetY,
+                        length = Math.sqrt(x * x + y * y),
+                        angle;
+                    if (length > radius) {
+                    angle = Math.atan2(y, x);
+                    centerx = radius * Math.cos(angle);
+                    centery = radius * Math.sin(angle);
+                    }
+                    return point;
+                };
+            }
+            
             //add object with given data
             function addObject(position, bounds) { 
                 if (!position || !bounds){
@@ -172,8 +304,9 @@
 
                 if (first){
                     first[toString(nextObjectID)] = newObj; //create new key in state dictionary
-                    nextObjectID += 1;
+                    // nextObjectID += 1;
                 }
+                nextObjectID++;
             }
 
             //Adds energy cube to existing frame state
@@ -191,6 +324,64 @@
                 }
 
             }
+
+            function getRandomLocation(objectNum) {
+                var min = objects[objectNum]["startingRad"] + 0.2;
+                var max = objects[objectNum]["endingRad"] - 0.2;
+                var radians = Math.random() * (max - min) + min;
+                var radius = Math.random() * (0.8) + 0.1;
+                return {"radius": radius, "radians": radians}
+            }
+
+            function drawCubes() {
+                $( ".cube" ).remove();
+                var appendstr = "";
+                var count = 0;
+                frames[frame].forEach(cube => {
+                    appendStr = "";
+                    // TODO: test enabling code, remove later
+                    // var loc = getRandomLocation(cube["object"]);
+                    // cube["radians"] = loc["radians"];
+                    // cube["radius"] = loc["radius"];
+                    // end test code
+                    var nextRadians = (2 * Math.PI) - cube["radians"];
+                    var nextRadius = cube["radius"] * ((canvas.width)/2);
+                    var relx = nextRadius * Math.sin(nextRadians);
+                    var rely = nextRadius * Math.cos(nextRadians);
+                    var x = relx + (canvas.width)/2;
+                    var y = rely + (canvas.height)/2;
+                    appendstr = "<div id=\"cube"+count+"\" class=cube style=\"top: "+y+"px; left: "+x+"px; opacity: 50%; background-color: "+cube["color"]+";\"></div>";
+                    $( "#maincircle" ).append( appendstr );
+                    count++;
+                });
+                Draggable.create(".cube", {
+                    /*liveSnap:{
+                        points: clipper
+                    },*/
+                    bounds: "#maincircle"
+                });
+            }
+
+            $("head").append('<style id="style_changer" type="text/css"></style>');
+            function updateCubeSize() {
+                var maxHeight = (canvas.height)/30;
+                if(maxHeight < 20) {
+                    $('#style_changer').html('.cube{height:'+maxHeight+'px; width:'+maxHeight+'px;}');
+                }
+            }
+
+            window.addEventListener("resize", function() {
+                context = canvas.getContext('2d');
+                canvas.width  = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                var centerx = getOffset( document.getElementById('circlecenter') ).left;
+                var centery = getOffset( document.getElementById('circlecenter') ).top;
+                var clipper = clipAtRadius((canvas.width)/2, 0, 0);
+                divideCircle();
+                drawCubes();
+                updateCubeSize();
+            });
+
             //removes object based on key
             function removeObject(key) { 
                 let first = frameData[0];
@@ -254,7 +445,7 @@
                 var currentIndex = numObjectButtons - 1;
                 expand[currentIndex] = 0;
                 
-                addEntity
+                // addEntity
 
                 tableSize = document.getElementById("objects-table").rows.length;
 
@@ -291,7 +482,7 @@
             function createNewObject(objID){
                 var returnString;
                 var currentIndex = numObjectButtons - 1;
-                returnString = "<input type=\"text\" class=\"obj_name_box\"  placeholder=\"Object Name\"></input> ";
+                returnString = "<input type=\"text\" class=\"obj_name_box\" id=\"object" + currentIndex + "\" placeholder=\"Object Name\"></input> ";
                 returnString = returnString + "<div class=\"text-right\"><button id=\"expand" + currentIndex + "\" class=\"btn btn-primary\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#collapseExample" + currentIndex + "\" aria-expanded=\"false\" aria-controls=\"collapseExample\" onclick=\"expandMenu(currentIndex)\">\\/</button></div>";
                 returnString = returnString +  "<div class=\"collapse\" id=\"collapseExample" + currentIndex + "\"><div class=\"card card-body\">" + newEnergyMenu(objID) + "</div></div>";
                 return returnString;
@@ -314,12 +505,21 @@
 
             $("input[type='number']").inputSpinner()
 
+
 			function addFrameButton() {
                 var table = document.getElementById("frames-table");
                 var tableSize = document.getElementById("frames-table").rows[0].cells.length;
                 var newCol = table.rows[0].insertCell(tableSize);
                 var tableSize = document.getElementById("frames-table").rows[0].cells.length;
-				newCol.innerHTML = "<button id=\"select-frame-button\" onclick=\"selectFrameButton(tableSize)\">" + (tableSize) + "</button>"; //make do something later
+				        newCol.innerHTML = "<button id=\"select-frame-button\" onclick=\"selectFrameButton(tableSize)\">" + (tableSize) + "</button>"; //make do something later
+                //hides Object menu and displays playback menu if more than one frame is added
+                if(tableSize == 1){
+                    document.getElementById("object-menu").style.display = "block";
+                }
+                if(tableSize >= 2){
+                    document.getElementById("object-menu").style.display = "none";
+                    document.getElementById("playback-controls").style.display = "block";
+                }
             }
 			
 			function removeFrameButton() {
@@ -329,7 +529,17 @@
 					//do nothing
 				} else {
 				var delCol = table.rows[0].deleteCell(tableSize);
-				}
+        //hides playback menu and displays object menu if only one frame exists
+        if(tableSize == 1){
+        document.getElementById("object-menu").style.display = "block";
+        document.getElementById("playback-controls").style.display = "none";
+           }
+        //hides main canvas, playback controls, and object menu when no frames exist
+        if(tableSize < 1){
+        document.getElementById("object-menu").style.display = "none";
+        document.getElementById("playback-controls").style.display = "none";
+           }
+				 }
 			}
 			
 			
