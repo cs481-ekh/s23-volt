@@ -200,7 +200,7 @@
             var expand = [20];
             var zeroObjects = true;
             var energySpinnerIndexes = [10];
-            var cubes = [];   
+            var menuIsOpen = false; 
 
             var playPauseButton = document.getElementById("play-pause");
             
@@ -385,7 +385,9 @@
                                 if(e.clientY >= rect.top && e.clientY <= (rect.top + rect.height)){
                                     contexElement.style.top = e.clientY + "px";
                                     contexElement.style.left = e.clientX + "px";
+
                                     contexElement.classList.add("active");
+                                    menuIsOpen = true;
                                 }
                                 else{
                                     i++;
@@ -395,7 +397,8 @@
                                 i++;
                             }
                         });
-                    });               
+                    });
+
                     count++;
                 });
                 Draggable.create(".cube", {
@@ -406,8 +409,20 @@
                 });
             }
 
+            //hides drop-down context menu when an option is selected
             document.getElementById("context-menu").addEventListener("click", function(){
-                document.getElementById("context-menu").classList.remove("active");
+                if(menuIsOpen == true){
+                    document.getElementById("context-menu").classList.remove("active");
+                    menuIsOpen = false;
+                }
+            });
+
+            //if canvis is clicked then menu dissapears
+            window.addEventListener("mousedown", function(){
+                if(menuIsOpen == true){
+                    document.getElementById("context-menu").classList.remove("active");
+                    menuIsOpen = false;
+                }
             });
 
             $("head").append('<style id="style_changer" type="text/css"></style>');
