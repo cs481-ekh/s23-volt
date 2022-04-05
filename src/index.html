@@ -73,6 +73,23 @@
 			</div>
         </div>  
 
+        <div id="context-menu">
+            <div class="item">
+                <i class="fa therm"></i> Thermal
+            </div>
+            <div class="item">
+                <i class="fa grav"></i> Gravitational
+            </div>
+            <div class="item">
+                <i class="fa kin"></i> Kinetic
+            </div>
+            <div class="item">
+                <i class="fa pot"></i> Potential
+            </div>
+            <div class="item">
+                <i class="fa cust"></i> Custom
+            </div>
+        </div>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/Draggable.min.js"></script>
@@ -183,6 +200,7 @@
             var expand = [20];
             var zeroObjects = true;
             var energySpinnerIndexes = [10];
+            var cubes = [];   
 
             var playPauseButton = document.getElementById("play-pause");
             
@@ -322,7 +340,6 @@
                     }
                     owner.energyCubes.push(newObj);
                 }
-
             }
 
             function getRandomLocation(objectNum) {
@@ -351,7 +368,34 @@
                     var x = relx + (canvas.width)/2;
                     var y = rely + (canvas.height)/2;
                     appendstr = "<div id=\"cube"+count+"\" class=cube style=\"top: "+y+"px; left: "+x+"px; opacity: 50%; background-color: "+cube["color"]+";\"></div>";
+                    
                     $( "#maincircle" ).append( appendstr );
+
+                    //adds right clickable menu for each cube
+                    document.getElementById("cube" + count).addEventListener("contextmenu", function(e){
+                        e.preventDefault();
+                        var contexElement = document.getElementById("context-menu");
+                        var cubeList = document.getElementsByClassName("cube");
+                        const cubeArray = Array.prototype.slice.call(cubeList);
+                        var i = 0;
+                        
+                        cubeArray.forEach(cube => {
+                            var rect = cube.getBoundingClientRect();
+                            if(e.clientX >= rect.left && e.clientX <= (rect.left + rect.width)){
+                                if(e.clientY >= rect.top && e.clientY <= (rect.top + rect.height)){
+                                    contexElement.style.top = e.clientY + "px";
+                                    contexElement.style.left = e.clientX + "px";
+                                    contexElement.classList.add("active");
+                                }
+                                else{
+                                    i++;
+                                }
+                            }
+                            else{
+                                i++;
+                            }
+                        });
+                    });               
                     count++;
                 });
                 Draggable.create(".cube", {
@@ -361,6 +405,10 @@
                     bounds: "#maincircle"
                 });
             }
+
+            document.getElementById("context-menu").addEventListener("click", function(){
+                document.getElementById("context-menu").classList.remove("active");
+            });
 
             $("head").append('<style id="style_changer" type="text/css"></style>');
             function updateCubeSize() {
@@ -541,6 +589,7 @@
            }
 				 }
 			}
+
 			
 			
 			function hideFrameControls() {
@@ -577,7 +626,7 @@
 			function selectFrameButton(i) {
 				frames[i] //should grab frame data, doesnt display yet
 			}
-			
+		
         </script>
         
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
