@@ -74,19 +74,19 @@
         </div>  
 
         <div id="context-menu">
-            <div class="item">
+            <div class="item" id="therm-item">
                 <i class="fa therm"></i> Thermal
             </div>
-            <div class="item">
+            <div class="item" id="grav-item">
                 <i class="fa grav"></i> Gravitational
             </div>
-            <div class="item">
+            <div class="item" id="kin-item">
                 <i class="fa kin"></i> Kinetic
             </div>
-            <div class="item">
+            <div class="item" id="pot-item">
                 <i class="fa pot"></i> Potential
             </div>
-            <div class="item">
+            <div class="item" id="cust-item">
                 <i class="fa cust"></i> Custom
             </div>
         </div>
@@ -371,13 +371,15 @@
                     
                     $( "#maincircle" ).append( appendstr );
 
+                    
+
                     //adds right clickable menu for each cube
                     document.getElementById("cube" + count).addEventListener("contextmenu", function(e){
                         e.preventDefault();
                         var contexElement = document.getElementById("context-menu");
                         var cubeList = document.getElementsByClassName("cube");
                         const cubeArray = Array.prototype.slice.call(cubeList);
-                        var i = 0;
+                        var curCount = 0;
                         
                         cubeArray.forEach(cube => {
                             var rect = cube.getBoundingClientRect();
@@ -388,19 +390,57 @@
 
                                     contexElement.classList.add("active");
                                     menuIsOpen = true;
+                                    
+
+                                    document.getElementById("context-menu").addEventListener("mousedown", function(ev){
+                                        
+                                        if(menuIsOpen == true){
+                                            if($(ev.target).attr("id") == "therm-item"){
+                                                menuIsOpen = false;
+                                                document.getElementById("context-menu").classList.remove("active");
+                                                var curCube = document.getElementById("cube" + curCount);
+                                                //assign new energy type
+                                                //alert(cube.id + " set to therm");
+                                            }
+                                            else if($(ev.target).attr("id") == "grav-item"){
+                                                menuIsOpen = false;
+                                                document.getElementById("context-menu").classList.remove("active");
+                                                var curCube = document.getElementById("cube" + curCount);
+                                                //assign new energy type
+                                                //alert("set to grav");
+                                            }
+                                            else if($(ev.target).attr("id") == "kin-item"){
+                                                menuIsOpen = false;
+                                                document.getElementById("context-menu").classList.remove("active");
+                                                var curCube = document.getElementById("cube" + curCount);
+                                                //assign new energy type
+                                                //alert("set to kin");
+                                            }
+                                            else if($(ev.target).attr("id") == "pot-item"){
+                                                menuIsOpen = false;
+                                                document.getElementById("context-menu").classList.remove("active");
+                                                var curCube = document.getElementById("cube" + curCount);
+                                                //assign new energy type
+                                                //alert("set to pot");
+                                            }
+                                            else if($(ev.target).attr("id") == "cust-item"){
+                                                menuIsOpen = false;
+                                                document.getElementById("context-menu").classList.remove("active");
+                                                var curCube = document.getElementById("cube" + curCount);
+                                                //assign new energy type
+                                                //alert("set to cust");
+                                            }
+                                        }
+                                        curCount++;
+                                    });
                                 }
-                                else{
-                                    i++;
-                                }
-                            }
-                            else{
-                                i++;
                             }
                         });
                     });
 
                     count++;
                 });
+                initMoveableCubes();
                 Draggable.create(".cube", {
                     /*liveSnap:{
                         points: clipper
@@ -408,6 +448,22 @@
                     bounds: "#maincircle"
                 });
             }
+
+
+             //conculates which object each cube is "in"
+             function initMoveableCubes(){
+                var cubeList = document.getElementsByClassName("cube");
+                var cubeArray = Array.prototype.slice.call(cubeList);
+
+                for(var i = 0; i < cubeArray.length; i++){
+                    var cube = document.getElementById("cube" + i);
+                    cube.addEventListener("mouseup", function(e){
+                        //$(e.target).attr("object") = calculateQuadrant(document.getElementById("main-canvas"), e);
+                        //alert("quad changed");
+                    });
+                }
+            }
+
 
             //hides drop-down context menu when an option is selected
             document.getElementById("context-menu").addEventListener("click", function(){
