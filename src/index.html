@@ -26,10 +26,17 @@
             <div id="playback-controls">
                 PLAYBACK CONTROLS
                 <div id="playback-grid">
-                    <div>
-                        <button id="play-pause">Play</button>
-                        
-                    </div>
+                    <span>    
+                        <div>
+                            <button id="play-pause">Play</button>
+                        </div>
+                        <div>
+                            <button id="step-back" onclick="stepForward(true)">&lt&lt</button>
+                        </div>
+                        <div>                            
+                            <button id="step-forward" onclick="stepForward(false)">&gt&gt</button>
+                        </div>
+                    </span>
                     <div id="speed-slider">
                         Playback Speed:
                         <input type="range" min="1" max="10" value="5" class="slider" id="playback-speed">
@@ -121,8 +128,8 @@
             ]
 
             var frames = [
-                [
-                    {
+                {
+                    "0" : {
                         "type": "chemical",
                         "radians": 1,
                         "radius": 0.5,
@@ -131,7 +138,7 @@
                         "edited": false,
                         "object": 0
                     },
-                    {
+                    "1":{
                         "type": "kinetic",
                         "radians": 2.3,
                         "radius": 0.5,
@@ -140,7 +147,7 @@
                         "edited": false,
                         "object": 1
                     },
-                    {
+                    "2":{
                         "type": "gravitational",
                         "radians": 3.9,
                         "radius": 0.5,
@@ -149,7 +156,7 @@
                         "edited": false,
                         "object": 2
                     },
-                    {
+                    "3":{
                         "type": "heat",
                         "radians": 5.7,
                         "radius": 0.5,
@@ -158,7 +165,7 @@
                         "edited": false,
                         "object": 3
                     },
-                    {
+                    "4":{
                         "type": "kinetic",
                         "radians": 2,
                         "radius": 0.3,
@@ -167,7 +174,7 @@
                         "edited": false,
                         "object": 1
                     }
-                ]
+                }
             ]
             // END TEST DATA
 
@@ -186,15 +193,19 @@
 
             var frameStateTemplate = {};
 
-            var frameData = [];
+            var frameData = frames;//[];
             var frame = 0;
+            
+            var intervalTimer; //= setInterval(playback, milliseconds);
 
             var nextObjectID = 0; // keeps track of the last object id assigned
 
             var table = document.getElementById("objects-table");
             var tableSize;
 
-            var testButton = 0;
+            var playbackActive = false;
+            var playbackSpeed = 5000;
+
             var numObjectButtons = 0;
             var objectExpandButton = [20];
             var expand = [20];
@@ -203,7 +214,8 @@
             var menuIsOpen = false; 
 
             var playPauseButton = document.getElementById("play-pause");
-            
+            var speedSlider = document.getElementById("playback-speed");
+            speedSlider.addEventListener("change", speedChanged);
             playPauseButton.addEventListener("click", playPause);
 
 
@@ -354,7 +366,14 @@
                 $( ".cube" ).remove();
                 var appendstr = "";
                 var count = 0;
-                frames[frame].forEach(cube => {
+
+                //get our current frame
+                var currentFrame = frameData[frame];
+                console.log(currentFrame); //to show that frames are in fact moving forward
+                var currentFrameKeys = Object.keys(currentFrame); //get all cube id's for the current frame
+                
+                currentFrameKeys.forEach(cubeID => {
+                    var cube = frameData[frame][cubeID]; //gets specific cube from dictionary, based on cube's id
                     appendStr = "";
                     // TODO: test enabling code, remove later
                     // var loc = getRandomLocation(cube["object"]);
@@ -516,6 +535,8 @@
                 if (frameData < 0){
                     newFrame = JSON.parse(JSON.stringify(frameStateTemplate)); //deep copy our frame state
                 }else{
+                    console.log(frameData);
+                    console.log(frame);
                     newFrame = JSON.parse(JSON.stringify(frameData[frameData.length - 1])); //deep copy our frame state
                 }
 
@@ -528,20 +549,90 @@
                 frameData.pop();
                 frame = frameData.length - 1;
             }
+
+            //clamps a number to specific range
+            //source : https://stackoverflow.com/questions/11409895/whats-the-most-elegant-way-to-cap-a-number-to-a-segment
+            function clampNumber(number, min, max) {
+                return Math.max(min, Math.min(number, max));
+            }
+
+            //handles changing playback speed
+            function speedChanged(e){
+                let speedVal = Number(e.target.value);
+
+                //make sure we have a valid speed value, and that its not zero
+                if (speedVal && speedVal > 0.1){
+                    playbackSpeed = 25000/speedVal;
+                    togglePlayback(true);
+                }
+            }
+            
             //annimation = document.getElementById("physics-annimation");
             function playPause() { 
 
-                if(testButton == 0){
-                    playPauseButton.innerHTML = "Play";
-                    //Functional goes here
-                    testButton = 1;
+                if(playbackActive == true){
+
+                    //stop playback
+                    togglePlayback(false);
                 }
                 else{
-                    playPauseButton.innerHTML = "Pause";
-                    //Functional goes here
-                    testButton = 0;
+
+                    //begin playback
+                    togglePlayback(true);
                 }
             } 
+
+            //walks through existing frames, stops at end
+            function playback(){
+                if (frame < frames.length - 1){
+                    stepForward();
+                }else{
+                    togglePlayback(false);
+                }
+            }
+
+            //toggles interval that steps through frames
+            function togglePlayback(start){
+                if(start === true){
+                    if (frame >= frameData.length - 1){
+                        frame = 0;
+                    }
+                    //handles starting current playback
+                    playPauseButton.innerHTML = "Pause";
+
+                    //stop the current playback interval, then restart it
+                    clearInterval(intervalTimer);
+                    intervalTimer = setInterval(playback, playbackSpeed);
+                    playbackActive = true;
+                }else{
+                    //handles pausing current playback
+                    playPauseButton.innerHTML = "Play";
+
+                    clearInterval(intervalTimer);
+                    playbackActive = false;
+                }
+            }
+
+            //updates the current cubes and states to render properly on the canvas
+            function drawFrame(toFrame){
+                frame = toFrame;
+                drawCubes();
+            }
+
+            //allows us to step forwards and backwards in our simulation (frame to frame)
+            function stepForward(reverse){
+                var nextFrame = 0;
+                
+                if (reverse) {
+                    nextFrame = frame - 1;
+                }else{
+                    nextFrame = frame + 1;
+                }
+
+                //make sure our target frame is in range of our actual frame data
+                clampNumber(nextFrame,0,frameData.length);
+                drawFrame(nextFrame);
+            }
 
             function expandMenu(i) { 
                 button = document.getElementById("expand" + i);
@@ -630,7 +721,7 @@
                 var tableSize = document.getElementById("frames-table").rows[0].cells.length;
                 var newCol = table.rows[0].insertCell(tableSize);
                 var tableSize = document.getElementById("frames-table").rows[0].cells.length;
-				        newCol.innerHTML = "<button id=\"select-frame-button\" onclick=\"selectFrameButton(tableSize)\">" + (tableSize) + "</button>"; //make do something later
+				        newCol.innerHTML = "<button id=\"select-frame-button\" onclick=\"selectFrameButton(" + tableSize + ")\">" + (tableSize) + "</button>"; //make do something later
                 //hides Object menu and displays playback menu if more than one frame is added
                 if(tableSize == 1){
                     document.getElementById("object-menu").style.display = "block";
@@ -639,6 +730,7 @@
                     document.getElementById("object-menu").style.display = "none";
                     document.getElementById("playback-controls").style.display = "block";
                 }
+                addFrame();
             }
 			
 			function removeFrameButton() {
@@ -695,7 +787,9 @@
 			}
 			
 			function selectFrameButton(i) {
-				frames[i] //should grab frame data, doesnt display yet
+                frame = i - 1;
+                togglePlayback(false);
+				drawCubes(); //should grab frame data, doesnt display yet
 			}
 		
         </script>
