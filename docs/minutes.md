@@ -1,4 +1,4 @@
-# Minutes 4/4/2022
+# Minutes 4/8/2022
 ## Scribe: Madeline
 ## Present: Madeline, Andrew, Seth, Zarek
 ## Absent: N/A
