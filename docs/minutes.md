@@ -1,4 +1,16 @@
 # Minutes 4/4/2022
+## Scribe: Madeline
+## Present: Madeline, Andrew, Seth, Zarek
+## Absent: N/A
+## Items:
+* This meeting was used to discuss planning for sprint 4 and wrapping up the project
+## A/I:
+* Zarek - file save / load, update position for cubes when dragged 
+* Andrew - energy/object relation, finish cube menu and updating cube data with it
+* Seth - finish graphing functionality, create cubeEditingRelations dictionary
+* Maddi - get pieces connected for type object name -> add energy -> populate frame + put labels on objects
+
+# Minutes 4/4/2022
 ## Scribe: Seth
 ## Present: Madeline, Andrew, Seth, Zarek
 ## Absent: N/A
