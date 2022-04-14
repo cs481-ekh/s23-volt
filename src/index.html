@@ -181,9 +181,9 @@
 
             //Defining templates for frame data
             var objectDataTemplate = {
-                "name": "",
-                "startingRad": 0,
-                "endingRad": 0
+                name: "",
+                startingRad: 0,
+                endingRad: 0
             };
 
             var energyCubeDataTemplate = {
@@ -198,7 +198,7 @@
 
             var frameStateTemplate = {};
 
-            var objectData = objects;//[];
+            var objectData = [];
             var frameData = frames;//[];
             var frame = 0;
             
@@ -251,6 +251,8 @@
                 context.beginPath();
                 context.moveTo(radius, radius);
                 for(let i = 0; i<numObjects; i++) {
+                    objectData[i].startingRad = i*slice;
+                    objectData[i].endingRad = (i+1)*slice;
                     var x = radius + (radius * Math.sin(i*slice));
                     var y = radius + (radius * Math.cos(i*slice));
                     context.lineTo(x, y);
@@ -322,27 +324,12 @@
             }
             
             //add object with given data
-            function addObject(position, bounds) { 
-                if (!position || !bounds){
-                    console.log("no position or bounds! invalid objects");
-                    return;
-                }
-
-                let newObj;
-
-                newObj = JSON.parse(JSON.stringify(objectDataTemplate)); //deep copy our static object
-
-                //assigning new object properties
-                newObj.position = position;
-                newObj.bounds = bounds; 
-
-                let first = frameData[0];
-
-                if (first){
-                    first[toString(nextObjectID)] = newObj; //create new key in state dictionary
-                    // nextObjectID += 1;
-                }
+            function addObject(name) {
+                var newObj = JSON.parse(JSON.stringify(objectDataTemplate)); //deep copy our static object
+                newObj["name"] = name;
+                objectData.push(newObj);
                 nextObjectID++;
+                divideCircle();
             }
 
             //Adds energy cube to existing frame state
@@ -680,9 +667,7 @@
                 newCell1.innerHTML = createNewObject(nextObjectID);
                 
                 //Adds object and increments nextObjectID
-                addObject([0,0],[0,0]);
-
-                divideCircle();
+                addObject("tmp");
 
             }
 
