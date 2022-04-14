@@ -60,7 +60,7 @@
                         </td>
                     </tr>
                 </table>
-                <button type="button" id="init-cubes-button" class="btn btn-primary" onclick="drawCubes()">Draw Cubes</button>
+                <button type="button" id="init-cubes-button" class="btn btn-primary" onclick="initFirstFrame()">Draw Cubes</button>
             </div>
             
             <div id="frame-controls">
@@ -199,7 +199,7 @@
             var frameStateTemplate = {};
 
             var objectData = [];
-            var frameData = frames;//[];
+            var frameData = [[]];
             var frame = 0;
             
             var intervalTimer; //= setInterval(playback, milliseconds);
@@ -358,13 +358,50 @@
                 return {"radius": radius, "radians": radians}
             }
 
+            // takes the current form values and uses them to populate the objectData and frameData structures
+            function initFirstFrame() {
+                var objNameBoxes = document.getElementsByClassName("obj_name_box");
+                const objNameBoxArray = Array.prototype.slice.call(objNameBoxes);
+                var curCount = 0;
+                objNameBoxArray.forEach(nameBox => {
+                    var nextObjectID = nameBox.id;
+                    var nextObjectIndex = parseInt(nextObjectID.charAt(nextObjectID.length - 1));
+                    var nextObjectName = nameBox.value;
+                    objectData[nextObjectIndex].name = nextObjectName;
+                });
+
+                frameData = [[]];
+                var typeSelectors = document.getElementsByClassName("energy-type");
+                const typeSelectorArray = Array.prototype.slice.call(typeSelectors);
+                // console.log(typeSelectorArray);
+                curCount = 0;
+                typeSelectorArray.forEach(typeSelect => {
+                    var typeToAdd = $(typeSelectors[curCount]).find(":selected").val();
+                    // console.log(typeToAdd);
+                    var parentTableID = $(typeSelect).closest('table').attr('id');
+                    // console.log(typeSelect);
+                    var adjacentSpinner = $(typeSelect).next();
+                    var countToAdd = adjacentSpinner.val();
+                    // console.log(countToAdd);
+                    var owningObject = parseInt(parentTableID.charAt(parentTableID.length - 1));
+                    for (let i = 0; i < countToAdd; i++) {
+                        addEnergyCube(typeToAdd, owningObject);
+                    }
+                    curCount++;
+                });
+                console.log(frameData[0]);
+                drawCubes();
+                updateCubeSize();
+            }
+
             function drawCubes() {
                 $( ".cube" ).remove();
                 var appendstr = "";
                 var count = 0;
 
+                // console.log(frameData);
                 //get our current frame
-                var currentFrame = frameData[frame];
+                var currentFrame = frameData[frame-1];
                 console.log(currentFrame); //to show that frames are in fact moving forward
                 // var currentFrameKeys = Object.keys(currentFrame); //get all cube id's for the current frame
                 
@@ -499,9 +536,10 @@
             $("head").append('<style id="style_changer" type="text/css"></style>');
             function updateCubeSize() {
                 var maxHeight = (canvas.height)/30;
-                if(maxHeight < 20) {
-                    $('#style_changer').html('.cube{height:'+maxHeight+'px; width:'+maxHeight+'px;}');
+                if(maxHeight > 20) {
+                    maxHeight = 20;
                 }
+                $('#style_changer').html('.cube{height:'+maxHeight+'px; width:'+maxHeight+'px;}');
             }
 
             window.addEventListener("resize", function() {
