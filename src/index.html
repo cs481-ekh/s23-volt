@@ -16,8 +16,8 @@
             <div id="main-canvas">
                 <div></div>
                 <!-- below objects are for testing, will be changed/removed later -->
-                <!-- <div class="cube dragtest" style="background-color:rgb(128, 255, 43)"></div>
-                <div class="cube pathtest" style="background-color: rgb(204, 127, 255)"></div> -->
+                <!-- <div class="cube dragtest" style="background-color:rgb(128, 255, 43)"></div> -->
+                <!-- <div class="cube pathtest" style="background-color: rgb(204, 127, 255)"></div> -->
                 <div class="circle" id="maincircle">
                     <canvas id="can"></canvas>
                     <div class="circlecenter" id="circlecenter"></div>
@@ -128,8 +128,8 @@
             ]
 
             var frames = [
-                {
-                    "0" : {
+                [
+                    {
                         "type": "chemical",
                         "radians": 1,
                         "radius": 0.5,
@@ -138,7 +138,7 @@
                         "edited": false,
                         "object": 0
                     },
-                    "1":{
+                    {
                         "type": "kinetic",
                         "radians": 2.3,
                         "radius": 0.5,
@@ -147,7 +147,7 @@
                         "edited": false,
                         "object": 1
                     },
-                    "2":{
+                    {
                         "type": "gravitational",
                         "radians": 3.9,
                         "radius": 0.5,
@@ -156,7 +156,7 @@
                         "edited": false,
                         "object": 2
                     },
-                    "3":{
+                    {
                         "type": "heat",
                         "radians": 5.7,
                         "radius": 0.5,
@@ -165,7 +165,7 @@
                         "edited": false,
                         "object": 3
                     },
-                    "4":{
+                    {
                         "type": "kinetic",
                         "radians": 2,
                         "radius": 0.3,
@@ -174,25 +174,31 @@
                         "edited": false,
                         "object": 1
                     }
-                }
+                ]
             ]
             // END TEST DATA
 
 
             //Defining templates for frame data
             var objectDataTemplate = {
-                position:[0,0],
-                bounds:[0,0],
-                energyCubes:[]
+                "name": "",
+                "startingRad": 0,
+                "endingRad": 0
             };
 
             var energyCubeDataTemplate = {
-                type:"gravitational",
-                value: 0.0
+                "type": "",
+                "radians": 0,
+                "radius": 0,
+                "color": "",
+                "label": "",
+                "edited": false,
+                "object": 0
             };
 
             var frameStateTemplate = {};
 
+            var objectData = objects;//[];
             var frameData = frames;//[];
             var frame = 0;
             
@@ -340,17 +346,20 @@
             }
 
             //Adds energy cube to existing frame state
-            function addEnergyCube(objectKey, name, value){
-                var owner = frameData[0][objectKey];
-                var newObj = JSON.parse(JSON.stringify(energyCubeDataTemplate));
+            function addEnergyCube(type, objectKey){
+                var owner = objectData[objectKey];
+                var newCube = JSON.parse(JSON.stringify(energyCubeDataTemplate));
+                var loc = getRandomLocation(objectKey);
                 if (owner){
-                    if (name){
-                        newObj.name = name;
-                    }                
-                    if (value){
-                        newObj.value = value;
-                    }
-                    owner.energyCubes.push(newObj);
+                    newCube["object"] = objectKey;
+                    newCube["type"] = type;
+                    newCube["radians"] = loc["radians"];
+                    newCube["radius"] = loc["radius"];
+                    // newCube["label"] = typeAttributes["type"]["label"];
+                    // newCube["color"] = typeAttributes["type"]["color"];
+                    frameData[0].push(newCube);
+                } else {
+                    console.log("Error: energy assigned to object "+objectKey+" which was not found");
                 }
             }
 
@@ -370,10 +379,10 @@
                 //get our current frame
                 var currentFrame = frameData[frame];
                 console.log(currentFrame); //to show that frames are in fact moving forward
-                var currentFrameKeys = Object.keys(currentFrame); //get all cube id's for the current frame
+                // var currentFrameKeys = Object.keys(currentFrame); //get all cube id's for the current frame
                 
-                currentFrameKeys.forEach(cubeID => {
-                    var cube = frameData[frame][cubeID]; //gets specific cube from dictionary, based on cube's id
+                currentFrame.forEach(cube => {
+                    // var cube = frameData[frame][cubeID]; //gets specific cube from dictionary, based on cube's id
                     appendStr = "";
                     // TODO: test enabling code, remove later
                     // var loc = getRandomLocation(cube["object"]);
@@ -386,7 +395,7 @@
                     var rely = nextRadius * Math.cos(nextRadians);
                     var x = relx + (canvas.width)/2;
                     var y = rely + (canvas.height)/2;
-                    appendstr = "<div id=\"cube"+count+"\" class=cube style=\"top: "+y+"px; left: "+x+"px; opacity: 50%; background-color: "+cube["color"]+";\"></div>";
+                    appendstr = "<div id=\"cube"+count+"\" class=cube style=\"top: "+y+"px; left: "+x+"px; opacity: 50%; background-color: "+cube["color"]+";\">test</div>";
                     
                     $( "#maincircle" ).append( appendstr );
 
