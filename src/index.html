@@ -16,8 +16,8 @@
             <div id="main-canvas">
                 <div></div>
                 <!-- below objects are for testing, will be changed/removed later -->
-                <!-- <div class="cube dragtest" style="background-color:rgb(128, 255, 43)"></div>
-                <div class="cube pathtest" style="background-color: rgb(204, 127, 255)"></div> -->
+                <!-- <div class="cube dragtest" style="background-color:rgb(128, 255, 43)"></div> -->
+                <!-- <div class="cube pathtest" style="background-color: rgb(204, 127, 255)"></div> -->
                 <div class="circle" id="maincircle">
                     <canvas id="can"></canvas>
                     <div class="circlecenter" id="circlecenter"></div>
@@ -69,7 +69,7 @@
                         </td>
                     </tr>
                 </table>
-                <button type="button" id="init-cubes-button" class="btn btn-primary" onclick="drawCubes()">Draw Cubes</button>
+                <button type="button" id="init-cubes-button" class="btn btn-primary" onclick="initFirstFrame()">Draw Cubes</button>
             </div>
             
             <div id="frame-controls">
@@ -138,7 +138,7 @@
 
             var frames = [
                 {
-                    "0" : {
+                    1: {
                         "type": "chemical",
                         "radians": 1,
                         "radius": 0.5,
@@ -147,7 +147,7 @@
                         "edited": false,
                         "object": 0
                     },
-                    "1":{
+                    2: {
                         "type": "kinetic",
                         "radians": 2.3,
                         "radius": 0.5,
@@ -156,7 +156,7 @@
                         "edited": false,
                         "object": 1
                     },
-                    "2":{
+                    3: {
                         "type": "gravitational",
                         "radians": 3.9,
                         "radius": 0.5,
@@ -165,7 +165,7 @@
                         "edited": false,
                         "object": 2
                     },
-                    "3":{
+                    4: {
                         "type": "heat",
                         "radians": 5.7,
                         "radius": 0.5,
@@ -174,7 +174,7 @@
                         "edited": false,
                         "object": 3
                     },
-                    "4":{
+                    5: {
                         "type": "kinetic",
                         "radians": 2,
                         "radius": 0.3,
@@ -196,14 +196,19 @@
             };
 
             var energyCubeDataTemplate = {
-                type:"gravitational",
-                value: 0.0
+                "type": "",
+                "radians": 0,
+                "radius": 0,
+                "color": "",
+                "label": "",
+                "edited": false,
+                "object": 0
             };
 
             var frameStateTemplate = {};
 
             var objectData = [];
-            var frameData = frames;//[];
+            var frameData = [{}];
             var frame = 0;
             
             var intervalTimer; //= setInterval(playback, milliseconds);
@@ -378,29 +383,73 @@
                 objectData.push(newObj);
                 nextObjectID++;
                 divideCircle();
+                // console.log(objectData);
             }
 
             //Adds energy cube to existing frame state
-            function addEnergyCube(objectKey, name, value){
-                var owner = frameData[0][objectKey];
-                var newObj = JSON.parse(JSON.stringify(energyCubeDataTemplate));
+            function addEnergyCube(type, objectKey){
+                var owner = objectData[objectKey];
+                var newCube = JSON.parse(JSON.stringify(energyCubeDataTemplate));
+                var loc = getRandomLocation(objectKey);
                 if (owner){
-                    if (name){
-                        newObj.name = name;
-                    }                
-                    if (value){
-                        newObj.value = value;
-                    }
-                    owner.energyCubes.push(newObj);
+                    newCube["object"] = objectKey;
+                    newCube["type"] = type;
+                    newCube["radians"] = loc["radians"];
+                    newCube["radius"] = loc["radius"];
+                    // newCube["label"] = typeAttributes["type"]["label"];
+                    // newCube["color"] = typeAttributes["type"]["color"];
+                    newKey = Object.keys(frameData[0]).length;
+                    frameData[0][newKey] = newCube;
+                    // console.log("added cube to object"+objectKey+" at loc "+newCube["radians"]+", "+newCube["radius"]);
+                } else {
+                    // console.log("Error: energy assigned to object "+objectKey+" which was not found");
                 }
             }
 
             function getRandomLocation(objectNum) {
-                var min = objects[objectNum]["startingRad"] + 0.2;
-                var max = objects[objectNum]["endingRad"] - 0.2;
+                var min = objectData[objectNum]["startingRad"] + 0.2;
+                var max = objectData[objectNum]["endingRad"] - 0.2;
                 var radians = Math.random() * (max - min) + min;
                 var radius = Math.random() * (0.8) + 0.1;
+                // console.log("getting random loc between "+min+" and "+max+" for obj "+objectNum);
                 return {"radius": radius, "radians": radians}
+            }
+
+            // takes the current form values and uses them to populate the objectData and frameData structures
+            function initFirstFrame() {
+                var objNameBoxes = document.getElementsByClassName("obj_name_box");
+                const objNameBoxArray = Array.prototype.slice.call(objNameBoxes);
+                var curCount = 0;
+                objNameBoxArray.forEach(nameBox => {
+                    var nextObjectID = nameBox.id;
+                    var nextObjectIndex = parseInt(nextObjectID.charAt(nextObjectID.length - 1));
+                    var nextObjectName = nameBox.value;
+                    objectData[nextObjectIndex].name = nextObjectName;
+                });
+
+                frameData = [{}];
+                var typeSelectors = document.getElementsByClassName("energy-type");
+                const typeSelectorArray = Array.prototype.slice.call(typeSelectors);
+                // console.log(typeSelectorArray);
+                curCount = 0;
+                typeSelectorArray.forEach(typeSelect => {
+                    var typeToAdd = $(typeSelectors[curCount]).find(":selected").val();
+                    // console.log(typeToAdd);
+                    var parentTableID = $(typeSelect).closest('table').attr('id');
+                    // console.log(typeSelect);
+                    var adjacentSpinner = $(typeSelect).next();
+                    var countToAdd = adjacentSpinner.val();
+                    // console.log(countToAdd);
+                    var owningObject = parseInt(parentTableID.charAt(parentTableID.length - 1));
+                    for (let i = 0; i < countToAdd; i++) {
+                        // console.log("at 442, i="+i+", owningObject="+owningObject+", typeToAdd="+typeToAdd);
+                        addEnergyCube(typeToAdd, owningObject);
+                    }
+                    curCount++;
+                });
+                console.log(frameData[0]);
+                drawCubes();
+                updateCubeSize();
             }
 
             function drawCubes() {
@@ -408,13 +457,14 @@
                 var appendstr = "";
                 var count = 0;
 
+                // console.log(frameData);
                 //get our current frame
-                var currentFrame = frameData[frame];
+                var currentFrame = frameData[frame-1];
                 console.log(currentFrame); //to show that frames are in fact moving forward
                 var currentFrameKeys = Object.keys(currentFrame); //get all cube id's for the current frame
                 
                 currentFrameKeys.forEach(cubeID => {
-                    var cube = frameData[frame][cubeID]; //gets specific cube from dictionary, based on cube's id
+                    var cube = currentFrame[cubeID]; //gets specific cube from dictionary, based on cube's id
                     appendStr = "";
                     // TODO: test enabling code, remove later
                     // var loc = getRandomLocation(cube["object"]);
@@ -427,7 +477,7 @@
                     var rely = nextRadius * Math.cos(nextRadians);
                     var x = relx + (canvas.width)/2;
                     var y = rely + (canvas.height)/2;
-                    appendstr = "<div id=\"cube"+count+"\" class=cube style=\"top: "+y+"px; left: "+x+"px; opacity: 50%; background-color: "+cube["color"]+";\"></div>";
+                    appendstr = "<div id=\"cube"+count+"\" class=cube style=\"top: "+y+"px; left: "+x+"px; opacity: 50%; background-color: "+cube["color"]+";\">"+cube["type"]+"</div>";
                     
                     $( "#maincircle" ).append( appendstr );
 
@@ -544,9 +594,10 @@
             $("head").append('<style id="style_changer" type="text/css"></style>');
             function updateCubeSize() {
                 var maxHeight = (canvas.height)/30;
-                if(maxHeight < 20) {
-                    $('#style_changer').html('.cube{height:'+maxHeight+'px; width:'+maxHeight+'px;}');
+                if(maxHeight > 20) {
+                    maxHeight = 20;
                 }
+                $('#style_changer').html('.cube{height:'+maxHeight+'px; width:'+maxHeight+'px;}');
             }
 
             window.addEventListener("resize", function() {
