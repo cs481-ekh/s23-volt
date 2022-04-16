@@ -477,7 +477,7 @@
                     var rely = nextRadius * Math.cos(nextRadians);
                     var x = relx + (canvas.width)/2;
                     var y = rely + (canvas.height)/2;
-                    appendstr = "<div id=\"cube"+count+"\" class=cube style=\"top: "+y+"px; left: "+x+"px; opacity: 50%; background-color: "+cube["color"]+";\">test</div>";
+                    appendstr = "<div id=\"cube"+count+"\" class=cube style=\"top: "+y+"px; left: "+x+"px; opacity: 50%; background-color: "+cube["color"]+";\">"+cube["type"]+"</div>";
                     
                     $( "#maincircle" ).append( appendstr );
 
