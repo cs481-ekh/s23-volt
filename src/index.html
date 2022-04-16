@@ -23,6 +23,15 @@
                     <div class="circlecenter" id="circlecenter"></div>
                 </div>
             </div>
+            <div id="save-load">
+                SIMULATION SAVE/LOAD
+                <br/>
+                    <button id="save-button" class="btn btn-primary" onclick="saveCurrentState('simulation.json')">Save</button>
+                    <label class="btn btn-primary">
+                        Upload
+                    <input id="load-sim" type="file" style="visibility: hidden;"/>
+                    </label>
+            </div>
             <div id="playback-controls">
                 PLAYBACK CONTROLS
                 <div id="playback-grid">
@@ -239,6 +248,50 @@
             canvas.style.height='100%';
             canvas.width  = canvas.offsetWidth;
             canvas.height = canvas.offsetHeight;
+
+            //handles uploading a simulation to be displayed
+            function onUploadSim(event) {
+                //creating new reader and assigning a callback
+                var reader = new FileReader();
+                reader.onload = onReaderLoad;
+                reader.readAsText(event.target.files[0]);
+            }
+
+            //once our file is uploaded, we convert it to a usable structure here
+            function onReaderLoad(event){
+                console.log(event.target.result);
+                var obj = JSON.parse(event.target.result);
+                frameData = obj;
+                //resetting frame to 0 and drawing
+                frame = 0;
+                clearFrames();
+                for(var i =0; i < frameData.length; i++){
+                    addFrameButton(true); //handles from load so we don't add new frames to the data side.
+                };
+                drawFrame(frame);
+            }
+            
+            document.getElementById('load-sim').addEventListener('change', onUploadSim);
+
+
+            function saveCurrentState (filename) {
+                const blob = new Blob([JSON.stringify(frameData)], { type: "text/json" });
+                const link = document.createElement("a");
+
+                link.download = filename;
+                link.href = window.URL.createObjectURL(blob);
+                link.dataset.downloadurl = ["text/json", link.download, link.href].join(":");
+
+                const evt = new MouseEvent("click", {
+                    view: window,
+                    bubbles: true,
+                    cancelable: true,
+                });
+
+                link.dispatchEvent(evt);
+                link.remove()
+            };
+
             // method to redraw separating lines in circle
             function divideCircle() {
                 context.clearRect(0, 0, canvas.width, canvas.height);
@@ -748,8 +801,16 @@
 
             $("input[type='number']").inputSpinner()
 
+            //clears out visual frames so we can refresh for data
+            function clearFrames(){
+                var table = document.getElementById("frames-table");
+                for (var j = 0; j < table.rows[0].cells.length; j++) {
+                    table.rows[0].deleteCell(j);
+                }
+                table.rows[0].innerHTML = "";
+            }
 
-			function addFrameButton() {
+			function addFrameButton(fromLoad = false) {
                 var table = document.getElementById("frames-table");
                 var tableSize = document.getElementById("frames-table").rows[0].cells.length;
                 var newCol = table.rows[0].insertCell(tableSize);
@@ -763,7 +824,9 @@
                     document.getElementById("object-menu").style.display = "none";
                     document.getElementById("playback-controls").style.display = "block";
                 }
-                addFrame();
+                if (fromLoad === false){
+                    addFrame();
+                }
             }
 			
 			function removeFrameButton() {
