@@ -383,6 +383,7 @@
                 objectData.push(newObj);
                 nextObjectID++;
                 divideCircle();
+                // console.log(objectData);
             }
 
             //Adds energy cube to existing frame state
@@ -399,16 +400,18 @@
                     // newCube["color"] = typeAttributes["type"]["color"];
                     newKey = Object.keys(frameData[0]).length;
                     frameData[0][newKey] = newCube;
+                    // console.log("added cube to object"+objectKey+" at loc "+newCube["radians"]+", "+newCube["radius"]);
                 } else {
-                    console.log("Error: energy assigned to object "+objectKey+" which was not found");
+                    // console.log("Error: energy assigned to object "+objectKey+" which was not found");
                 }
             }
 
             function getRandomLocation(objectNum) {
-                var min = objects[objectNum]["startingRad"] + 0.2;
-                var max = objects[objectNum]["endingRad"] - 0.2;
+                var min = objectData[objectNum]["startingRad"] + 0.2;
+                var max = objectData[objectNum]["endingRad"] - 0.2;
                 var radians = Math.random() * (max - min) + min;
                 var radius = Math.random() * (0.8) + 0.1;
+                // console.log("getting random loc between "+min+" and "+max+" for obj "+objectNum);
                 return {"radius": radius, "radians": radians}
             }
 
@@ -439,6 +442,7 @@
                     // console.log(countToAdd);
                     var owningObject = parseInt(parentTableID.charAt(parentTableID.length - 1));
                     for (let i = 0; i < countToAdd; i++) {
+                        // console.log("at 442, i="+i+", owningObject="+owningObject+", typeToAdd="+typeToAdd);
                         addEnergyCube(typeToAdd, owningObject);
                     }
                     curCount++;
