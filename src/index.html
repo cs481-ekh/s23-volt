@@ -33,7 +33,7 @@
                     </label>
             </div>
             <div id="playback-controls">
-                PLAYBACK CONTROLS
+                <h3>PLAYBACK CONTROLS</h3>
                 <div id="playback-grid">
                     <span>    
                         <div>
@@ -47,21 +47,23 @@
                         </div>
                     </span>
                     <div id="speed-slider">
-                        Playback Speed:
+                        <label for="playback-speed">Playback Speed:</label>
                         <input type="range" min="1" max="10" value="5" class="slider" id="playback-speed">
                     </div>
                 </div>
             </div>
             
             <div id="object-menu">
-                OBJECT MENU
+                <h3>OBJECT MENU</h3>
                 <table id="objects-table">
                     <tr>
                         <td>
                             
-                            <div class="text-left">
-                                <button type="button" id="add-object-button" class="btn btn-primary" onclick="addObjectButton()">+</button>
-                                <label for="add-object-button">Add Object</label>
+                            <div class="text-center">
+                                <h4>Objects</h3>
+                                <button type="button" id="add-object-button" class="btn btn-success" onclick="addObjectButton()">Add</button>
+                                
+                                <button type="button" id="remove-object-button" class="btn btn-danger" onclick="removeObjectButton()">Remove</button>
                              </div>
                         </td>
                         <td>
@@ -315,6 +317,9 @@
                 
             }
 
+            //method to redraw lines based on one less object
+
+
             function polarToObjectRadians(radians) {
                 if(radians >= 0) {
                     return ((3 * Math.PI) / 2) - radians;
@@ -386,6 +391,7 @@
                 // console.log(objectData);
             }
 
+
             //Adds energy cube to existing frame state
             function addEnergyCube(type, objectKey){
                 var owner = objectData[objectKey];
@@ -421,7 +427,7 @@
                 const objNameBoxArray = Array.prototype.slice.call(objNameBoxes);
                 var curCount = 0;
                 objNameBoxArray.forEach(nameBox => {
-                    var nextObjectID = nameBox.id;
+                    nextObjectID = nameBox.id;
                     var nextObjectIndex = parseInt(nextObjectID.charAt(nextObjectID.length - 1));
                     var nextObjectName = nameBox.value;
                     objectData[nextObjectIndex].name = nextObjectName;
@@ -753,7 +759,6 @@
 
                 var newRow = table.insertRow(tableSize);
                 var newCell1 = newRow.insertCell(0);
-                newCell1.innerHTML = "<button id=\"add-object-button\" onclick=\"addObjectButton()\">+</button><label for=\"add-object-button\">Add Object</label>";
 
                 var tableSize = document.getElementById("objects-table").rows.length;
                 document.getElementById("objects-table").deleteRow(tableSize - 1);
@@ -767,6 +772,21 @@
 
             }
 
+            function removeObjectButton(){
+                if(numObjectButtons == 0){
+                    return;
+                }
+                numObjectButtons--;
+                var currentIndex = numObjectButtons - 1;
+                expand[currentIndex] = 0;
+                
+                var tableSize = document.getElementById("objects-table").rows.length;
+                document.getElementById("objects-table").deleteRow(tableSize - 2);
+                nextObjectID--;
+                divideCircle();
+            }
+
+            //Adds another energy type to an object
             function addEnergy(i){
                 energySpinnerIndexes[i]++;
                 var energyTable = document.getElementById("energy-table" + i);
@@ -779,12 +799,24 @@
                 newCell.innerHTML = newCellContent;
             }
 
+            function removeEnergy(i){
+                if(energySpinnerIndexes[i] == 0){
+                    return;
+                }
+                energySpinnerIndexes[i]--;
+                var energyTable = document.getElementById("energy-table" + i);
+                var energyTableSize = document.getElementById("energy-table" + i).rows.length;
+                energyTable.deleteRow(energyTableSize - 1);
+
+
+            }
+
             function createNewObject(objID){
                 var returnString;
                 var currentIndex = numObjectButtons - 1;
                 returnString = "<input type=\"text\" class=\"obj_name_box\" id=\"object" + currentIndex + "\" placeholder=\"Object Name\"></input> ";
-                returnString = returnString + "<div class=\"text-right\"><button id=\"expand" + currentIndex + "\" class=\"btn btn-primary\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#collapseExample" + currentIndex + "\" aria-expanded=\"false\" aria-controls=\"collapseExample\" onclick=\"expandMenu(currentIndex)\">\\/</button></div>";
-                returnString = returnString +  "<div class=\"collapse\" id=\"collapseExample" + currentIndex + "\"><div class=\"card card-body\">" + newEnergyMenu(objID) + "</div></div>";
+                returnString = returnString + "<div class=\"text-right\"><button id=\"expand" + currentIndex + "\" class=\"btn btn-primary\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#collapseExample" + currentIndex + "\" aria-expanded=\"false\" aria-controls=\"collapseExample\" >Expand</button></div>";
+                returnString = returnString + "<div class=\"collapse\" id=\"collapseExample" + currentIndex + "\"><div class=\"card card-body\">" + newEnergyMenu(objID) + "</div></div>";
                 return returnString;
             }
 
@@ -793,12 +825,12 @@
                 var currentIndex = numObjectButtons - 1;
                 energySpinnerIndexes[currentIndex] = 0;
 
-                returnString = "<div id=\"energy-menu\"><table id=\"energy-table" + currentIndex + "\"><tr><td>";
+                returnString = "<div id=\"energy-menu\" align=\"center\"><table id=\"energy-table" + currentIndex + "\"><tr><td>";
                 returnString = returnString + "<select name=\"energy-names\" class=\"energy-type\" id=\"energy-type\" text-align=\"center\">";
                 returnString = returnString + "<option hidden=\"\">Energy Type</option><option value=\"kinetic\">Kinetic</option><option value=\"thermal\">Thermal</option><option value=\"gravitational\">Gravitational</option><option value=\"custom\">Custom</option></select>";
                 returnString = returnString + "<input placeholder=\"Number\" required type=\"number\" value=\"\" min=\"0\" max=\"10\"/ id=\"energy-spin" + energySpinnerIndexes[currentIndex] + "\"></div>"
                 returnString = returnString + "</td><td></td></tr></table>";
-                returnString = returnString + "<br><button id=\"add-energy-button\" onclick=\"addEnergy(" + currentIndex + ")\">+</button><label for=\"add-energy-button\">Add Energy Type</label>";
+                returnString = returnString + "<br><div align=\"center\"><h5>Energy</h5><button id=\"add-energy-button\" class=\"btn btn-success\" onclick=\"addEnergy(" + currentIndex + ")\">Add</button>\ <button id=\"remove-energy-button\" class=\"btn btn-danger\" height=\"2px\" onclick=\"removeEnergy(" + currentIndex + ")\">Remove</button></div>";
 
                 return returnString;
             }
