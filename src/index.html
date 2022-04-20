@@ -181,7 +181,31 @@
                 }
             ]
             // END TEST DATA
-
+			
+			var cubeEditingRelations = [
+				{
+				"gravitationalRelation": {
+					"label":"GPE",
+					"color":"yellow"
+					},
+				"chemicalRelation": {
+					"label":"CPE",
+					"color":"blue",
+					},
+				"kineticRelation": {
+					"label":"KE",
+					"color":"green"
+					},
+				"thermalRelation": {
+					"label":"HE",
+					"color":"red"
+					},
+				"potentialRelation": {
+					"label":"PE",
+					"color":"purple"
+					}
+				}
+			]
 
             //Defining templates for frame data
             var objectDataTemplate = {
@@ -247,22 +271,22 @@
 						},{
 						label: "Gravitational Energy",
 						data: gravValues,
-					borderColor: "green",
+					borderColor: "yellow",
 					fill: false
 						},{
 						label: "Kinetic Energy",
 						data: kinValues,
-					borderColor: "blue",
+					borderColor: "green",
 					fill: false
 						},{
 						label: "Potential Energy",
 						data: potValues,
-					borderColor: "yellow",
+					borderColor: "purple",
 					fill: false
 						},{
 						label: "Chemical Energy",
 						data: chemValues,
-					borderColor: "purple",
+					borderColor: "blue",
 					fill: false
 						}]
 					},
