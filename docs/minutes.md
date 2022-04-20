@@ -1,3 +1,15 @@
+# Minutes 4/20/2022
+## Scribe: Seth
+## Present: Madeline, Andrew, Seth, Zarek
+## Absent: N/A
+## Items:
+* This meeting was used to discuss wrapping up the project
+## A/I:
+* Zarek - Finish cube position updating
+* Andrew - Finish object relation with cubes
+* Seth - Finish updating graph values between frames
+* Maddi - Finish getting object labels besides them
+
 # Minutes 4/8/2022
 ## Scribe: Madeline
 ## Present: Madeline, Andrew, Seth, Zarek
