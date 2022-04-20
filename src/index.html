@@ -226,29 +226,48 @@
 
 		      	addFrameButton(); //add initial frame button
 	      		var graphClicked = 0;
-				document.getElementById("myChart").style.display = "none";
-				var xValues = [100,200,300,400,500,600,700,800,900,1000];
+				document.getElementById("myChart").style.display = "none"; // hide graph
+				var xValues = [1]; // initial x value for graph, first frame
+				var thermValues = [860,1140,1060,1060,1070,1110,1330,2210,7830,2478]; //thermal energy count
+				var gravValues = [1600,1700,1700,1900,2000,2700,4000,5000,6000,7000]; //gravitational energy count
+				var kinValues = [300,700,2000,5000,6000,4000,2000,1000,200,100]; //kinetic energy count
+				var potValues = [500,700,1000,200,300,500]; //potential energy count
+				var chemValues = [200,300,2000,300,200,300]; //chemical energy count
 
-				new Chart("myChart", {
+				//create a line chart with the x axis of the xValues array and with line data sets of the various energy arrays
+				var myChartVar = new Chart("myChart", {
 					type: "line",
 					data: {
 						labels: xValues,
 					datasets: [{
-						data: [860,1140,1060,1060,1070,1110,1330,2210,7830,2478],
+						label: "Thermal Energy",
+						data: thermValues,
 					borderColor: "red",
 					fill: false
 						},{
-						data: [1600,1700,1700,1900,2000,2700,4000,5000,6000,7000],
+						label: "Gravitational Energy",
+						data: gravValues,
 					borderColor: "green",
 					fill: false
 						},{
-						data: [300,700,2000,5000,6000,4000,2000,1000,200,100],
+						label: "Kinetic Energy",
+						data: kinValues,
 					borderColor: "blue",
+					fill: false
+						},{
+						label: "Potential Energy",
+						data: potValues,
+					borderColor: "yellow",
+					fill: false
+						},{
+						label: "Chemical Energy",
+						data: chemValues,
+					borderColor: "purple",
 					fill: false
 						}]
 					},
 					options: {
-						legend: {display: false}
+						legend: {display: true}
 					}
 				});
 				
@@ -751,7 +770,7 @@
                 var tableSize = document.getElementById("frames-table").rows[0].cells.length;
                 var newCol = table.rows[0].insertCell(tableSize);
                 var tableSize = document.getElementById("frames-table").rows[0].cells.length;
-				        newCol.innerHTML = "<button id=\"select-frame-button\" onclick=\"selectFrameButton(" + tableSize + ")\">" + (tableSize) + "</button>"; //make do something later
+				        newCol.innerHTML = "<button id=\"select-frame-button\" onclick=\"selectFrameButton(" + tableSize + ")\">" + (tableSize) + "</button>";
                 //hides Object menu and displays playback menu if more than one frame is added
                 if(tableSize == 1){
                     document.getElementById("object-menu").style.display = "block";
@@ -759,6 +778,8 @@
                 if(tableSize >= 2){
                     document.getElementById("object-menu").style.display = "none";
                     document.getElementById("playback-controls").style.display = "block";
+					xValues.push(tableSize);
+					myChartVar.update();
                 }
                 addFrame();
             }
@@ -770,6 +791,8 @@
 					//do nothing
 				} else {
 				var delCol = table.rows[0].deleteCell(tableSize);
+				xValues.pop();
+				myChartVar.update();
         //hides playback menu and displays object menu if only one frame exists
         if(tableSize == 1){
         document.getElementById("object-menu").style.display = "block";
