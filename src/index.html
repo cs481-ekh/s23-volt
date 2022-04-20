@@ -92,20 +92,17 @@
         </div>  
 
         <div id="context-menu">
-            <div class="item" id="therm-item">
-                <i class="fa therm"></i> Thermal
-            </div>
-            <div class="item" id="grav-item">
-                <i class="fa grav"></i> Gravitational
-            </div>
             <div class="item" id="kin-item">
                 <i class="fa kin"></i> Kinetic
             </div>
-            <div class="item" id="pot-item">
-                <i class="fa pot"></i> Potential
+            <div class="item" id="therm-item">
+                <i class="fa grav"></i> Thermal
             </div>
-            <div class="item" id="cust-item">
-                <i class="fa cust"></i> Custom
+            <div class="item" id="grav-item">
+                <i class="fa kin"></i> Gravitational
+            </div>
+            <div class="item" id="chem-item">
+                <i class="fa pot"></i> Chemical
             </div>
         </div>
 
@@ -483,77 +480,45 @@
                     var rely = nextRadius * Math.cos(nextRadians);
                     var x = relx + (canvas.width)/2;
                     var y = rely + (canvas.height)/2;
-                    appendstr = "<div id=\"cube"+count+"\" class=cube style=\"top: "+y+"px; left: "+x+"px; opacity: 50%; background-color: "+cube["color"]+";\">"+cube["type"]+"</div>";
+
+                    switch (cube["type"]) {
+                        case 'kinetic': 
+                            cube["label"] = "KE";
+                            cube["color"] = "lightblue";
+                            break;
+
+                        case 'thermal': 
+                            cube["label"] = "TE";
+                            cube["color"] = "pink";
+                            break;
+
+                        case 'gravitational': 
+                            cube["label"] = "GE";
+                            cube["color"] = "lightgreen";
+                            break;
+
+                        case 'chemical': 
+                            cube["label"] = "CE";
+                            cube["color"] = "yellow";
+                            break;
+
+                        default: 
+                            cube["label"] = "Unknown";
+                    }
+
+                    appendstr = "<div id=\"cube"+count+"\" class=cube style=\"top: "+y+"px; left: "+x+"px; opacity: 50%; background-color: "+cube["color"]+";\">"+cube["label"]+"</div>";
                     
                     $( "#maincircle" ).append( appendstr );
 
-                    
-
-                    //adds right clickable menu for each cube
                     document.getElementById("cube" + count).addEventListener("contextmenu", function(e){
                         e.preventDefault();
                         var contexElement = document.getElementById("context-menu");
-                        var cubeList = document.getElementsByClassName("cube");
-                        const cubeArray = Array.prototype.slice.call(cubeList);
-                        var curCount = 0;
-                        
-                        cubeArray.forEach(cube => {
-                            var rect = cube.getBoundingClientRect();
-                            if(e.clientX >= rect.left && e.clientX <= (rect.left + rect.width)){
-                                if(e.clientY >= rect.top && e.clientY <= (rect.top + rect.height)){
-                                    contexElement.style.top = e.clientY + "px";
-                                    contexElement.style.left = e.clientX + "px";
-
-                                    contexElement.classList.add("active");
-                                    menuIsOpen = true;
-                                    
-
-                                    document.getElementById("context-menu").addEventListener("mousedown", function(ev){
-                                        
-                                        if(menuIsOpen == true){
-                                            if($(ev.target).attr("id") == "therm-item"){
-                                                menuIsOpen = false;
-                                                document.getElementById("context-menu").classList.remove("active");
-                                                var curCube = document.getElementById("cube" + curCount);
-                                                //assign new energy type
-                                                //alert(cube.id + " set to therm");
-                                            }
-                                            else if($(ev.target).attr("id") == "grav-item"){
-                                                menuIsOpen = false;
-                                                document.getElementById("context-menu").classList.remove("active");
-                                                var curCube = document.getElementById("cube" + curCount);
-                                                //assign new energy type
-                                                //alert("set to grav");
-                                            }
-                                            else if($(ev.target).attr("id") == "kin-item"){
-                                                menuIsOpen = false;
-                                                document.getElementById("context-menu").classList.remove("active");
-                                                var curCube = document.getElementById("cube" + curCount);
-                                                //assign new energy type
-                                                //alert("set to kin");
-                                            }
-                                            else if($(ev.target).attr("id") == "pot-item"){
-                                                menuIsOpen = false;
-                                                document.getElementById("context-menu").classList.remove("active");
-                                                var curCube = document.getElementById("cube" + curCount);
-                                                //assign new energy type
-                                                //alert("set to pot");
-                                            }
-                                            else if($(ev.target).attr("id") == "cust-item"){
-                                                menuIsOpen = false;
-                                                document.getElementById("context-menu").classList.remove("active");
-                                                var curCube = document.getElementById("cube" + curCount);
-                                                //assign new energy type
-                                                //alert("set to cust");
-                                            }
-                                        }
-                                        curCount++;
-                                    });
-                                }
-                            }
-                        });
-                    });
-
+                        contexElement.classList.add("active");
+                        menuIsOpen = true;
+                        var contexElement = document.getElementById("context-menu");
+                        contexElement.style.top = e.clientY + "px";
+                        contexElement.style.left = e.clientX + "px";
+                    });                   
                     count++;
                 });
                 initMoveableCubes();
@@ -563,11 +528,83 @@
                     },*/
                     bounds: "#maincircle"
                 });
+                addDropdownListener();
+            }
+
+            function addDropdownListener(){
+
+                document.getElementById("context-menu").addEventListener("mousedown", function(ev){
+                    var currentFrame = frameData[frame-1];
+                    var contexElement = document.getElementById("context-menu");
+                    var contextTop = contexElement.offsetTop;
+                    var contextLeft = contexElement.offsetLeft;
+                    var targ = ev.target;
+                    var cubeIndex = 0;
+                    var cubeList = document.getElementsByClassName("cube");
+                    const cubeArray = Array.prototype.slice.call(cubeList);
+
+                    cubeArray.every(cube => {
+                        var rect = cube.getBoundingClientRect();
+                        var rectLeft = rect.left + 0;
+                        var rectRight = rect.right + 0;
+                        var rectTop = rect.top + 0;
+                        var rectBottom = rect.bottom + 0;
+                        if(contextLeft >= rectLeft && contextLeft <= rectRight){
+                            if(contextTop >= rectTop && contextTop <= rectBottom){
+
+                                switch ($(ev.target).attr("id")) {
+                                    case "kin-item":
+                                        menuIsOpen = false;
+                                        document.getElementById("context-menu").classList.remove("active");
+                                        currentFrame[cubeIndex]["type"] = "kinetic";
+                                        currentFrame[cubeIndex]["label"] = "KE";
+                                        currentFrame[cubeIndex]["color"] = "lightblue";
+                                        drawCubes();
+                                        break;
+  
+                                    case "therm-item":
+                                        menuIsOpen = false;
+                                        document.getElementById("context-menu").classList.remove("active");
+                                        currentFrame[cubeIndex]["type"] = "thermal";
+                                        currentFrame[cubeIndex]["label"] = "TE";
+                                        currentFrame[cubeIndex]["color"] = "pink";
+                                        drawCubes();
+                                        break;
+
+                                    case "grav-item":
+                                        menuIsOpen = false;
+                                        document.getElementById("context-menu").classList.remove("active");
+                                        currentFrame[cubeIndex]["type"] = "gravitational";
+                                        currentFrame[cubeIndex]["label"] = "GE";
+                                        currentFrame[cubeIndex]["color"] = "lightgreen";
+                                        drawCubes();
+                                        break;
+
+                                    case "chem-item":
+                                        menuIsOpen = false;
+                                        document.getElementById("context-menu").classList.remove("active");
+                                        currentFrame[cubeIndex]["type"] = "chemical";
+                                        currentFrame[cubeIndex]["label"] = "CE";
+                                        currentFrame[cubeIndex]["color"] = "yellow";
+                                        drawCubes();
+                                        break;
+
+                                }
+                                return false;
+                            }
+                        }
+                        cubeIndex++;
+                        return true;
+                    });
+                    
+                               
+                });
+
             }
 
 
              //conculates which object each cube is "in"
-             function initMoveableCubes(){
+            function initMoveableCubes(){
                 var cubeList = document.getElementsByClassName("cube");
                 var cubeArray = Array.prototype.slice.call(cubeList);
 
@@ -788,12 +825,15 @@
 
             //Adds another energy type to an object
             function addEnergy(i){
+                if(energySpinnerIndexes[i] == 3){
+                    return;
+                }
                 energySpinnerIndexes[i]++;
                 var energyTable = document.getElementById("energy-table" + i);
                 var energyTableSize = document.getElementById("energy-table" + i).rows.length;
                 var newRow = energyTable.insertRow(energyTableSize);
                 var newCellContent = "<select name=\"energy-names\" class=\"energy-type\" id=\"energy-type\" text-align=\"center\">";
-                newCellContent = newCellContent + "<option hidden=\"\">Energy Type</option><option value=\"kinetic\">Kinetic</option><option value=\"thermal\">Thermal</option><option value=\"gravitational\">Gravitational</option><option value=\"custom\">Custom</option></select>";
+                newCellContent = newCellContent + "<option hidden=\"\">Energy Type</option><option value=\"kinetic\">Kinetic</option><option value=\"thermal\">Thermal</option><option value=\"gravitational\">Gravitational</option><option value=\"chemical\">Chemical</option></select>";
                 newCellContent = newCellContent + "<input placeholder=\"Number\" required type=\"number\" value=\"\" min=\"0\" max=\"10\"/ id=\"energy-spin" + energySpinnerIndexes[i] + "\"></div>";
                 var newCell = newRow.insertCell(0);
                 newCell.innerHTML = newCellContent;
@@ -827,7 +867,7 @@
 
                 returnString = "<div id=\"energy-menu\" align=\"center\"><table id=\"energy-table" + currentIndex + "\"><tr><td>";
                 returnString = returnString + "<select name=\"energy-names\" class=\"energy-type\" id=\"energy-type\" text-align=\"center\">";
-                returnString = returnString + "<option hidden=\"\">Energy Type</option><option value=\"kinetic\">Kinetic</option><option value=\"thermal\">Thermal</option><option value=\"gravitational\">Gravitational</option><option value=\"custom\">Custom</option></select>";
+                returnString = returnString + "<option hidden=\"\">Energy Type</option><option value=\"kinetic\">Kinetic</option><option value=\"thermal\">Thermal</option><option value=\"gravitational\">Gravitational</option><option value=\"chemical\">Chemical</option></select>";
                 returnString = returnString + "<input placeholder=\"Number\" required type=\"number\" value=\"\" min=\"0\" max=\"10\"/ id=\"energy-spin" + energySpinnerIndexes[currentIndex] + "\"></div>"
                 returnString = returnString + "</td><td></td></tr></table>";
                 returnString = returnString + "<br><div align=\"center\"><h5>Energy</h5><button id=\"add-energy-button\" class=\"btn btn-success\" onclick=\"addEnergy(" + currentIndex + ")\">Add</button>\ <button id=\"remove-energy-button\" class=\"btn btn-danger\" height=\"2px\" onclick=\"removeEnergy(" + currentIndex + ")\">Remove</button></div>";
@@ -835,7 +875,7 @@
                 return returnString;
             }
 
-            $("input[type='number']").inputSpinner()
+            //$("input[type='number']").inputSpinner();
 
             //clears out visual frames so we can refresh for data
             function clearFrames(){
