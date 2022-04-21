@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-
-<html>
+<html lang="en">
     <title>
         Crown Joules
     </title>
     <head>
+        <meta charset="utf-8">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" crossorigin="anonymous">
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" crossorigin="anonymous"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
@@ -13,8 +13,12 @@
     </head>
     <body>
         <div id="grid-container">
+            
             <div id="main-canvas">
-                <div></div>
+                <div id="save-load">
+                    <h4>SIMULATION SAVE/LOAD</h4>
+                    <input id="load-sim" type="file" style="visibility: hidden;"/><label for="load-sim" class="btn btn-primary">Upload</label>  <button id="save-button" class="btn btn-primary" onclick="saveCurrentState('simulation.json')">Save</button>                     
+                </div> 
                 <!-- below objects are for testing, will be changed/removed later -->
                 <!-- <div class="cube dragtest" style="background-color:rgb(128, 255, 43)"></div> -->
                 <!-- <div class="cube pathtest" style="background-color: rgb(204, 127, 255)"></div> -->
@@ -23,15 +27,7 @@
                     <div class="circlecenter" id="circlecenter"></div>
                 </div>
             </div>
-            <div id="save-load">
-                SIMULATION SAVE/LOAD
-                <br/>
-                    <button id="save-button" class="btn btn-primary" onclick="saveCurrentState('simulation.json')">Save</button>
-                    <label class="btn btn-primary">
-                        Upload
-                    <input id="load-sim" type="file" style="visibility: hidden;"/>
-                    </label>
-            </div>
+            
             <div id="playback-controls">
                 <h3>PLAYBACK CONTROLS</h3>
                 <div id="playback-grid">
@@ -226,6 +222,7 @@
             var zeroObjects = true;
             var energySpinnerIndexes = [10];
             var menuIsOpen = false; 
+            var isInit = false;
 
             var playPauseButton = document.getElementById("play-pause");
             var speedSlider = document.getElementById("playback-speed");
@@ -496,15 +493,52 @@
                     $( "#maincircle" ).append( appendstr );
 
                     document.getElementById("cube" + count).addEventListener("contextmenu", function(e){
-                        e.preventDefault();
-                        var contexElement = document.getElementById("context-menu");
-                        contexElement.classList.add("active");
-                        menuIsOpen = true;
-                        var contexElement = document.getElementById("context-menu");
-                        contexElement.style.top = e.clientY + "px";
-                        contexElement.style.left = e.clientX + "px";
-                    });                   
-                    count++;
+                        if(frameData.length > 1){
+                            var tableSize = (document.getElementById("frames-table").rows[0].cells.length) - 1;
+                            e.preventDefault();
+                            if(tableSize < 1){
+                                //Can't change energy type while on initialization frame
+                            }
+                            else{
+                                var contexElement = document.getElementById("context-menu");
+                                contexElement.classList.add("active");
+                                menuIsOpen = true;
+                                var contexElement = document.getElementById("context-menu");
+                                contexElement.style.top = e.clientY + "px";
+                                contexElement.style.left = e.clientX + "px";
+                            }
+                        }
+                    });
+
+                    
+                    document.getElementById("cube" + count).addEventListener("mouseout", function(e){
+                        if(frameData.length > 1){
+                            e.preventDefault();
+                            var currentFrame = frameData[frame-1];
+                            var targ = e.target;
+                            var cubeIndex = 0;
+                            var cubeList = document.getElementsByClassName("cube");
+                            const cubeArray = Array.prototype.slice.call(cubeList);
+
+                            cubeArray.every(cube => {
+                                //TODO: UPDATE COORDS AFTER CUBE IS MOVED
+                                var rect = cube.getBoundingClientRect();
+                                var rectLeft = rect.left;
+                                var rectRight = rect.right;
+                                var rectTop = rect.top;
+                                var rectBottom = rect.bottom;
+                                if(e.clientX >= rectLeft  && e.clientX <= rectRight){
+                                    if(e.clientY >= rectTop && e.clientY <= rectBottom){
+                                        currentFrame[cubeIndex]["object"] = calculateQuadrant(canvas, e);
+                                        return false;
+                                    }
+                                }
+                                cubeIndex++;
+                                return true;
+                            });
+                        }
+                    });
+                    count++;  
                 });
                 initMoveableCubes();
                 Draggable.create(".cube", {
@@ -514,11 +548,14 @@
                     },*/
                     bounds: "#maincircle"
                 });
-                addDropdownListener();
+                if(frameData.length == 1){
+                    addDropdownListener();
+                }
+                
             }
 
+            //adds a context-menu listener to each cube.
             function addDropdownListener(){
-
                 document.getElementById("context-menu").addEventListener("mousedown", function(ev){
                     var currentFrame = frameData[frame-1];
                     var contexElement = document.getElementById("context-menu");
@@ -531,10 +568,10 @@
 
                     cubeArray.every(cube => {
                         var rect = cube.getBoundingClientRect();
-                        var rectLeft = rect.left + 0;
-                        var rectRight = rect.right + 0;
-                        var rectTop = rect.top + 0;
-                        var rectBottom = rect.bottom + 0;
+                        var rectLeft = rect.left;
+                        var rectRight = rect.right;
+                        var rectTop = rect.top;
+                        var rectBottom = rect.bottom;
                         if(contextLeft >= rectLeft && contextLeft <= rectRight){
                             if(contextTop >= rectTop && contextTop <= rectBottom){
 
@@ -755,22 +792,6 @@
                 drawFrame(nextFrame);
             }
 
-            function expandMenu(i) { 
-                button = document.getElementById("expand" + i);
-                if(expand[i] == 0){
-                    button.innerHTML = "/\\";
-
-                    expand[i] = 1;
-                }
-                else{
-                    button.innerHTML = "\\/";
-
-                    expand[i] = 0;
-                }
-                
-
-            } 
-
             function addObjectButton(){
                 numObjectButtons++;
                 var currentIndex = numObjectButtons - 1;
@@ -898,17 +919,17 @@
 					//do nothing
 				} else {
 				var delCol = table.rows[0].deleteCell(tableSize);
-        //hides playback menu and displays object menu if only one frame exists
-        if(tableSize == 1){
-        document.getElementById("object-menu").style.display = "block";
-        document.getElementById("playback-controls").style.display = "none";
-           }
-        //hides main canvas, playback controls, and object menu when no frames exist
-        if(tableSize < 1){
-        document.getElementById("object-menu").style.display = "none";
-        document.getElementById("playback-controls").style.display = "none";
-           }
-				 }
+                //hides playback menu and displays object menu if only one frame exists
+                    if(tableSize == 1){
+                        document.getElementById("object-menu").style.display = "block";
+                        document.getElementById("playback-controls").style.display = "none";
+                    }
+                    //hides main canvas, playback controls, and object menu when no frames exist
+                    if(tableSize < 1){
+                        document.getElementById("object-menu").style.display = "none";
+                        document.getElementById("playback-controls").style.display = "none";
+                    }
+				}
 			}
 
 			
