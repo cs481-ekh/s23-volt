@@ -22,9 +22,11 @@
                 <!-- below objects are for testing, will be changed/removed later -->
                 <!-- <div class="cube dragtest" style="background-color:rgb(128, 255, 43)"></div> -->
                 <!-- <div class="cube pathtest" style="background-color: rgb(204, 127, 255)"></div> -->
-                <div class="circle" id="maincircle">
-                    <canvas id="can"></canvas>
-                    <div class="circlecenter" id="circlecenter"></div>
+                <div class="outercircle" id="outercircle">
+                    <div class="circle" id="maincircle">
+                        <canvas id="can"></canvas>
+                        <div class="circlecenter" id="circlecenter"></div>
+                    </div>
                 </div>
             </div>
             
@@ -308,7 +310,6 @@
                     context.lineTo(radius, radius);
                 }
                 context.stroke();
-                
             }
 
             //method to redraw lines based on one less object
@@ -334,6 +335,7 @@
                 return (radians - (3 * Math.PI) / 2) * (-1);
             }
 
+            // takes in event (eg click) and canvas (html ID "can"), returns object association of event
             function calculateQuadrant(canvas, event) {
                 const numObjects = nextObjectID;
                 const slice = (2*Math.PI) / numObjects;
@@ -359,7 +361,7 @@
             var centerx = getOffset( document.getElementById('circlecenter') ).left;
             var centery = getOffset( document.getElementById('circlecenter') ).top;
             var clipper = clipAtRadius((canvas.width)/2, 0, 0);
-            // TODO: fix this
+            // TODO: fix this, to be used for snapping cubes to stay within circle
             function clipAtRadius(radius, offsetX, offsetY) {
                 return point => {
                     let x = centerx - offsetX,
@@ -453,6 +455,20 @@
             }
 
             function drawCubes() {
+                // add labels to objects
+                $( ".objlabel" ).remove();
+                var padding = $( "#outercircle" ).width() * 0.025;
+                var outerWidth = $( "#outercircle" ).width();
+                var objCount = objectData.length;
+                var slice = Math.PI * (2/objCount);
+                for(let i = 0; i<objCount; i++) {
+                    var objLabelX = ((outerWidth)/2) + (((outerWidth)/2) * Math.sin((i+0.5)*slice));
+                    var objLabelY = ((outerWidth)/2) + (((outerWidth)/2) * Math.cos((i+0.5)*slice));
+                    console.log("obj="+i+" x="+objLabelX+" y="+objLabelY+" name="+objectData[i].name);
+                    var appendLabel = "<div id=\"label"+i+"\" class=objlabel style=\"top: "+objLabelY+"px; left: "+objLabelX+"px;\">"+objectData[i].name+"</div>";
+                    $( "#outercircle" ).append( appendLabel );
+                }
+
                 $( ".cube" ).remove();
                 var appendstr = "";
                 var count = 0;
@@ -466,11 +482,6 @@
                 currentFrameKeys.forEach(cubeID => {
                     var cube = currentFrame[cubeID]; //gets specific cube from dictionary, based on cube's id
                     appendStr = "";
-                    // TODO: test enabling code, remove later
-                    // var loc = getRandomLocation(cube["object"]);
-                    // cube["radians"] = loc["radians"];
-                    // cube["radius"] = loc["radius"];
-                    // end test code
                     var nextRadians = (2 * Math.PI) - cube["radians"];
                     var nextRadius = cube["radius"] * ((canvas.width)/2);
                     var relx = nextRadius * Math.sin(nextRadians);
@@ -502,7 +513,6 @@
                         default: 
                             cube["label"] = "Unknown";
                     }
-
                     appendstr = "<div id=\"cube"+count+"\" class=cube style=\"top: "+y+"px; left: "+x+"px; opacity: 50%; background-color: "+cube["color"]+";\">"+cube["label"]+"</div>";
                     
                     $( "#maincircle" ).append( appendstr );
@@ -557,6 +567,7 @@
                 });
                 initMoveableCubes();
                 Draggable.create(".cube", {
+                    // commented code below and clipAtRadius() method are for keeping objects contained in the circle (instead of just in the square around it), but not finished
                     /*liveSnap:{
                         points: clipper
                     },*/
