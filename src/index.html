@@ -206,6 +206,10 @@
             var frameData = [{}];
             var frame = 0;
             
+            var newestRadians = 0;
+            var newestRadius = 0;
+            var newestObj = -1;
+
             var intervalTimer; //= setInterval(playback, milliseconds);
 
             var nextObjectID = 0; // keeps track of the last object id assigned
@@ -347,8 +351,37 @@
                 const objRadians = polarToObjectRadians(polarRadians);
                 const obj = Math.trunc(objRadians/((2 * Math.PI)/numObjects));
                 console.log("objRadians = " + objRadians + ", obj = " + obj);
+                newestRadians = objRadians;
+                newestObj = obj;
+                return;
             }
             
+            function calculateRadius(givenX, givenY){
+                var radius;
+                var centerX = getOffset( document.getElementById('circlecenter') ).left;
+                var centerY = getOffset( document.getElementById('circlecenter') ).top;
+                var calculatedX;
+                var calculatedY;
+                var currentRadiusInPixels = (canvas.width)/2;
+                if(givenX < centerX){
+                    calculatedX = centerX - givenX;
+                }
+                else{
+                    calculatedX = givenX- centerX;
+                }
+                if(givenY < centerY){
+                    calculatedY = centerY - givenY;
+                }
+                else{
+                    calculatedY = givenY- centerY;
+                }
+
+                radius =  Math.sqrt((calculatedX * calculatedX) + (calculatedY * calculatedY)) / currentRadiusInPixels;
+
+                newestRadius = radius;
+                return;
+            }
+
             function getOffset(el) {
                 const rect = el.getBoundingClientRect();
                 return {
@@ -527,7 +560,7 @@
 
                     
                     document.getElementById("cube" + count).addEventListener("mouseout", function(e){
-                        if(frameData.length > 1){
+                        //if(frameData.length > 1){
                             e.preventDefault();
                             var currentFrame = frameData[frame-1];
                             var targ = e.target;
@@ -542,16 +575,19 @@
                                 var rectRight = rect.right;
                                 var rectTop = rect.top;
                                 var rectBottom = rect.bottom;
-                                if(e.clientX >= rectLeft  && e.clientX <= rectRight){
-                                    if(e.clientY >= rectTop && e.clientY <= rectBottom){
-                                        currentFrame[cubeIndex]["object"] = calculateQuadrant(canvas, e);
-                                        return false;
+                                if(e.clientX >= rectLeft - 2 && e.clientX <= rectRight + 2){
+                                    if(e.clientY >= rectTop - 2 && e.clientY <= rectBottom + 2){
+                                        calculateQuadrant(canvas, e);
+                                        currentFrame[cubeIndex]["radians"] = newestRadians;
+                                        calculateRadius(rectLeft, rectTop);
+                                        currentFrame[cubeIndex]["radius"] = newestRadius;
+                                        return;
                                     }
                                 }
                                 cubeIndex++;
                                 return true;
                             });
-                        }
+                        //}
                     });
                     count++;  
                 });
