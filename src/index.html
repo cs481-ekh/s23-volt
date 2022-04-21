@@ -13,12 +13,12 @@
     </head>
     <body>
         <div id="grid-container">
-            
+            <div id="save-load">
+                <h4>SIMULATION SAVE/LOAD</h4>
+                <div id="load-save-controls"><input id="load-sim" type="file" style="visibility: hidden;"/><label for="load-sim" class="btn btn-primary">Upload</label>  <button id="save-button" class="btn btn-primary" onclick="saveCurrentState('simulation.json')">Save</button></div>                     
+            </div>
             <div id="main-canvas">
-                <div id="save-load">
-                    <h4>SIMULATION SAVE/LOAD</h4>
-                    <input id="load-sim" type="file" style="visibility: hidden;"/><label for="load-sim" class="btn btn-primary">Upload</label>  <button id="save-button" class="btn btn-primary" onclick="saveCurrentState('simulation.json')">Save</button>                     
-                </div> 
+                 
                 <!-- below objects are for testing, will be changed/removed later -->
                 <!-- <div class="cube dragtest" style="background-color:rgb(128, 255, 43)"></div> -->
                 <!-- <div class="cube pathtest" style="background-color: rgb(204, 127, 255)"></div> -->

@@ -25,9 +25,7 @@ canvas {
     grid-row: 1/3;
     border: none;
     padding: 20px;
-    overflow: auto;
-    user-select: none;
-    
+    overflow: auto;   
 }
 #grid-container > #playback-controls {
     display: none;
@@ -95,7 +93,7 @@ canvas {
     height: 20px;
     width: 20px;
     border: 1px solid black;
-    user-select: all;
+
   }
   
 #frames-table {
@@ -124,7 +122,6 @@ canvas {
     width:64%;
     height:0;
     padding: 32% 0;
-    user-select: none;
 }
 
 .objlabel {
@@ -164,4 +161,16 @@ canvas {
 #context-menu hr {
     margin: 2px 0px;
     border-color: #555;
+}
+
+#save-load {
+    grid-column: 1;
+    grid-row: 1;
+    z-index: 100;
+    justify-self: left;
+    padding: 20px;
+}
+
+#load-save-controls {
+    padding-left: 35px;
 }
