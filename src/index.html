@@ -456,6 +456,17 @@
             }
 
             function drawCubes() {
+                // add labels to objects
+                var objCount = objectData.length;
+                var slice = Math.PI * (2/objCount);
+                for(let i = 0; i<objCount; i++) {
+                    var objLabelX = ((canvas.width)/2) + 50 + ((((canvas.width)/2)+50) * Math.sin((i+.5)*slice));
+                    var objLabelY = ((canvas.width)/2) + 50 + ((((canvas.width)/2)+50) * Math.cos(i+.5)*slice);
+                    console.log("obj="+i+" x="+objLabelX+" y="+objLabelY+" name="+objectData[i].name);
+                    var appendLabel = "<div id=\"label"+i+"\" class=objlabel style=\"top: "+objLabelY+"px; left: "+objLabelX+"px;\">"+objectData[i].name+"</div>";
+                    $( "#maincircle" ).append( appendLabel );
+                }
+
                 $( ".cube" ).remove();
                 var appendstr = "";
                 var count = 0;
@@ -497,6 +508,7 @@
                 });
                 initMoveableCubes();
                 Draggable.create(".cube", {
+                    // commented code below and clipAtRadius() method are for keeping objects contained in the circle (instead of just in the square around it), but not finished
                     /*liveSnap:{
                         points: clipper
                     },*/

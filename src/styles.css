@@ -122,6 +122,10 @@ canvas {
     padding: 32% 0;
 }
 
+.objlabel {
+    position: absolute;
+}
+
 #context-menu {
     position: fixed;
     width: 150px;
