@@ -292,7 +292,6 @@
 
             // method to redraw separating lines in circle
             function divideCircle() {
-                console.log("redividing circle");
                 context.clearRect(0, 0, canvas.width, canvas.height);
                 var numObjects = nextObjectID;
                 var radius = (canvas.width)/2;
@@ -311,7 +310,6 @@
                     context.lineTo(radius, radius);
                 }
                 context.stroke();
-                console.log("should have drawn the lines?");
             }
 
             //method to redraw lines based on one less object
