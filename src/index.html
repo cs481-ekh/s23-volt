@@ -488,7 +488,33 @@
                     var rely = nextRadius * Math.cos(nextRadians);
                     var x = relx + (canvas.width)/2;
                     var y = rely + (canvas.height)/2;
-                    appendstr = "<div id=\"cube"+count+"\" class=cube style=\"top: "+y+"px; left: "+x+"px; opacity: 50%; background-color: "+cube["color"]+";\">"+cube["type"]+"</div>";
+
+                    //remove? idk if this is current or not
+                    switch (cube["type"]) {
+                        case 'kinetic': 
+                            cube["label"] = "KE";
+                            cube["color"] = "lightblue";
+                            break;
+
+                        case 'thermal': 
+                            cube["label"] = "TE";
+                            cube["color"] = "pink";
+                            break;
+
+                        case 'gravitational': 
+                            cube["label"] = "GE";
+                            cube["color"] = "lightgreen";
+                            break;
+
+                        case 'chemical': 
+                            cube["label"] = "CE";
+                            cube["color"] = "yellow";
+                            break;
+
+                        default: 
+                            cube["label"] = "Unknown";
+                    }
+                    appendstr = "<div id=\"cube"+count+"\" class=cube style=\"top: "+y+"px; left: "+x+"px; opacity: 50%; background-color: "+cube["color"]+";\">"+cube["label"]+"</div>";
                     
                     $( "#maincircle" ).append( appendstr );
 
