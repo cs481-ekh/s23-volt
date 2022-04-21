@@ -482,11 +482,6 @@
                 currentFrameKeys.forEach(cubeID => {
                     var cube = currentFrame[cubeID]; //gets specific cube from dictionary, based on cube's id
                     appendStr = "";
-                    // TODO: test enabling code, remove later
-                    // var loc = getRandomLocation(cube["object"]);
-                    // cube["radians"] = loc["radians"];
-                    // cube["radius"] = loc["radius"];
-                    // end test code
                     var nextRadians = (2 * Math.PI) - cube["radians"];
                     var nextRadius = cube["radius"] * ((canvas.width)/2);
                     var relx = nextRadius * Math.sin(nextRadians);
@@ -494,7 +489,6 @@
                     var x = relx + (canvas.width)/2;
                     var y = rely + (canvas.height)/2;
 
-                    //remove? idk if this is current or not
                     switch (cube["type"]) {
                         case 'kinetic': 
                             cube["label"] = "KE";
