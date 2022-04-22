@@ -265,27 +265,27 @@
 						labels: xValues,
 					datasets: [{
 						label: "Thermal Energy",
-						data: thermValues,
+						data: thermValues, // datasets[0]
 					borderColor: "red",
 					fill: false
 						},{
 						label: "Gravitational Energy",
-						data: gravValues,
+						data: gravValues, // datasets[1]
 					borderColor: "yellow",
 					fill: false
 						},{
 						label: "Kinetic Energy",
-						data: kinValues,
+						data: kinValues, // datasets[2]
 					borderColor: "green",
 					fill: false
 						},{
 						label: "Potential Energy",
-						data: potValues,
+						data: potValues, // datasets[3]
 					borderColor: "purple",
 					fill: false
 						},{
 						label: "Chemical Energy",
-						data: chemValues,
+						data: chemValues, // datasets[4]
 					borderColor: "blue",
 					fill: false
 						}]
@@ -294,7 +294,6 @@
 						legend: {display: true}
 					}
 				});
-				
 				
             // create canvas, set to fill main circle
             var canvas = document.getElementById('can'),
@@ -424,6 +423,7 @@
                         newObj.value = value;
                     }
                     owner.energyCubes.push(newObj);
+					
                 }
             }
 
