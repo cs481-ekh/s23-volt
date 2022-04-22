@@ -8,6 +8,7 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" crossorigin="anonymous">
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" crossorigin="anonymous"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
         <link href="styles.css" rel="stylesheet">
     </head>
@@ -28,6 +29,9 @@
                         <div class="circlecenter" id="circlecenter"></div>
                     </div>
                 </div>
+				<div class="chart-container">
+				<canvas id="myChart" style="width:100%;max-width:500px"></canvas>
+				</div>
             </div>
             
             <div id="playback-controls">
@@ -183,7 +187,31 @@
                 }
             ]
             // END TEST DATA
-
+			
+			var cubeEditingRelations = [
+				{
+				"gravitationalRelation": {
+					"label":"GPE",
+					"color":"yellow"
+					},
+				"chemicalRelation": {
+					"label":"CPE",
+					"color":"blue",
+					},
+				"kineticRelation": {
+					"label":"KE",
+					"color":"green"
+					},
+				"thermalRelation": {
+					"label":"HE",
+					"color":"red"
+					},
+				"potentialRelation": {
+					"label":"PE",
+					"color":"purple"
+					}
+				}
+			]
 
             //Defining templates for frame data
             var objectDataTemplate = {
@@ -239,7 +267,51 @@
 
 		      	addFrameButton(); //add initial frame button
 	      		var graphClicked = 0;
+				document.getElementById("myChart").style.display = "none"; // hide graph
+				var xValues = [1]; // initial x value for graph, first frame
+				var thermValues = [860,1140,1060,1060,1070,1110,1330,2210,7830,2478]; //thermal energy count
+				var gravValues = [1600,1700,1700,1900,2000,2700,4000,5000,6000,7000]; //gravitational energy count
+				var kinValues = [300,700,2000,5000,6000,4000,2000,1000,200,100]; //kinetic energy count
+				var potValues = [500,700,1000,200,300,500]; //potential energy count
+				var chemValues = [200,300,2000,300,200,300]; //chemical energy count
 
+				//create a line chart with the x axis of the xValues array and with line data sets of the various energy arrays
+				var myChartVar = new Chart("myChart", {
+					type: "line",
+					data: {
+						labels: xValues,
+					datasets: [{
+						label: "Thermal Energy",
+						data: thermValues, // datasets[0]
+					borderColor: "red",
+					fill: false
+						},{
+						label: "Gravitational Energy",
+						data: gravValues, // datasets[1]
+					borderColor: "yellow",
+					fill: false
+						},{
+						label: "Kinetic Energy",
+						data: kinValues, // datasets[2]
+					borderColor: "green",
+					fill: false
+						},{
+						label: "Potential Energy",
+						data: potValues, // datasets[3]
+					borderColor: "purple",
+					fill: false
+						},{
+						label: "Chemical Energy",
+						data: chemValues, // datasets[4]
+					borderColor: "blue",
+					fill: false
+						}]
+					},
+					options: {
+						legend: {display: true}
+					}
+				});
+				
             // create canvas, set to fill main circle
             var canvas = document.getElementById('can'),
                 context = canvas.getContext('2d');
@@ -263,13 +335,18 @@
             function onReaderLoad(event){
                 console.log(event.target.result);
                 var obj = JSON.parse(event.target.result);
-                frameData = obj;
+                
+                frameData = obj['frames'];
+
                 //resetting frame to 0 and drawing
                 frame = 0;
                 clearFrames();
                 for(var i =0; i < frameData.length; i++){
                     addFrameButton(true); //handles from load so we don't add new frames to the data side.
                 };
+
+                var objects = obj['objs'];
+                objects.forEach(ob=>addObject(ob['name']));
                 drawFrame(frame);
             }
             
@@ -277,7 +354,8 @@
 
 
             function saveCurrentState (filename) {
-                const blob = new Blob([JSON.stringify(frameData)], { type: "text/json" });
+                const dataStruct = {objs: objectData, frames:frameData};
+                const blob = new Blob([JSON.stringify(dataStruct)], { type: "text/json" });
                 const link = document.createElement("a");
 
                 link.download = filename;
@@ -609,12 +687,40 @@
                     /*liveSnap:{
                         points: clipper
                     },*/
-                    bounds: "#maincircle"
+                    bounds: "#maincircle",
+                    onDragEnd: function(e) {
+                        updateDataPosition(e);
+                    }
                 });
                 if(frameData.length == 1){
                     addDropdownListener();
                 }
                 
+            }
+
+            //updates a given cubes position on the data side
+            function updateDataPosition(e){
+                //vector containing center point of x and y
+                var center = [(canvas.width/2), (canvas.height/2)];
+
+                //dictionary was changed last minute to an array, have to do this to work around it
+                var cubeID = e.target.id;
+                cubeID = cubeID.replace("cube",'');
+                var cubeIndex = parseInt(cubeID);
+
+                const rect = canvas.getBoundingClientRect()
+                const relx = (e.clientX - rect.left);
+                const rely = (e.clientY - rect.top);
+                const x = relx - (canvas.width)/2;
+                const y = (rely - (canvas.height)/2) * -1;
+                const polarDistance = Math.sqrt((x*x) + (y*y));
+                const polarRadians = Math.atan2(y,x);
+                const objRadians = polarToObjectRadians(polarRadians);
+
+                console.log(frameData[frame - 1][cubeIndex]);
+                frameData[frame - 1][cubeIndex]["radians"] = objRadians;
+                frameData[frame - 1][cubeIndex]["radius"] = polarDistance/center[0];
+
             }
 
             //adds a context-menu listener to each cube.
@@ -966,7 +1072,7 @@
                 var tableSize = document.getElementById("frames-table").rows[0].cells.length;
                 var newCol = table.rows[0].insertCell(tableSize);
                 var tableSize = document.getElementById("frames-table").rows[0].cells.length;
-				        newCol.innerHTML = "<button id=\"select-frame-button\" onclick=\"selectFrameButton(" + tableSize + ")\">" + (tableSize) + "</button>"; //make do something later
+				        newCol.innerHTML = "<button id=\"select-frame-button\" onclick=\"selectFrameButton(" + tableSize + ")\">" + (tableSize) + "</button>";
                 //hides Object menu and displays playback menu if more than one frame is added
                 if(tableSize == 1){
                     document.getElementById("object-menu").style.display = "block";
@@ -974,6 +1080,8 @@
                 if(tableSize >= 2){
                     document.getElementById("object-menu").style.display = "none";
                     document.getElementById("playback-controls").style.display = "block";
+					xValues.push(tableSize);
+					myChartVar.update();
                 }
                 if (fromLoad === false){
                     addFrame();
@@ -987,6 +1095,8 @@
 					//do nothing
 				} else {
 				var delCol = table.rows[0].deleteCell(tableSize);
+				xValues.pop();
+				myChartVar.update();
                 //hides playback menu and displays object menu if only one frame exists
                     if(tableSize == 1){
                         document.getElementById("object-menu").style.display = "block";
@@ -1006,29 +1116,30 @@
 				if (document.getElementById("frames-table").style.display === "none") { // if not showing, show all frame controls
 					document.getElementById("frames-table").style.display="flex"; //show using flex, the old preset
 					document.getElementById("hide-frame-controls-button").innerHTML = "Hide Frame Controls"; //change text
-					document.getElementById("add-frame-button").style.display="inline-block";
-					document.getElementById("add-frame-button-label").innerHTML = "Add Frame&nbsp;";
-					document.getElementById("remove-frame-button").style.display="inline-block";
-					document.getElementById("remove-frame-button-label").innerHTML = "Remove Frame";
+					document.getElementById("add-frame-button").style.display="inline-block"; //show button
+					document.getElementById("add-frame-button-label").innerHTML = "Add Frame&nbsp;"; //add text again
+					document.getElementById("remove-frame-button").style.display="inline-block"; // show button
+					document.getElementById("remove-frame-button-label").innerHTML = "Remove Frame"; //add text again
 				} else { // if showing, hide all frame controls
 					document.getElementById("frames-table").style.display="none"; //hide
 					document.getElementById("hide-frame-controls-button").innerHTML = "Show Frame Controls"; //change text
-					document.getElementById("add-frame-button").style.display="none";
-					document.getElementById("add-frame-button-label").innerHTML = "";
-					document.getElementById("remove-frame-button").style.display="none";
-					document.getElementById("remove-frame-button-label").innerHTML = "";
+					document.getElementById("add-frame-button").style.display="none"; //hide button
+					document.getElementById("add-frame-button-label").innerHTML = ""; //remove text
+					document.getElementById("remove-frame-button").style.display="none"; //hide button
+					document.getElementById("remove-frame-button-label").innerHTML = ""; //remove text
 				}
 			}
 			
 
 			function showGraphButton() {
-				if (graphClicked === 0) {
+				if (graphClicked === 0) { //show
 					//add some graph stuff here
 					document.getElementById("graph-control-button").innerHTML = "Hide Graph";
+					document.getElementById("myChart").style.display = "flex";
 					graphClicked = 1;
-				} else {
+				} else { //hide
 					document.getElementById("graph-control-button").innerHTML = "Show Graph";
-					//add some graph stuff here, but different
+					document.getElementById("myChart").style.display = "none";
 					graphClicked = 0;
 				}
 			}
