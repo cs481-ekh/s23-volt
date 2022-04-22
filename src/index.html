@@ -63,9 +63,9 @@
                             
                             <div class="text-center">
                                 <h4>Objects</h3>
-                                <button type="button" id="add-object-button" class="btn btn-success" onclick="addObjectButton()">Add</button>
+                                <button type="button" id="add-object-button" class="obj-update btn btn-success" onclick="addObjectButton()">Add</button>
                                 
-                                <button type="button" id="remove-object-button" class="btn btn-danger" onclick="removeObjectButton()">Remove</button>
+                                <button type="button" id="remove-object-button" class="obj-update btn btn-danger" onclick="removeObjectButton()">Remove</button>
                              </div>
                         </td>
                         <td>
@@ -531,6 +531,7 @@
 
             // takes the current form values and uses them to populate the objectData and frameData structures
             function initFirstFrame() {
+                $( ".obj-update" ).remove();
                 var objNameBoxes = document.getElementsByClassName("obj_name_box");
                 const objNameBoxArray = Array.prototype.slice.call(objNameBoxes);
                 var curCount = 0;
@@ -1012,7 +1013,7 @@
                 var newRow = energyTable.insertRow(energyTableSize);
                 var newCellContent = "<select name=\"energy-names\" class=\"energy-type\" id=\"energy-type\" text-align=\"center\">";
                 newCellContent = newCellContent + "<option hidden=\"\">Energy Type</option><option value=\"kinetic\">Kinetic</option><option value=\"thermal\">Thermal</option><option value=\"gravitational\">Gravitational</option><option value=\"chemical\">Chemical</option></select>";
-                newCellContent = newCellContent + "<input placeholder=\"Number\" required type=\"number\" value=\"\" min=\"0\" max=\"10\"/ id=\"energy-spin" + energySpinnerIndexes[i] + "\"></div>";
+                newCellContent = newCellContent + "<input placeholder=\"1\" required type=\"number\" value=\"1\" min=\"0\" max=\"10\"/ id=\"energy-spin" + energySpinnerIndexes[i] + "\"></div>";
                 var newCell = newRow.insertCell(0);
                 newCell.innerHTML = newCellContent;
             }
@@ -1049,7 +1050,7 @@
                 returnString = "<div id=\"energy-menu\" align=\"center\"><table id=\"energy-table" + currentIndex + "\"><tr><td>";
                 returnString = returnString + "<select name=\"energy-names\" class=\"energy-type\" id=\"energy-type\" text-align=\"center\">";
                 returnString = returnString + "<option hidden=\"\">Energy Type</option><option value=\"kinetic\">Kinetic</option><option value=\"thermal\">Thermal</option><option value=\"gravitational\">Gravitational</option><option value=\"chemical\">Chemical</option></select>";
-                returnString = returnString + "<input placeholder=\"Number\" required type=\"number\" value=\"\" min=\"0\" max=\"10\"/ id=\"energy-spin" + energySpinnerIndexes[currentIndex] + "\"></div>"
+                returnString = returnString + "<input placeholder=\"1\" required type=\"number\" value=\"1\" min=\"0\" max=\"10\"/ id=\"energy-spin" + energySpinnerIndexes[currentIndex] + "\"></div>"
                 returnString = returnString + "</td><td></td></tr></table>";
                 returnString = returnString + "<br><div align=\"center\"><h5>Energy</h5><button id=\"add-energy-button\" class=\"btn btn-success\" onclick=\"addEnergy(" + currentIndex + ")\">Add</button>\ <button id=\"remove-energy-button\" class=\"btn btn-danger\" height=\"2px\" onclick=\"removeEnergy(" + currentIndex + ")\">Remove</button></div>";
 
