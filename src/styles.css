@@ -177,6 +177,11 @@ canvas {
     border-color: #555;
 }
 
+
+.chart-container {
+	height: 500px;
+	width: 500px;
+}
 #save-load {
     grid-column: 1;
     grid-row: 1;
