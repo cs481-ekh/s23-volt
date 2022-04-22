@@ -263,13 +263,18 @@
             function onReaderLoad(event){
                 console.log(event.target.result);
                 var obj = JSON.parse(event.target.result);
-                frameData = obj;
+                
+                frameData = obj['frames'];
+
                 //resetting frame to 0 and drawing
                 frame = 0;
                 clearFrames();
                 for(var i =0; i < frameData.length; i++){
                     addFrameButton(true); //handles from load so we don't add new frames to the data side.
                 };
+
+                var objects = obj['objs'];
+                objects.forEach(ob=>addObject(ob['name']));
                 drawFrame(frame);
             }
             
@@ -277,7 +282,8 @@
 
 
             function saveCurrentState (filename) {
-                const blob = new Blob([JSON.stringify(frameData)], { type: "text/json" });
+                const dataStruct = {objs: objectData, frames:frameData};
+                const blob = new Blob([JSON.stringify(dataStruct)], { type: "text/json" });
                 const link = document.createElement("a");
 
                 link.download = filename;
@@ -609,12 +615,40 @@
                     /*liveSnap:{
                         points: clipper
                     },*/
-                    bounds: "#maincircle"
+                    bounds: "#maincircle",
+                    onDragEnd: function(e) {
+                        updateDataPosition(e);
+                    }
                 });
                 if(frameData.length == 1){
                     addDropdownListener();
                 }
                 
+            }
+
+            //updates a given cubes position on the data side
+            function updateDataPosition(e){
+                //vector containing center point of x and y
+                var center = [(canvas.width/2), (canvas.height/2)];
+
+                //dictionary was changed last minute to an array, have to do this to work around it
+                var cubeID = e.target.id;
+                cubeID = cubeID.replace("cube",'');
+                var cubeIndex = parseInt(cubeID);
+
+                const rect = canvas.getBoundingClientRect()
+                const relx = (e.clientX - rect.left);
+                const rely = (e.clientY - rect.top);
+                const x = relx - (canvas.width)/2;
+                const y = (rely - (canvas.height)/2) * -1;
+                const polarDistance = Math.sqrt((x*x) + (y*y));
+                const polarRadians = Math.atan2(y,x);
+                const objRadians = polarToObjectRadians(polarRadians);
+
+                console.log(frameData[frame - 1][cubeIndex]);
+                frameData[frame - 1][cubeIndex]["radians"] = objRadians;
+                frameData[frame - 1][cubeIndex]["radius"] = polarDistance/center[0];
+
             }
 
             //adds a context-menu listener to each cube.
