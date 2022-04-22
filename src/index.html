@@ -33,7 +33,6 @@
 				<canvas id="myChart" style="width:100%;max-width:500px"></canvas>
 				</div>
             </div>
-            
             <div id="playback-controls">
                 <h3>PLAYBACK CONTROLS</h3>
                 <div id="playback-grid">
@@ -439,6 +438,7 @@
 
                 var objects = obj['objs'];
                 objects.forEach(ob=>addObject(ob['name']));
+
                 drawFrame(frame);
             }
             
@@ -448,6 +448,7 @@
             function saveCurrentState (filename) {
                 const dataStruct = {objs: objectData, frames:frameData};
                 const blob = new Blob([JSON.stringify(dataStruct)], { type: "text/json" });
+
                 const link = document.createElement("a");
 
                 link.download = filename;
@@ -594,7 +595,8 @@
 
             //Adds energy cube to existing frame state
             function addEnergyCube(type, objectKey){
-				var owner = objectData[objectKey];
+
+                var owner = objectData[objectKey];
                 var newCube = JSON.parse(JSON.stringify(energyCubeDataTemplate));
                 var loc = getRandomLocation(objectKey);
                 if (owner){
@@ -624,6 +626,7 @@
             // takes the current form values and uses them to populate the objectData and frameData structures
             function initFirstFrame() {
                 $( ".obj-update" ).remove();
+
                 var objNameBoxes = document.getElementsByClassName("obj_name_box");
                 const objNameBoxArray = Array.prototype.slice.call(objNameBoxes);
                 var curCount = 0;
@@ -652,6 +655,7 @@
                         // console.log("at 442, i="+i+", owningObject="+owningObject+", typeToAdd="+typeToAdd);
                         addEnergyCube(typeToAdd, owningObject);
 						updateChartY(1, typeToAdd); //hard coded one because they should be adding energy anywhere else, gg
+
                     }
                     curCount++;
                 });
@@ -661,6 +665,7 @@
             }
 
             //Draws cubes on canvas when draw-cubes button is clicked
+
             function drawCubes() {
                 // add labels to objects
                 $( ".objlabel" ).remove();
@@ -1090,6 +1095,7 @@
             }
 
             //Removes object from object table when remove-object button is clicked
+
             function removeObjectButton(){
                 if(numObjectButtons == 0){
                     return;
