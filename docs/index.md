@@ -1,4 +1,4 @@
-# The Crown Joules - Spring 2022 - Physics Learning Tool
+# Physics Learning Tool
 # Team Members
  - Madeline Nelson
  - Seth Banta
