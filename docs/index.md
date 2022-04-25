@@ -1,10 +1,14 @@
-# Project title
+# The Crown Joules - Spring 2022 - Physics Learning Tool
 # Team Members
-# Project abstract
+ - Madeline Nelson
+ - Seth Banta
+ - Zarek Sliwoski
+ - Andrew Carlson
+# TODO - Project abstract
  - Start with your project statement
  - Should be concise (~200 words)
  - Descriptive enough for someone outside to understand
-# Project Description
+# TODO - Project Description
  - Describe what you actually built
  - How it works
  - Screenshots
