@@ -6,7 +6,7 @@
  - Zarek Sliwoski
  - Andrew Carlson
 
-## Project abstract
+## Project Abstract
 Science students struggle to understand and model energy effectively, and to relate those models to 
 the graphs, laws and equations that characterize most physics instruction. This project seeks to 
 develop an application in which students can develop, run, share, critique and modify dynamic models
