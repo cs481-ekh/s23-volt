@@ -36,5 +36,5 @@ program also contains the abilty to display a chart of the amount energy cubes p
 
 ### How it works
 After loading up the application, the user will be presented with this screen:
-![Imgur](/docs/CJR1.png)
+![Imgur](https://imgur.com/IOUjTuy)
 
