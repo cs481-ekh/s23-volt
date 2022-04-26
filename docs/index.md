@@ -36,7 +36,7 @@ program also contains the abilty to display a chart of the amount energy cubes p
 
 ### How it works
 After loading up the application, the user will be presented with this screen:
-[Imgur](https://i.imgur.com/IOUjTuy.png)
+![Imgur](https://i.imgur.com/IOUjTuy.png)
 
 From this point, they will use the object menu(scene initialization menu) on the left of the page to
 add the desired objects and their associated initail energy cubes:
