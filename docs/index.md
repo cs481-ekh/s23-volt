@@ -24,11 +24,11 @@ to visualize the law of conservation of energy.
 
 ## Project Description
 
- ### What We Built
+### What We Built
 TODO
 
- ### How it works
+### How it works
 TODO
 
- ### Screenshots
+### Screenshots
 TODO
