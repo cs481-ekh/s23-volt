@@ -15,7 +15,6 @@ an app where students construct frame-by-frame animations of energy transfers an
 Programs that allow students to model and visualize energy physics do exist, but they do not allow 
 constructing custom animations of energy transfer or a way for students to test their knowledge.
 
-##
 This repository contains a web application that allows students to design custom energy transfer 
 scenarios by adding objects and energy to a system in the form of color-coded "energy cubes", 
 then creating a frame by frame representation of energy transfer in a given scenario. This will 
