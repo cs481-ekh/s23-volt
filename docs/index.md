@@ -40,14 +40,14 @@ After loading up the application, the user will be presented with this screen:
 ![Imgur](https://i.imgur.com/IOUjTuy.png)
 
 From this point, they will use the object menu(scene initialization menu) on the right side of the page to
-add the desired objects and their associated initail energy cubes. Then the "Draw Cubes" button will
+add the desired objects and their associated initail energy cubes. Then, the "Draw Cubes" button will
 be pressed to initialize the scene:
 
 ![Imgur](https://i.imgur.com/46BXuXK.png)
 
 After the scene is initialized, the user will click the "Add Frame" button that is at the panel at the
-bottum of the page. This will generate a new fram that initializes all energy cube in the same place as 
-they were in the previous frame. The User will move those frame to the disered new location. 
+bottum of the page. This will generate a new frame that initializes all energy cubes in the same place as 
+they were in the previous frame. The User will move each frame to the desired new location. 
 
 After this, the user can right click on each energy cube and select a new energy type from the drop-down menu:
 
@@ -60,12 +60,12 @@ one using the "Playback Controls" menu at the top right of the page:
 
 ![Imgur](https://i.imgur.com/fRgjgob.png)
 
-The user can also save a json of thier project or import a json from another source that will populate the 
+The user can also save a json file of thier project or import a json from another source that will populate the 
 frames. This can be done from the "Simulation Save/Load" menu at the top left of the page:
 
 ![Imgur](https://i.imgur.com/htQDCV1.png)
 
-The user also has access to a graph that shows the total amount of each energy type per frame. This can 
-be accessed using the "Show Graph" button on the frame control panel at the bottum of the page:
+The user also has access to the ability to display a graph that shows the total amount of each energy type per 
+frame. This can be accessed using the "Show Graph" button on the frame control panel at the bottum of the page:
 
 ![Imgur](https://i.imgur.com/QPqqRl6.png)
