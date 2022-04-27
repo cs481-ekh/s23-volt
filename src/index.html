@@ -650,14 +650,14 @@
             function drawCubes() {
                 // add labels to objects
                 $( ".objlabel" ).remove();
-                var padding = $( "#outercircle" ).width() * 0.025;
-                var padDown = $( "#outercircle" ).width() * 0.13;
+                var padX = $( "#outercircle" ).width() * 0.04;
+                var padY = 8; // half of 16px medium font size
                 var outerWidth = $( "#outercircle" ).width();
                 var objCount = objectData.length;
                 var slice = Math.PI * (2/objCount);
                 for(let i = 0; i<objCount; i++) {
-                    var objLabelX = ((outerWidth)/2) + (((outerWidth)/2) * Math.sin((i+0.5)*slice));
-                    var objLabelY = ((outerWidth)/2) + (((outerWidth)/2) * Math.cos((i+0.5)*slice));
+                    var objLabelX = ((outerWidth)/2) + (((outerWidth)/2) * Math.sin((i+0.5)*slice)) - padX;
+                    var objLabelY = ((outerWidth)/2) + (((outerWidth)/2) * Math.cos((i+0.5)*slice)) - padY;
                     console.log("obj="+i+" x="+objLabelX+" y="+objLabelY+" name="+objectData[i].name);
                     var appendLabel = "<div id=\"label"+i+"\" class=objlabel style=\"top: "+objLabelY+"px; left: "+objLabelX+"px;\">"+objectData[i].name+"</div>";
                     $( "#outercircle" ).append( appendLabel );
