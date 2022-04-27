@@ -657,7 +657,7 @@
                 var slice = Math.PI * (2/objCount);
                 for(let i = 0; i<objCount; i++) {
                     var objLabelX = ((outerWidth)/2) + (((outerWidth)/2) * Math.sin((i+0.5)*slice));
-                    var objLabelY = ((outerWidth)/2) + (((outerWidth)/2) * Math.cos((i+0.5)*slice)) + padDown;
+                    var objLabelY = ((outerWidth)/2) + (((outerWidth)/2) * Math.cos((i+0.5)*slice));
                     console.log("obj="+i+" x="+objLabelX+" y="+objLabelY+" name="+objectData[i].name);
                     var appendLabel = "<div id=\"label"+i+"\" class=objlabel style=\"top: "+objLabelY+"px; left: "+objLabelX+"px;\">"+objectData[i].name+"</div>";
                     $( "#outercircle" ).append( appendLabel );
