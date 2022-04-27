@@ -95,11 +95,23 @@ canvas {
     background-color: darkgray;
 }
 
-#init-cubes-button {
-    position: absolute;
-    right: 0;
-    bottom: 0;
+#init-cubes-button  {
+  border-radius: 6px;
+  border-width: 0;
+  box-shadow: rgba(50, 50, 93, .1) 0 0 0 1px inset,rgba(50, 50, 93, .1) 0 2px 5px 0,rgba(0, 0, 0, .07) 0 1px 1px 0;
+  color: #fff;
+  cursor: pointer;
+  font-size: 175%;
+  height: 44px;
+  line-height: 1.15;
+  margin: 12px 0 0;
+  outline: none;
+  padding: 0 25px;
+  position: relative;
+  text-align: center;
+  width: 50%;
 }
+
 
 .cube {
     position: absolute;
