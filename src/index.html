@@ -1235,9 +1235,14 @@
 			}
 			
 			function selectFrameButton(i) {
-                frame = i - 1;
+                if (i === 1) {
+					frame = frameData.length - 1;
+					stepForward(false);
+				} else {
+				frame = i - 1;
                 togglePlayback(false);
 				drawCubes(); //should grab frame data, doesnt display yet
+				}
 			}
 		
         </script>
