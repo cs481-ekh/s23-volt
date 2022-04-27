@@ -295,13 +295,8 @@
 					borderColor: "blue",
 					fill: false
 						},{
-						label: "Potential Energy",
-						data: potValues, // datasets[3]
-					borderColor: "purple",
-					fill: false
-						},{
 						label: "Chemical Energy",
-						data: chemValues, // datasets[4]
+						data: chemValues, // datasets[3]
 					borderColor: "yellow",
 					fill: false
 						}]
@@ -335,14 +330,8 @@
 							myChartVar.data.datasets[energyTypeArrayValue].data[i] = myChartVar.data.datasets[energyTypeArrayValue].data[i] + 1;
 						}
 						myChartVar.update();
-					} else if (energyType === "potential") {
-						energyTypeArrayValue = 3;
-						for (i = 0; i < 11; i++) {
-							myChartVar.data.datasets[energyTypeArrayValue].data[i] = myChartVar.data.datasets[energyTypeArrayValue].data[i] + 1;
-						}
-						myChartVar.update();
 					} else if (energyType === "chemical") {
-						energyTypeArrayValue = 4;
+						energyTypeArrayValue = 3;
 						for (i = 0; i < 11; i++) {
 							myChartVar.data.datasets[energyTypeArrayValue].data[i] = myChartVar.data.datasets[energyTypeArrayValue].data[i] + 1;
 						}
@@ -370,12 +359,8 @@
 						energyTypeArrayValue = 2;
 						myChartVar.data.datasets[energyTypeArrayValue].data[realFrameValue] = myChartVar.data.datasets[energyTypeArrayValue].data[realFrameValue] + 1; // grab the current value and add one
 						myChartVar.update();
-					} else if (energyType === "potential") {
-						energyTypeArrayValue = 3;
-						myChartVar.data.datasets[energyTypeArrayValue].data[realFrameValue] = myChartVar.data.datasets[energyTypeArrayValue].data[realFrameValue] + 1; // grab the current value and add one
-						myChartVar.update();
 					} else if (energyType === "chemical") {
-						energyTypeArrayValue = 4;
+						energyTypeArrayValue = 3;
 						myChartVar.data.datasets[energyTypeArrayValue].data[realFrameValue] = myChartVar.data.datasets[energyTypeArrayValue].data[realFrameValue] + 1; // grab the current value and add one
 						myChartVar.update();
 					}
@@ -393,12 +378,8 @@
 						oldEnergyTypeArrayValue = 2;
 						myChartVar.data.datasets[oldEnergyTypeArrayValue].data[realFrameValue] = myChartVar.data.datasets[oldEnergyTypeArrayValue].data[realFrameValue] - 1; // grab the current value and add one
 						myChartVar.update();
-					} else if (oldEnergyType === "potential") {
-						oldEnergyTypeArrayValue = 3;
-						myChartVar.data.datasets[oldEnergyTypeArrayValue].data[realFrameValue] = myChartVar.data.datasets[oldEnergyTypeArrayValue].data[realFrameValue] - 1; // grab the current value and add one
-						myChartVar.update();
 					} else if (oldEnergyType === "chemical") {
-						oldEnergyTypeArrayValue = 4;
+						oldEnergyTypeArrayValue = 3;
 						myChartVar.data.datasets[oldEnergyTypeArrayValue].data[realFrameValue] = myChartVar.data.datasets[oldEnergyTypeArrayValue].data[realFrameValue] - 1; // grab the current value and add one
 						myChartVar.update();
 					}
