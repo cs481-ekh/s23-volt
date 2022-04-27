@@ -47,7 +47,7 @@ be pressed to initialize the scene:
 
 After the scene is initialized, the user will click the "Add Frame" button that is at the panel at the
 bottom of the page. This will generate a new frame that initializes all energy cubes in the same place as 
-they were in the previous frame. The User will move each frame to the desired new location. 
+they were in the previous frame. The user will move each frame to the desired new location. 
 
 After this, the user can right click on each energy cube and select a new energy type from the drop-down menu:
 
@@ -55,7 +55,7 @@ After this, the user can right click on each energy cube and select a new energy
 
 This process will be repeated until the user has finished generating their scene.
 
-From This point, the user can either play an animation of their scene or step through each frame one by 
+From this point, the user can either play an animation of their scene or step through each frame one by 
 one using the "Playback Controls" menu at the top right of the page:
 
 ![Imgur](https://i.imgur.com/fRgjgob.png)
