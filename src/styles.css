@@ -155,10 +155,8 @@ canvas {
     align-items: center;
     justify-content: center;
     align-self: center;
-    border-radius:50%;
     width:70%;
-    height:0;
-    padding: 35% 0;
+    height:70%;
 }
 
 .objlabel {
