@@ -112,80 +112,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/MotionPathPlugin.min.js"></script>
 
         <script>
-            // START TEST DATA
-            var objects = [
-                {
-                    name: "hand",
-                    startingRad: 0,
-                    endingRad: Math.PI / 2
-                },
-                {
-                    name: "floor",
-                    startingRad: Math.PI / 2,
-                    endingRad: Math.PI
-                },
-                {
-                    name: "ball",
-                    startingRad: Math.PI,
-                    endingRad: (3*Math.PI)/2
-                },
-                {
-                    name: "air",
-                    startingRad: (3*Math.PI)/2,
-                    endingRad: 2*Math.PI
-                },
-            ]
-
-            var frames = [
-                {
-                    1: {
-                        "type": "chemical",
-                        "radians": 1,
-                        "radius": 0.5,
-                        "color": "blue",
-                        "label": "CPE",
-                        "edited": false,
-                        "object": 0
-                    },
-                    2: {
-                        "type": "kinetic",
-                        "radians": 2.3,
-                        "radius": 0.5,
-                        "color": "green",
-                        "label": "KE",
-                        "edited": false,
-                        "object": 1
-                    },
-                    3: {
-                        "type": "gravitational",
-                        "radians": 3.9,
-                        "radius": 0.5,
-                        "color": "yellow",
-                        "label": "GPE",
-                        "edited": false,
-                        "object": 2
-                    },
-                    4: {
-                        "type": "heat",
-                        "radians": 5.7,
-                        "radius": 0.5,
-                        "color": "red",
-                        "label": "HE",
-                        "edited": false,
-                        "object": 3
-                    },
-                    5: {
-                        "type": "kinetic",
-                        "radians": 2,
-                        "radius": 0.3,
-                        "color": "green",
-                        "label": "KE",
-                        "edited": false,
-                        "object": 1
-                    }
-                }
-            ]
-            // END TEST DATA
+            
 			
 			var cubeEditingRelations = [
 				{
@@ -612,10 +539,10 @@
                 const objNameBoxArray = Array.prototype.slice.call(objNameBoxes);
                 var curCount = 0;
                 objNameBoxArray.forEach(nameBox => {
-                    nextObjectID = nameBox.id;
-                    var nextObjectIndex = parseInt(nextObjectID.charAt(nextObjectID.length - 1));
+                    var tmpNextObjectID = nameBox.id;
+                    var nextObjectNum = parseInt(tmpNextObjectID.charAt(tmpNextObjectID.length - 1));
                     var nextObjectName = nameBox.value;
-                    objectData[nextObjectIndex].name = nextObjectName;
+                    objectData[nextObjectNum].name = nextObjectName;
                 });
 
                 frameData = [{}];
@@ -650,8 +577,8 @@
             function drawCubes() {
                 // add labels to objects
                 $( ".objlabel" ).remove();
-                var padX = $( "#outercircle" ).width() * 0.04;
-                var padY = 8; // half of 16px medium font size
+                var padX = $( "#outercircle" ).width() * 0.04;  // this padding ideally would match the pixel length of the label itself
+                var padY = 18; // height of the 16px font plus 2 pixels to give space
                 var outerWidth = $( "#outercircle" ).width();
                 var objCount = objectData.length;
                 var slice = Math.PI * (2/objCount);
@@ -1071,7 +998,7 @@
                 newCell1.innerHTML = createNewObject(nextObjectID);
                 
                 //Adds object and increments nextObjectID
-                addObject("tmp");
+                addObject("");
 
             }
 
