@@ -612,10 +612,10 @@
                 const objNameBoxArray = Array.prototype.slice.call(objNameBoxes);
                 var curCount = 0;
                 objNameBoxArray.forEach(nameBox => {
-                    nextObjectID = nameBox.id;
-                    var nextObjectIndex = parseInt(nextObjectID.charAt(nextObjectID.length - 1));
+                    var tmpNextObjectID = nameBox.id;
+                    var nextObjectNum = parseInt(tmpNextObjectID.charAt(tmpNextObjectID.length - 1));
                     var nextObjectName = nameBox.value;
-                    objectData[nextObjectIndex].name = nextObjectName;
+                    objectData[nextObjectNum].name = nextObjectName;
                 });
 
                 frameData = [{}];
@@ -650,8 +650,8 @@
             function drawCubes() {
                 // add labels to objects
                 $( ".objlabel" ).remove();
-                var padX = $( "#outercircle" ).width() * 0.04;
-                var padY = 16; // half of 16px medium font size
+                var padX = $( "#outercircle" ).width() * 0.04;  // this padding ideally would match the pixel length of the label itself
+                var padY = 18; // height of the 16px font plus 2 pixels to give space
                 var outerWidth = $( "#outercircle" ).width();
                 var objCount = objectData.length;
                 var slice = Math.PI * (2/objCount);
