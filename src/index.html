@@ -651,7 +651,7 @@
                 // add labels to objects
                 $( ".objlabel" ).remove();
                 var padX = $( "#outercircle" ).width() * 0.04;
-                var padY = 8; // half of 16px medium font size
+                var padY = 16; // half of 16px medium font size
                 var outerWidth = $( "#outercircle" ).width();
                 var objCount = objectData.length;
                 var slice = Math.PI * (2/objCount);
@@ -1071,7 +1071,7 @@
                 newCell1.innerHTML = createNewObject(nextObjectID);
                 
                 //Adds object and increments nextObjectID
-                addObject("tmp");
+                addObject("");
 
             }
 
