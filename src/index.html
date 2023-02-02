@@ -1,1181 +1,1192 @@
 <!DOCTYPE html>
 <html lang="en">
-    <title>
-        Crown Joules
-    </title>
-    <head>
-        <meta charset="utf-8">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" crossorigin="anonymous">
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" crossorigin="anonymous"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-        <link href="styles.css" rel="stylesheet">
-    </head>
-    <body>
-        <div id="grid-container">
-            <div id="save-load">
-                <h4>SIMULATION SAVE/LOAD</h4>
-                <div id="load-save-controls"><input id="load-sim" type="file" style="visibility: hidden;"/><label for="load-sim" class="btn btn-primary">Upload</label>  <button id="save-button" class="btn btn-primary" onclick="saveCurrentState('simulation.json')">Save</button></div>                     
-            </div>
-            <div id="main-canvas">
-                 
-                <!-- below objects are for testing, will be changed/removed later -->
-                <!-- <div class="cube dragtest" style="background-color:rgb(128, 255, 43)"></div> -->
-                <!-- <div class="cube pathtest" style="background-color: rgb(204, 127, 255)"></div> -->
-                <div class="outercircle" id="outercircle">
-                    <div class="circle" id="maincircle">
-                        <canvas id="can"></canvas>
-                        <div class="circlecenter" id="circlecenter"></div>
-                    </div>
-                </div>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link href="styles.css" rel="stylesheet">
+    <title>Energy Frametasia</title>
+</head>
+<body>
+<div id="grid-container">
+    <div id="save-load">
+        <h4>SIMULATION SAVE/LOAD</h4>
+        <div id="load-save-controls"><input id="load-sim" type="file" style="visibility: hidden;"/><label for="load-sim"
+                                                                                                          class="btn btn-primary">Upload</label>
+            <button id="save-button" class="btn btn-primary" onclick="saveCurrentState('simulation.json')">Save</button>
+        </div>
+    </div>
+    <div id="main-canvas">
 
+        <!-- below objects are for testing, will be changed/removed later -->
+        <!-- <div class="cube dragtest" style="background-color:rgb(128, 255, 43)"></div> -->
+        <!-- <div class="cube pathtest" style="background-color: rgb(204, 127, 255)"></div> -->
+        <div class="outercircle" id="outercircle">
+            <div class="circle" id="maincircle">
+                <canvas id="can"></canvas>
+                <div class="circlecenter" id="circlecenter"></div>
             </div>
-            <div id="playback-controls">
-                <h3>PLAYBACK CONTROLS:</h3>
-                <div id="playback-grid">
-                    <span>    
+        </div>
+
+    </div>
+    <div id="playback-controls">
+        <h3>PLAYBACK CONTROLS:</h3>
+        <div id="playback-grid">
+                    <span>
                         <div>
                             <button id="play-pause">Play</button>
                         </div>
                         <div>
                             <button id="step-back" onclick="stepForward(true)">&lt&lt</button>
                         </div>
-                        <div>                            
+                        <div>
                             <button id="step-forward" onclick="stepForward(false)">&gt&gt</button>
                         </div>
                     </span>
-                    <div id="speed-slider">
-                        <label for="playback-speed">Playback Speed:</label>
-                        <input type="range" min="1" max="10" value="5" class="slider" id="playback-speed">
-                    </div>
-                </div>
-            </div>
-            <div class="chart-container">
-                <canvas id="myChart" style="width:100%;max-width:500px"></canvas>
-            </div>
-            <div id="object-menu">
-                <h3>OBJECT MENU</h3>
-                <table id="objects-table">
-                    <tr>
-                        <td>
-                            
-                            <div class="text-center">
-                                <h4>Objects</h3>
-                                <button type="button" id="add-object-button" class="obj-update btn btn-success" onclick="addObjectButton()">Add</button>
-                                
-                                <button type="button" id="remove-object-button" class="obj-update btn btn-danger" onclick="removeObjectButton()">Remove</button>
-                             </div>
-                        </td>
-                        <td>
-
-                        </td>
-                    </tr>
-                </table>
-                <button type="button" id="init-cubes-button" class="btn btn-primary" onclick="initFirstFrame()">Draw Cubes</button>
-            </div>
-            
-            <div id="frame-controls">
-                
-				<table id="frames-table">
-					<tr>
-						<tfoot>
-							<button style="margin:2px;" id="add-frame-button" onclick="addFrameButton()">+</button>
-							<label id="add-frame-button-label" for="add-frame-button">Add Frame&nbsp;</label>
-							<button style="margin:2px;" id="remove-frame-button" onclick="removeFrameButton()">-</button>
-							<label id="remove-frame-button-label" for="remove-frame-button">Remove Frame</label>
-							<button style="margin:2px;" id="hide-frame-controls-button" onclick="hideFrameControls()">Hide Frame Controls</button>
-							<button style="margin:2px;" id="graph-control-button" onclick="showGraphButton()">Show Graph</button>
-						</tfoot>
-					</tr>
-				</table>
-			</div>
-        </div>  
-
-        <div id="context-menu">
-            <div class="item" id="kin-item">
-                <i class="fa kin"></i> Kinetic
-            </div>
-            <div class="item" id="therm-item">
-                <i class="fa grav"></i> Thermal
-            </div>
-            <div class="item" id="grav-item">
-                <i class="fa kin"></i> Gravitational
-            </div>
-            <div class="item" id="chem-item">
-                <i class="fa pot"></i> Chemical
+            <div id="speed-slider">
+                <label for="playback-speed">Playback Speed:</label>
+                <input type="range" min="1" max="10" value="5" class="slider" id="playback-speed">
             </div>
         </div>
+    </div>
+    <div class="chart-container">
+        <canvas id="myChart" style="width:100%;max-width:500px"></canvas>
+    </div>
+    <div id="object-menu">
+        <h3>OBJECT MENU</h3>
+        <table id="objects-table">
+            <tr>
+                <td>
 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/Draggable.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/MotionPathPlugin.min.js"></script>
+                    <div class="text-center">
+                        <h3>Objects</h3>
+                        <button type="button" id="add-object-button" class="obj-update btn btn-success"
+                                onclick="addObjectButton()">Add
+                        </button>
 
-        <script>
-            
-			
-			var cubeEditingRelations = [
-				{
-				"gravitationalRelation": {
-					"label":"GPE",
-					"color":"yellow"
-					},
-				"chemicalRelation": {
-					"label":"CPE",
-					"color":"blue",
-					},
-				"kineticRelation": {
-					"label":"KE",
-					"color":"green"
-					},
-				"thermalRelation": {
-					"label":"HE",
-					"color":"red"
-					},
-				"potentialRelation": {
-					"label":"PE",
-					"color":"purple"
-					}
-				}
-			]
+                        <button type="button" id="remove-object-button" class="obj-update btn btn-danger"
+                                onclick="removeObjectButton()">Remove
+                        </button>
+                    </div>
+                </td>
+                <td>
 
-            //Defining templates for frame data
-            var objectDataTemplate = {
-                name: "",
-                startingRad: 0,
-                endingRad: 0
-            };
+                </td>
+            </tr>
+        </table>
+        <button type="button" id="init-cubes-button" class="btn btn-primary" onclick="initFirstFrame()">Draw Cubes
+        </button>
+    </div>
 
-            var energyCubeDataTemplate = {
-                "type": "",
-                "radians": 0,
-                "radius": 0,
-                "color": "",
-                "label": "",
-                "edited": false,
-                "object": 0
-            };
+    <div id="frame-controls">
 
-            var frameStateTemplate = {};
+        <table id="frames-table">
+            <tr>
+                <tfoot>
+                <button style="margin:2px;" id="add-frame-button" onclick="addFrameButton()">+</button>
+                <label id="add-frame-button-label" for="add-frame-button">Add Frame&nbsp;</label>
+                <button style="margin:2px;" id="remove-frame-button" onclick="removeFrameButton()">-</button>
+                <label id="remove-frame-button-label" for="remove-frame-button">Remove Frame</label>
+                <button style="margin:2px;" id="hide-frame-controls-button" onclick="hideFrameControls()">Hide Frame
+                    Controls
+                </button>
+                <button style="margin:2px;" id="graph-control-button" onclick="showGraphButton()">Show Graph</button>
+                </tfoot>
+            </tr>
+        </table>
+    </div>
+</div>
 
-            var objectData = [];
-            var frameData = [{}];
-            var frame = 0;
-            
-            var newestRadians = 0;
-            var newestRadius = 0;
-            var newestObj = -1;
+<div id="context-menu">
+    <div class="item" id="kin-item">
+        <i class="fa kin"></i> Kinetic
+    </div>
+    <div class="item" id="therm-item">
+        <i class="fa grav"></i> Thermal
+    </div>
+    <div class="item" id="grav-item">
+        <i class="fa kin"></i> Gravitational
+    </div>
+    <div class="item" id="chem-item">
+        <i class="fa pot"></i> Chemical
+    </div>
+</div>
 
-            var intervalTimer; //= setInterval(playback, milliseconds);
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/Draggable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/MotionPathPlugin.min.js"></script>
 
-            var nextObjectID = 0; // keeps track of the last object id assigned
-
-            var table = document.getElementById("objects-table");
-            var tableSize;
-
-            var playbackActive = false;
-            var playbackSpeed = 5000;
-
-            var numObjectButtons = 0;
-            var objectExpandButton = [20];
-            var expand = [20];
-            var zeroObjects = true;
-            var energySpinnerIndexes = [10];
-            var menuIsOpen = false; 
-            var isInit = false;
-
-            var playPauseButton = document.getElementById("play-pause");
-            var speedSlider = document.getElementById("playback-speed");
-            speedSlider.addEventListener("change", speedChanged);
-            playPauseButton.addEventListener("click", playPause);
+<script>
 
 
-
-		      	addFrameButton(); //add initial frame button
-	      		var graphClicked = 0;
-				document.getElementById("myChart").style.display = "none"; // hide graph
-				var xValues = [1]; // initial x value for graph, first frame
-				var thermValues = [0,0,0,0,0,0,0,0,0,0]; //thermal energy count
-				var gravValues = [0,0,0,0,0,0,0,0,0,0]; //gravitational energy count
-				var kinValues = [0,0,0,0,0,0,0,0,0,0]; //kinetic energy count
-				var potValues = [0,0,0,0,0,0,0,0,0,0]; //potential energy count
-				var chemValues = [0,0,0,0,0,0,0,0,0,0]; //chemical energy count
-
-				//create a line chart with the x axis of the xValues array and with line data sets of the various energy arrays
-				var myChartVar = new Chart("myChart", {
-					type: "line",
-					data: {
-						labels: xValues,
-					datasets: [{
-						label: "Thermal Energy",
-						data: thermValues, // datasets[0]
-					borderColor: "red",
-					fill: false
-						},{
-						label: "Gravitational Energy",
-						data: gravValues, // datasets[1]
-					borderColor: "green",
-					fill: false
-						},{
-						label: "Kinetic Energy",
-						data: kinValues, // datasets[2]
-					borderColor: "blue",
-					fill: false
-						},{
-						label: "Chemical Energy",
-						data: chemValues, // datasets[3]
-					borderColor: "yellow",
-					fill: false
-						}]
-					},
-					options: {
-						legend: {display: true}
-					}
-				});
-								
-				//update the y value of an energy type on whatever frame they were on by one, should be called whenever a new energy cube is added to the project
-				function updateChartY(frameValue, energyType) {
-					var energyTypeArrayValue;
-					console.log(energyType);
-					var realFrameValue = frameValue - 1; //change to 0 based array value
-					//find energy type and set the appropriate array value
-					if (energyType === "thermal") {
-						energyTypeArrayValue = 0;
-						for (i = 0; i < 11; i++) {
-							myChartVar.data.datasets[energyTypeArrayValue].data[i] = myChartVar.data.datasets[energyTypeArrayValue].data[i] + 1;
-						}
-						myChartVar.update();
-					} else if (energyType === "gravitational") {
-						energyTypeArrayValue = 1;
-						for (i = 0; i < 11; i++) {
-							myChartVar.data.datasets[energyTypeArrayValue].data[i] = myChartVar.data.datasets[energyTypeArrayValue].data[i] + 1;
-						}
-						myChartVar.update();
-					} else if (energyType === "kinetic") {
-						energyTypeArrayValue = 2;
-						for (i = 0; i < 11; i++) {
-							myChartVar.data.datasets[energyTypeArrayValue].data[i] = myChartVar.data.datasets[energyTypeArrayValue].data[i] + 1;
-						}
-						myChartVar.update();
-					} else if (energyType === "chemical") {
-						energyTypeArrayValue = 3;
-						for (i = 0; i < 11; i++) {
-							myChartVar.data.datasets[energyTypeArrayValue].data[i] = myChartVar.data.datasets[energyTypeArrayValue].data[i] + 1;
-						}
-						myChartVar.update();
-					}
-				}
-				
-				//update the Y value of an energy type by one, should occur when a cube is right clicked and changed
-				function updateChartYByOne(frameValue, energyType, oldEnergyType) {
-					var energyTypeArrayValue;
-					var realFrameValue = frameValue - 1; //change to 0 based array value
-					console.log(realFrameValue);
-					console.log(energyType);
-					console.log(oldEnergyType);
-					//find energy type and set the appropriate array value
-					if (energyType === "thermal") {
-						energyTypeArrayValue = 0;
-						myChartVar.data.datasets[energyTypeArrayValue].data[realFrameValue] = myChartVar.data.datasets[energyTypeArrayValue].data[realFrameValue] + 1; // grab the current value and add one
-						myChartVar.update();
-					} else if (energyType === "gravitational") {
-						energyTypeArrayValue = 1;
-						myChartVar.data.datasets[energyTypeArrayValue].data[realFrameValue] = myChartVar.data.datasets[energyTypeArrayValue].data[realFrameValue] + 1; // grab the current value and add one
-						myChartVar.update();
-					} else if (energyType === "kinetic") {
-						energyTypeArrayValue = 2;
-						myChartVar.data.datasets[energyTypeArrayValue].data[realFrameValue] = myChartVar.data.datasets[energyTypeArrayValue].data[realFrameValue] + 1; // grab the current value and add one
-						myChartVar.update();
-					} else if (energyType === "chemical") {
-						energyTypeArrayValue = 3;
-						myChartVar.data.datasets[energyTypeArrayValue].data[realFrameValue] = myChartVar.data.datasets[energyTypeArrayValue].data[realFrameValue] + 1; // grab the current value and add one
-						myChartVar.update();
-					}
-					var oldEnergyTypeArrayValue;
-					//find energy type and set the appropriate array value
-					if (oldEnergyType === "thermal") {
-						oldEnergyTypeArrayValue = 0;
-						myChartVar.data.datasets[oldEnergyTypeArrayValue].data[realFrameValue] = myChartVar.data.datasets[oldEnergyTypeArrayValue].data[realFrameValue] - 1; // grab the current value and add one
-						myChartVar.update();
-					} else if (oldEnergyType === "gravitational") {
-						oldEnergyTypeArrayValue = 1;
-						myChartVar.data.datasets[oldEnergyTypeArrayValue].data[realFrameValue] = myChartVar.data.datasets[oldEnergyTypeArrayValue].data[realFrameValue] - 1; // grab the current value and add one
-						myChartVar.update();
-					} else if (oldEnergyType === "kinetic") {
-						oldEnergyTypeArrayValue = 2;
-						myChartVar.data.datasets[oldEnergyTypeArrayValue].data[realFrameValue] = myChartVar.data.datasets[oldEnergyTypeArrayValue].data[realFrameValue] - 1; // grab the current value and add one
-						myChartVar.update();
-					} else if (oldEnergyType === "chemical") {
-						oldEnergyTypeArrayValue = 3;
-						myChartVar.data.datasets[oldEnergyTypeArrayValue].data[realFrameValue] = myChartVar.data.datasets[oldEnergyTypeArrayValue].data[realFrameValue] - 1; // grab the current value and add one
-						myChartVar.update();
-					}
-				}
-            // create canvas, set to fill main circle
-            var canvas = document.getElementById('can'),
-                context = canvas.getContext('2d');
-            canvas.addEventListener('click', function(e) {
-                calculateQuadrant(canvas, e)
-            })
-            canvas.style.width='100%';
-            canvas.style.height='100%';
-            canvas.width  = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
-
-            //handles uploading a simulation to be displayed
-            function onUploadSim(event) {
-                //creating new reader and assigning a callback
-                var reader = new FileReader();
-                reader.onload = onReaderLoad;
-                reader.readAsText(event.target.files[0]);
+    var cubeEditingRelations = [
+        {
+            "gravitationalRelation": {
+                "label": "GPE",
+                "color": "yellow"
+            },
+            "chemicalRelation": {
+                "label": "CPE",
+                "color": "blue",
+            },
+            "kineticRelation": {
+                "label": "KE",
+                "color": "green"
+            },
+            "thermalRelation": {
+                "label": "HE",
+                "color": "red"
+            },
+            "potentialRelation": {
+                "label": "PE",
+                "color": "purple"
             }
+        }
+    ]
 
-            //once our file is uploaded, we convert it to a usable structure here
-            function onReaderLoad(event){
-                console.log(event.target.result);
-                var obj = JSON.parse(event.target.result);
-                
-                frameData = obj['frames'];
+    //Defining templates for frame data
+    var objectDataTemplate = {
+        name: "",
+        startingRad: 0,
+        endingRad: 0
+    };
 
-                //resetting frame to 0 and drawing
-                frame = 0;
-                clearFrames();
-                for(var i =0; i < frameData.length; i++){
-                    addFrameButton(true); //handles from load so we don't add new frames to the data side.
-                };
+    var energyCubeDataTemplate = {
+        "type": "",
+        "radians": 0,
+        "radius": 0,
+        "color": "",
+        "label": "",
+        "edited": false,
+        "object": 0
+    };
 
-                var objects = obj['objs'];
-                objects.forEach(ob=>addObject(ob['name']));
+    var frameStateTemplate = {};
 
-                drawFrame(frame);
+    var objectData = [];
+    var frameData = [{}];
+    var frame = 0;
+
+    var newestRadians = 0;
+    var newestRadius = 0;
+    var newestObj = -1;
+
+    var intervalTimer; //= setInterval(playback, milliseconds);
+
+    var nextObjectID = 0; // keeps track of the last object id assigned
+
+    var table = document.getElementById("objects-table");
+    var tableSize;
+
+    var playbackActive = false;
+    var playbackSpeed = 5000;
+
+    var numObjectButtons = 0;
+    var objectExpandButton = [20];
+    var expand = [20];
+    var zeroObjects = true;
+    var energySpinnerIndexes = [10];
+    var menuIsOpen = false;
+    var isInit = false;
+
+    var playPauseButton = document.getElementById("play-pause");
+    var speedSlider = document.getElementById("playback-speed");
+    speedSlider.addEventListener("change", speedChanged);
+    playPauseButton.addEventListener("click", playPause);
+
+
+    addFrameButton(); //add initial frame button
+    var graphClicked = 0;
+    document.getElementById("myChart").style.display = "none"; // hide graph
+    var xValues = [1]; // initial x value for graph, first frame
+    var thermValues = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; //thermal energy count
+    var gravValues = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; //gravitational energy count
+    var kinValues = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; //kinetic energy count
+    var potValues = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; //potential energy count
+    var chemValues = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; //chemical energy count
+
+    //create a line chart with the x axis of the xValues array and with line data sets of the various energy arrays
+    var myChartVar = new Chart("myChart", {
+        type: "line",
+        data: {
+            labels: xValues,
+            datasets: [{
+                label: "Thermal Energy",
+                data: thermValues, // datasets[0]
+                borderColor: "red",
+                fill: false
+            }, {
+                label: "Gravitational Energy",
+                data: gravValues, // datasets[1]
+                borderColor: "green",
+                fill: false
+            }, {
+                label: "Kinetic Energy",
+                data: kinValues, // datasets[2]
+                borderColor: "blue",
+                fill: false
+            }, {
+                label: "Chemical Energy",
+                data: chemValues, // datasets[3]
+                borderColor: "yellow",
+                fill: false
+            }]
+        },
+        options: {
+            legend: {display: true}
+        }
+    });
+
+    //update the y value of an energy type on whatever frame they were on by one, should be called whenever a new energy cube is added to the project
+    function updateChartY(frameValue, energyType) {
+        var energyTypeArrayValue;
+        console.log(energyType);
+        var realFrameValue = frameValue - 1; //change to 0 based array value
+        //find energy type and set the appropriate array value
+        if (energyType === "thermal") {
+            energyTypeArrayValue = 0;
+            for (i = 0; i < 11; i++) {
+                myChartVar.data.datasets[energyTypeArrayValue].data[i] = myChartVar.data.datasets[energyTypeArrayValue].data[i] + 1;
             }
-            
-            document.getElementById('load-sim').addEventListener('change', onUploadSim);
-
-
-            function saveCurrentState (filename) {
-                const dataStruct = {objs: objectData, frames:frameData};
-                const blob = new Blob([JSON.stringify(dataStruct)], { type: "text/json" });
-
-                const link = document.createElement("a");
-
-                link.download = filename;
-                link.href = window.URL.createObjectURL(blob);
-                link.dataset.downloadurl = ["text/json", link.download, link.href].join(":");
-
-                const evt = new MouseEvent("click", {
-                    view: window,
-                    bubbles: true,
-                    cancelable: true,
-                });
-
-                link.dispatchEvent(evt);
-                link.remove()
-            };
-
-            // method to redraw separating lines in circle
-            function divideCircle() {
-                context.clearRect(0, 0, canvas.width, canvas.height);
-                var numObjects = nextObjectID;
-                var radius = (canvas.width)/2;
-                var slice = Math.PI * (2/numObjects);
-                if(numObjects == 1) {
-                    return;
-                }
-                context.beginPath();
-                context.moveTo(radius, radius);
-                for(let i = 0; i<numObjects; i++) {
-                    objectData[i].startingRad = i*slice;
-                    objectData[i].endingRad = (i+1)*slice;
-                    var x = radius + (radius * Math.sin(i*slice));
-                    var y = radius + (radius * Math.cos(i*slice));
-                    context.lineTo(x, y);
-                    context.lineTo(radius, radius);
-                }
-                context.stroke();
+            myChartVar.update();
+        } else if (energyType === "gravitational") {
+            energyTypeArrayValue = 1;
+            for (i = 0; i < 11; i++) {
+                myChartVar.data.datasets[energyTypeArrayValue].data[i] = myChartVar.data.datasets[energyTypeArrayValue].data[i] + 1;
             }
-
-            //method to redraw lines based on one less object
-
-
-            function polarToObjectRadians(radians) {
-                if(radians >= 0) {
-                    return ((3 * Math.PI) / 2) - radians;
-                }
-                if (radians <= 0-(Math.PI / 2)) {
-                    return (radians * (-1)) - Math.PI / 2;
-                }
-                return (radians * (-1)) + (3 * Math.PI) / 2;
+            myChartVar.update();
+        } else if (energyType === "kinetic") {
+            energyTypeArrayValue = 2;
+            for (i = 0; i < 11; i++) {
+                myChartVar.data.datasets[energyTypeArrayValue].data[i] = myChartVar.data.datasets[energyTypeArrayValue].data[i] + 1;
             }
-
-            function objectToPolarRadians(radians) {
-                if(radians >= Math.PI / 2 && radians <= (3 * Math.PI) / 2) {
-                    return (3 * Math.PI) / 2 - radians;
-                }
-                if (radians <= Math.PI / 2) {
-                    return (radians + Math.PI / 2) * (-1);
-                }
-                return (radians - (3 * Math.PI) / 2) * (-1);
+            myChartVar.update();
+        } else if (energyType === "chemical") {
+            energyTypeArrayValue = 3;
+            for (i = 0; i < 11; i++) {
+                myChartVar.data.datasets[energyTypeArrayValue].data[i] = myChartVar.data.datasets[energyTypeArrayValue].data[i] + 1;
             }
+            myChartVar.update();
+        }
+    }
 
-            // takes in event (eg click) and canvas (html ID "can"), returns object association of event
-            function calculateQuadrant(canvas, event) {
-                const numObjects = nextObjectID;
-                const slice = (2*Math.PI) / numObjects;
-                const rect = canvas.getBoundingClientRect()
-                const relx = (event.clientX - rect.left);
-                const rely = (event.clientY - rect.top);
-                const x = relx - (canvas.width)/2;
-                const y = (rely - (canvas.height)/2) * -1;
-                const polarDistance = Math.sqrt(x*x + y*y);
-                const polarRadians = Math.atan2(y,x);
-                const objRadians = polarToObjectRadians(polarRadians);
-                const obj = Math.trunc(objRadians/((2 * Math.PI)/numObjects));
-                console.log("objRadians = " + objRadians + ", obj = " + obj);
-                newestRadians = objRadians;
-                newestObj = obj;
-                return;
+    //update the Y value of an energy type by one, should occur when a cube is right clicked and changed
+    function updateChartYByOne(frameValue, energyType, oldEnergyType) {
+        var energyTypeArrayValue;
+        var realFrameValue = frameValue - 1; //change to 0 based array value
+        console.log(realFrameValue);
+        console.log(energyType);
+        console.log(oldEnergyType);
+        //find energy type and set the appropriate array value
+        if (energyType === "thermal") {
+            energyTypeArrayValue = 0;
+            myChartVar.data.datasets[energyTypeArrayValue].data[realFrameValue] = myChartVar.data.datasets[energyTypeArrayValue].data[realFrameValue] + 1; // grab the current value and add one
+            myChartVar.update();
+        } else if (energyType === "gravitational") {
+            energyTypeArrayValue = 1;
+            myChartVar.data.datasets[energyTypeArrayValue].data[realFrameValue] = myChartVar.data.datasets[energyTypeArrayValue].data[realFrameValue] + 1; // grab the current value and add one
+            myChartVar.update();
+        } else if (energyType === "kinetic") {
+            energyTypeArrayValue = 2;
+            myChartVar.data.datasets[energyTypeArrayValue].data[realFrameValue] = myChartVar.data.datasets[energyTypeArrayValue].data[realFrameValue] + 1; // grab the current value and add one
+            myChartVar.update();
+        } else if (energyType === "chemical") {
+            energyTypeArrayValue = 3;
+            myChartVar.data.datasets[energyTypeArrayValue].data[realFrameValue] = myChartVar.data.datasets[energyTypeArrayValue].data[realFrameValue] + 1; // grab the current value and add one
+            myChartVar.update();
+        }
+        var oldEnergyTypeArrayValue;
+        //find energy type and set the appropriate array value
+        if (oldEnergyType === "thermal") {
+            oldEnergyTypeArrayValue = 0;
+            myChartVar.data.datasets[oldEnergyTypeArrayValue].data[realFrameValue] = myChartVar.data.datasets[oldEnergyTypeArrayValue].data[realFrameValue] - 1; // grab the current value and add one
+            myChartVar.update();
+        } else if (oldEnergyType === "gravitational") {
+            oldEnergyTypeArrayValue = 1;
+            myChartVar.data.datasets[oldEnergyTypeArrayValue].data[realFrameValue] = myChartVar.data.datasets[oldEnergyTypeArrayValue].data[realFrameValue] - 1; // grab the current value and add one
+            myChartVar.update();
+        } else if (oldEnergyType === "kinetic") {
+            oldEnergyTypeArrayValue = 2;
+            myChartVar.data.datasets[oldEnergyTypeArrayValue].data[realFrameValue] = myChartVar.data.datasets[oldEnergyTypeArrayValue].data[realFrameValue] - 1; // grab the current value and add one
+            myChartVar.update();
+        } else if (oldEnergyType === "chemical") {
+            oldEnergyTypeArrayValue = 3;
+            myChartVar.data.datasets[oldEnergyTypeArrayValue].data[realFrameValue] = myChartVar.data.datasets[oldEnergyTypeArrayValue].data[realFrameValue] - 1; // grab the current value and add one
+            myChartVar.update();
+        }
+    }
+
+    // create canvas, set to fill main circle
+    var canvas = document.getElementById('can'),
+        context = canvas.getContext('2d');
+    canvas.addEventListener('click', function (e) {
+        calculateQuadrant(canvas, e)
+    })
+    canvas.style.width = '100%';
+    canvas.style.height = '100%';
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+
+    //handles uploading a simulation to be displayed
+    function onUploadSim(event) {
+        //creating new reader and assigning a callback
+        var reader = new FileReader();
+        reader.onload = onReaderLoad;
+        reader.readAsText(event.target.files[0]);
+    }
+
+    //once our file is uploaded, we convert it to a usable structure here
+    function onReaderLoad(event) {
+        console.log(event.target.result);
+        var obj = JSON.parse(event.target.result);
+
+        frameData = obj['frames'];
+
+        //resetting frame to 0 and drawing
+        frame = 0;
+        clearFrames();
+        for (var i = 0; i < frameData.length; i++) {
+            addFrameButton(true); //handles from load so we don't add new frames to the data side.
+        }
+        ;
+
+        var objects = obj['objs'];
+        objects.forEach(ob => addObject(ob['name']));
+
+        drawFrame(frame);
+    }
+
+    document.getElementById('load-sim').addEventListener('change', onUploadSim);
+
+
+    function saveCurrentState(filename) {
+        const dataStruct = {objs: objectData, frames: frameData};
+        const blob = new Blob([JSON.stringify(dataStruct)], {type: "text/json"});
+
+        const link = document.createElement("a");
+
+        link.download = filename;
+        link.href = window.URL.createObjectURL(blob);
+        link.dataset.downloadurl = ["text/json", link.download, link.href].join(":");
+
+        const evt = new MouseEvent("click", {
+            view: window,
+            bubbles: true,
+            cancelable: true,
+        });
+
+        link.dispatchEvent(evt);
+        link.remove()
+    };
+
+    // method to redraw separating lines in circle
+    function divideCircle() {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        var numObjects = nextObjectID;
+        var radius = (canvas.width) / 2;
+        var slice = Math.PI * (2 / numObjects);
+        if (numObjects == 1) {
+            return;
+        }
+        context.beginPath();
+        context.moveTo(radius, radius);
+        for (let i = 0; i < numObjects; i++) {
+            objectData[i].startingRad = i * slice;
+            objectData[i].endingRad = (i + 1) * slice;
+            var x = radius + (radius * Math.sin(i * slice));
+            var y = radius + (radius * Math.cos(i * slice));
+            context.lineTo(x, y);
+            context.lineTo(radius, radius);
+        }
+        context.stroke();
+    }
+
+    //method to redraw lines based on one less object
+
+
+    function polarToObjectRadians(radians) {
+        if (radians >= 0) {
+            return ((3 * Math.PI) / 2) - radians;
+        }
+        if (radians <= 0 - (Math.PI / 2)) {
+            return (radians * (-1)) - Math.PI / 2;
+        }
+        return (radians * (-1)) + (3 * Math.PI) / 2;
+    }
+
+    function objectToPolarRadians(radians) {
+        if (radians >= Math.PI / 2 && radians <= (3 * Math.PI) / 2) {
+            return (3 * Math.PI) / 2 - radians;
+        }
+        if (radians <= Math.PI / 2) {
+            return (radians + Math.PI / 2) * (-1);
+        }
+        return (radians - (3 * Math.PI) / 2) * (-1);
+    }
+
+    // takes in event (eg click) and canvas (html ID "can"), returns object association of event
+    function calculateQuadrant(canvas, event) {
+        const numObjects = nextObjectID;
+        const slice = (2 * Math.PI) / numObjects;
+        const rect = canvas.getBoundingClientRect()
+        const relx = (event.clientX - rect.left);
+        const rely = (event.clientY - rect.top);
+        const x = relx - (canvas.width) / 2;
+        const y = (rely - (canvas.height) / 2) * -1;
+        const polarDistance = Math.sqrt(x * x + y * y);
+        const polarRadians = Math.atan2(y, x);
+        const objRadians = polarToObjectRadians(polarRadians);
+        const obj = Math.trunc(objRadians / ((2 * Math.PI) / numObjects));
+        console.log("objRadians = " + objRadians + ", obj = " + obj);
+        newestRadians = objRadians;
+        newestObj = obj;
+        return;
+    }
+
+    //calculates the current radius that a cube is located at
+    function calculateRadius(givenX, givenY) {
+        var radius;
+        var centerX = getOffset(document.getElementById('circlecenter')).left;
+        var centerY = getOffset(document.getElementById('circlecenter')).top;
+        var calculatedX;
+        var calculatedY;
+        var currentRadiusInPixels = (canvas.width) / 2;
+        if (givenX < centerX) {
+            calculatedX = centerX - givenX;
+        } else {
+            calculatedX = givenX - centerX;
+        }
+        if (givenY < centerY) {
+            calculatedY = centerY - givenY;
+        } else {
+            calculatedY = givenY - centerY;
+        }
+
+        radius = Math.sqrt((calculatedX * calculatedX) + (calculatedY * calculatedY)) / currentRadiusInPixels;
+
+        newestRadius = radius;
+        return;
+    }
+
+    function getOffset(el) {
+        const rect = el.getBoundingClientRect();
+        return {
+            left: rect.left + window.scrollX,
+            top: rect.top + window.scrollY
+        };
+    }
+
+    var centerx = getOffset(document.getElementById('circlecenter')).left;
+    var centery = getOffset(document.getElementById('circlecenter')).top;
+    var clipper = clipAtRadius((canvas.width) / 2, 0, 0);
+
+    // TODO: fix this, to be used for snapping cubes to stay within circle
+    function clipAtRadius(radius, offsetX, offsetY) {
+        return point => {
+            let x = centerx - offsetX,
+                y = centery - offsetY,
+                length = Math.sqrt(x * x + y * y),
+                angle;
+            if (length > radius) {
+                angle = Math.atan2(y, x);
+                centerx = radius * Math.cos(angle);
+                centery = radius * Math.sin(angle);
             }
-            
-            //calculates the current radius that a cube is located at
-            function calculateRadius(givenX, givenY){
-                var radius;
-                var centerX = getOffset( document.getElementById('circlecenter') ).left;
-                var centerY = getOffset( document.getElementById('circlecenter') ).top;
-                var calculatedX;
-                var calculatedY;
-                var currentRadiusInPixels = (canvas.width)/2;
-                if(givenX < centerX){
-                    calculatedX = centerX - givenX;
-                }
-                else{
-                    calculatedX = givenX- centerX;
-                }
-                if(givenY < centerY){
-                    calculatedY = centerY - givenY;
-                }
-                else{
-                    calculatedY = givenY- centerY;
-                }
+            return point;
+        };
+    }
 
-                radius =  Math.sqrt((calculatedX * calculatedX) + (calculatedY * calculatedY)) / currentRadiusInPixels;
+    //add object with given data
+    function addObject(name) {
+        var newObj = JSON.parse(JSON.stringify(objectDataTemplate)); //deep copy our static object
+        newObj["name"] = name;
+        objectData.push(newObj);
+        nextObjectID++;
+        divideCircle();
+        // console.log(objectData);
+    }
 
-                newestRadius = radius;
-                return;
+
+    //Adds energy cube to existing frame state
+    function addEnergyCube(type, objectKey) {
+
+        var owner = objectData[objectKey];
+        var newCube = JSON.parse(JSON.stringify(energyCubeDataTemplate));
+        var loc = getRandomLocation(objectKey);
+        if (owner) {
+            newCube["object"] = objectKey;
+            newCube["type"] = type;
+            newCube["radians"] = loc["radians"];
+            newCube["radius"] = loc["radius"];
+            // newCube["label"] = typeAttributes["type"]["label"];
+            // newCube["color"] = typeAttributes["type"]["color"];
+            newKey = Object.keys(frameData[0]).length;
+            frameData[0][newKey] = newCube;
+            // console.log("added cube to object"+objectKey+" at loc "+newCube["radians"]+", "+newCube["radius"]);
+        } else {
+            // console.log("Error: energy assigned to object "+objectKey+" which was not found");
+        }
+    }
+
+    function getRandomLocation(objectNum) {
+        var min = objectData[objectNum]["startingRad"] + 0.2;
+        var max = objectData[objectNum]["endingRad"] - 0.2;
+        var radians = Math.random() * (max - min) + min;
+        var radius = Math.random() * (0.8) + 0.1;
+        // console.log("getting random loc between "+min+" and "+max+" for obj "+objectNum);
+        return {"radius": radius, "radians": radians}
+    }
+
+    // takes the current form values and uses them to populate the objectData and frameData structures
+    function initFirstFrame() {
+        $(".obj-update").remove();
+
+        var objNameBoxes = document.getElementsByClassName("obj_name_box");
+        const objNameBoxArray = Array.prototype.slice.call(objNameBoxes);
+        var curCount = 0;
+        objNameBoxArray.forEach(nameBox => {
+            var tmpNextObjectID = nameBox.id;
+            var nextObjectNum = parseInt(tmpNextObjectID.charAt(tmpNextObjectID.length - 1));
+            var nextObjectName = nameBox.value;
+            objectData[nextObjectNum].name = nextObjectName;
+        });
+
+        frameData = [{}];
+        var typeSelectors = document.getElementsByClassName("energy-type");
+        const typeSelectorArray = Array.prototype.slice.call(typeSelectors);
+        // console.log(typeSelectorArray);
+        curCount = 0;
+        typeSelectorArray.forEach(typeSelect => {
+            var typeToAdd = $(typeSelectors[curCount]).find(":selected").val();
+            // console.log(typeToAdd);
+            var parentTableID = $(typeSelect).closest('table').attr('id');
+            // console.log(typeSelect);
+            var adjacentSpinner = $(typeSelect).next();
+            var countToAdd = adjacentSpinner.val();
+            // console.log(countToAdd);
+            var owningObject = parseInt(parentTableID.charAt(parentTableID.length - 1));
+            for (let i = 0; i < countToAdd; i++) {
+                // console.log("at 442, i="+i+", owningObject="+owningObject+", typeToAdd="+typeToAdd);
+                addEnergyCube(typeToAdd, owningObject);
+                updateChartY(1, typeToAdd); //hard coded one because they should be adding energy anywhere else, gg
+
             }
+            curCount++;
+        });
+        console.log(frameData[0]);
+        drawCubes();
+        updateCubeSize();
+    }
 
-            function getOffset(el) {
-                const rect = el.getBoundingClientRect();
-                return {
-                    left: rect.left + window.scrollX,
-                    top: rect.top + window.scrollY
-                };
+    //Draws cubes on canvas when draw-cubes button is clicked
+
+    function drawCubes() {
+        // add labels to objects
+        $(".objlabel").remove();
+        var padX = $("#outercircle").width() * 0.04;  // this padding ideally would match the pixel length of the label itself
+        var padY = 18; // height of the 16px font plus 2 pixels to give space
+        var outerWidth = $("#outercircle").width();
+        var objCount = objectData.length;
+        var slice = Math.PI * (2 / objCount);
+        for (let i = 0; i < objCount; i++) {
+            var objLabelX = ((outerWidth) / 2) + (((outerWidth) / 2) * Math.sin((i + 0.5) * slice)) - padX;
+            var objLabelY = ((outerWidth) / 2) + (((outerWidth) / 2) * Math.cos((i + 0.5) * slice)) - padY;
+            console.log("obj=" + i + " x=" + objLabelX + " y=" + objLabelY + " name=" + objectData[i].name);
+            var appendLabel = "<div id=\"label" + i + "\" class=objlabel style=\"top: " + objLabelY + "px; left: " + objLabelX + "px;\">" + objectData[i].name + "</div>";
+            $("#outercircle").append(appendLabel);
+        }
+
+        $(".cube").remove();
+        var appendstr = "";
+        var count = 0;
+
+        // console.log(frameData);
+        //get our current frame
+        var currentFrame = frameData[frame - 1];
+        console.log(currentFrame); //to show that frames are in fact moving forward
+        var currentFrameKeys = Object.keys(currentFrame); //get all cube id's for the current frame
+
+        currentFrameKeys.forEach(cubeID => {
+            var cube = currentFrame[cubeID]; //gets specific cube from dictionary, based on cube's id
+            appendStr = "";
+            var nextRadians = (2 * Math.PI) - cube["radians"];
+            var nextRadius = cube["radius"] * ((canvas.width) / 2);
+            var relx = nextRadius * Math.sin(nextRadians);
+            var rely = nextRadius * Math.cos(nextRadians);
+            var x = relx + (canvas.width) / 2;
+            var y = rely + (canvas.height) / 2;
+
+            //On draw call, the cube lables and color are populated in the frame data
+            switch (cube["type"]) {
+                case 'kinetic':
+                    cube["label"] = "KE";
+                    cube["color"] = "lightblue";
+                    break;
+
+                case 'thermal':
+                    cube["label"] = "TE";
+                    cube["color"] = "pink";
+                    break;
+
+                case 'gravitational':
+                    cube["label"] = "GE";
+                    cube["color"] = "lightgreen";
+                    break;
+
+                case 'chemical':
+                    cube["label"] = "CE";
+                    cube["color"] = "yellow";
+                    break;
+
+                default:
+                    cube["label"] = "Unknown";
             }
-            var centerx = getOffset( document.getElementById('circlecenter') ).left;
-            var centery = getOffset( document.getElementById('circlecenter') ).top;
-            var clipper = clipAtRadius((canvas.width)/2, 0, 0);
-            // TODO: fix this, to be used for snapping cubes to stay within circle
-            function clipAtRadius(radius, offsetX, offsetY) {
-                return point => {
-                    let x = centerx - offsetX,
-                        y = centery - offsetY,
-                        length = Math.sqrt(x * x + y * y),
-                        angle;
-                    if (length > radius) {
-                    angle = Math.atan2(y, x);
-                    centerx = radius * Math.cos(angle);
-                    centery = radius * Math.sin(angle);
+            appendstr = "<div id=\"cube" + count + "\" class=cube style=\"top: " + y + "px; left: " + x + "px; opacity: 50%; background-color: " + cube["color"] + ";\">" + cube["label"] + "</div>";
+
+            $("#maincircle").append(appendstr);
+
+            //adds context menu listener to each cube
+            document.getElementById("cube" + count).addEventListener("contextmenu", function (e) {
+                if (frameData.length > 1) {
+                    var tableSize = (document.getElementById("frames-table").rows[0].cells.length) - 1;
+                    e.preventDefault();
+                    if (tableSize < 1) {
+                        //Can't change energy type while on initialization frame
+                    } else {
+                        var contexElement = document.getElementById("context-menu");
+                        contexElement.classList.add("active");
+                        menuIsOpen = true;
+                        var contexElement = document.getElementById("context-menu");
+                        contexElement.style.top = e.clientY + "px";
+                        contexElement.style.left = e.clientX + "px";
                     }
-                    return point;
-                };
-            }
-            
-            //add object with given data
-            function addObject(name) {
-                var newObj = JSON.parse(JSON.stringify(objectDataTemplate)); //deep copy our static object
-                newObj["name"] = name;
-                objectData.push(newObj);
-                nextObjectID++;
-                divideCircle();
-                // console.log(objectData);
-            }
-
-
-            //Adds energy cube to existing frame state
-            function addEnergyCube(type, objectKey){
-
-                var owner = objectData[objectKey];
-                var newCube = JSON.parse(JSON.stringify(energyCubeDataTemplate));
-                var loc = getRandomLocation(objectKey);
-                if (owner){
-                    newCube["object"] = objectKey;
-                    newCube["type"] = type;
-                    newCube["radians"] = loc["radians"];
-                    newCube["radius"] = loc["radius"];
-                    // newCube["label"] = typeAttributes["type"]["label"];
-                    // newCube["color"] = typeAttributes["type"]["color"];
-                    newKey = Object.keys(frameData[0]).length;
-                    frameData[0][newKey] = newCube;
-                    // console.log("added cube to object"+objectKey+" at loc "+newCube["radians"]+", "+newCube["radius"]);
-                } else {
-                    // console.log("Error: energy assigned to object "+objectKey+" which was not found");
                 }
-            }
+            });
 
-            function getRandomLocation(objectNum) {
-                var min = objectData[objectNum]["startingRad"] + 0.2;
-                var max = objectData[objectNum]["endingRad"] - 0.2;
-                var radians = Math.random() * (max - min) + min;
-                var radius = Math.random() * (0.8) + 0.1;
-                // console.log("getting random loc between "+min+" and "+max+" for obj "+objectNum);
-                return {"radius": radius, "radians": radians}
-            }
-
-            // takes the current form values and uses them to populate the objectData and frameData structures
-            function initFirstFrame() {
-                $( ".obj-update" ).remove();
-
-                var objNameBoxes = document.getElementsByClassName("obj_name_box");
-                const objNameBoxArray = Array.prototype.slice.call(objNameBoxes);
-                var curCount = 0;
-                objNameBoxArray.forEach(nameBox => {
-                    var tmpNextObjectID = nameBox.id;
-                    var nextObjectNum = parseInt(tmpNextObjectID.charAt(tmpNextObjectID.length - 1));
-                    var nextObjectName = nameBox.value;
-                    objectData[nextObjectNum].name = nextObjectName;
-                });
-
-                frameData = [{}];
-                var typeSelectors = document.getElementsByClassName("energy-type");
-                const typeSelectorArray = Array.prototype.slice.call(typeSelectors);
-                // console.log(typeSelectorArray);
-                curCount = 0;
-                typeSelectorArray.forEach(typeSelect => {
-                    var typeToAdd = $(typeSelectors[curCount]).find(":selected").val();
-                    // console.log(typeToAdd);
-                    var parentTableID = $(typeSelect).closest('table').attr('id');
-                    // console.log(typeSelect);
-                    var adjacentSpinner = $(typeSelect).next();
-                    var countToAdd = adjacentSpinner.val();
-                    // console.log(countToAdd);
-                    var owningObject = parseInt(parentTableID.charAt(parentTableID.length - 1));
-                    for (let i = 0; i < countToAdd; i++) {
-                        // console.log("at 442, i="+i+", owningObject="+owningObject+", typeToAdd="+typeToAdd);
-                        addEnergyCube(typeToAdd, owningObject);
-						updateChartY(1, typeToAdd); //hard coded one because they should be adding energy anywhere else, gg
-
-                    }
-                    curCount++;
-                });
-                console.log(frameData[0]);
-                drawCubes();
-                updateCubeSize();
-            }
-
-            //Draws cubes on canvas when draw-cubes button is clicked
-
-            function drawCubes() {
-                // add labels to objects
-                $( ".objlabel" ).remove();
-                var padX = $( "#outercircle" ).width() * 0.04;  // this padding ideally would match the pixel length of the label itself
-                var padY = 18; // height of the 16px font plus 2 pixels to give space
-                var outerWidth = $( "#outercircle" ).width();
-                var objCount = objectData.length;
-                var slice = Math.PI * (2/objCount);
-                for(let i = 0; i<objCount; i++) {
-                    var objLabelX = ((outerWidth)/2) + (((outerWidth)/2) * Math.sin((i+0.5)*slice)) - padX;
-                    var objLabelY = ((outerWidth)/2) + (((outerWidth)/2) * Math.cos((i+0.5)*slice)) - padY;
-                    console.log("obj="+i+" x="+objLabelX+" y="+objLabelY+" name="+objectData[i].name);
-                    var appendLabel = "<div id=\"label"+i+"\" class=objlabel style=\"top: "+objLabelY+"px; left: "+objLabelX+"px;\">"+objectData[i].name+"</div>";
-                    $( "#outercircle" ).append( appendLabel );
-                }
-
-                $( ".cube" ).remove();
-                var appendstr = "";
-                var count = 0;
-
-                // console.log(frameData);
-                //get our current frame
-                var currentFrame = frameData[frame-1];
-                console.log(currentFrame); //to show that frames are in fact moving forward
-                var currentFrameKeys = Object.keys(currentFrame); //get all cube id's for the current frame
-                
-                currentFrameKeys.forEach(cubeID => {
-                    var cube = currentFrame[cubeID]; //gets specific cube from dictionary, based on cube's id
-                    appendStr = "";
-                    var nextRadians = (2 * Math.PI) - cube["radians"];
-                    var nextRadius = cube["radius"] * ((canvas.width)/2);
-                    var relx = nextRadius * Math.sin(nextRadians);
-                    var rely = nextRadius * Math.cos(nextRadians);
-                    var x = relx + (canvas.width)/2;
-                    var y = rely + (canvas.height)/2;
-
-                    //On draw call, the cube lables and color are populated in the frame data
-                    switch (cube["type"]) {
-                        case 'kinetic': 
-                            cube["label"] = "KE";
-                            cube["color"] = "lightblue";
-                            break;
-
-                        case 'thermal': 
-                            cube["label"] = "TE";
-                            cube["color"] = "pink";
-                            break;
-
-                        case 'gravitational': 
-                            cube["label"] = "GE";
-                            cube["color"] = "lightgreen";
-                            break;
-
-                        case 'chemical': 
-                            cube["label"] = "CE";
-                            cube["color"] = "yellow";
-                            break;
-
-                        default: 
-                            cube["label"] = "Unknown";
-                    }
-                    appendstr = "<div id=\"cube"+count+"\" class=cube style=\"top: "+y+"px; left: "+x+"px; opacity: 50%; background-color: "+cube["color"]+";\">"+cube["label"]+"</div>";
-                    
-                    $( "#maincircle" ).append( appendstr );
-
-                    //adds context menu listener to each cube
-                    document.getElementById("cube" + count).addEventListener("contextmenu", function(e){
-                        if(frameData.length > 1){
-                            var tableSize = (document.getElementById("frames-table").rows[0].cells.length) - 1;
-                            e.preventDefault();
-                            if(tableSize < 1){
-                                //Can't change energy type while on initialization frame
-                            }
-                            else{
-                                var contexElement = document.getElementById("context-menu");
-                                contexElement.classList.add("active");
-                                menuIsOpen = true;
-                                var contexElement = document.getElementById("context-menu");
-                                contexElement.style.top = e.clientY + "px";
-                                contexElement.style.left = e.clientX + "px";
-                            }
-                        }
-                    });
-
-                    //updates the accociated object, radians, and radius of the cube in the frame data
-                    document.getElementById("cube" + count).addEventListener("mouseout", function(e){
-                            e.preventDefault();
-                            var currentFrame = frameData[frame-1];
-                            var targ = e.target;
-                            var cubeIndex = 0;
-                            var cubeList = document.getElementsByClassName("cube");
-                            const cubeArray = Array.prototype.slice.call(cubeList);
-
-                            cubeArray.every(cube => {
-                                var rect = cube.getBoundingClientRect();
-                                var rectLeft = rect.left;
-                                var rectRight = rect.right;
-                                var rectTop = rect.top;
-                                var rectBottom = rect.bottom;
-                                if(e.clientX >= rectLeft - 2 && e.clientX <= rectRight + 2){
-                                    if(e.clientY >= rectTop - 2 && e.clientY <= rectBottom + 2){
-                                        calculateQuadrant(canvas, e);
-                                        currentFrame[cubeIndex]["radians"] = newestRadians;
-                                        calculateRadius(rectLeft, rectTop);
-                                        currentFrame[cubeIndex]["radius"] = newestRadius;
-                                        currentFrame[cubeIndex]["object"] = newestObj;
-                                        return;
-                                    }
-                                }
-                                cubeIndex++;
-                                return true;
-                            });
-                    });
-                    count++;  
-                });
-                initMoveableCubes();
-                Draggable.create(".cube", {
-                    // commented code below and clipAtRadius() method are for keeping objects contained in the circle (instead of just in the square around it), but not finished
-                    /*liveSnap:{
-                        points: clipper
-                    },*/
-                    bounds: "#maincircle",
-                    onDragEnd: function(e) {
-                        updateDataPosition(e);
-                    }
-                });
-                if(frameData.length == 1){
-                    addDropdownListener();
-                }
-                
-            }
-
-            //updates a given cubes position on the data side
-            function updateDataPosition(e){
-                //vector containing center point of x and y
-                var center = [(canvas.width/2), (canvas.height/2)];
-
-                //dictionary was changed last minute to an array, have to do this to work around it
-                var cubeID = e.target.id;
-                cubeID = cubeID.replace("cube",'');
-                var cubeIndex = parseInt(cubeID);
-
-                const rect = canvas.getBoundingClientRect()
-                const relx = (e.clientX - rect.left);
-                const rely = (e.clientY - rect.top);
-                const x = relx - (canvas.width)/2;
-                const y = (rely - (canvas.height)/2) * -1;
-                const polarDistance = Math.sqrt((x*x) + (y*y));
-                const polarRadians = Math.atan2(y,x);
-                const objRadians = polarToObjectRadians(polarRadians);
-
-                console.log(frameData[frame - 1][cubeIndex]);
-                frameData[frame - 1][cubeIndex]["radians"] = objRadians;
-                frameData[frame - 1][cubeIndex]["radius"] = polarDistance/center[0];
-
-            }
-
-            //adds a context-menu listener to each cube.
-            function addDropdownListener(){
-                document.getElementById("context-menu").addEventListener("mousedown", function(ev){
-                    var currentFrame = frameData[frame-1];
-                    var contexElement = document.getElementById("context-menu");
-                    var contextTop = contexElement.offsetTop;
-                    var contextLeft = contexElement.offsetLeft;
-                    var targ = ev.target;
-                    var cubeIndex = 0;
-                    var cubeList = document.getElementsByClassName("cube");
-                    const cubeArray = Array.prototype.slice.call(cubeList);
-
-                    cubeArray.every(cube => {
-                        var rect = cube.getBoundingClientRect();
-                        var rectLeft = rect.left;
-                        var rectRight = rect.right;
-                        var rectTop = rect.top;
-                        var rectBottom = rect.bottom;
-                        if(contextLeft >= rectLeft && contextLeft <= rectRight){
-                            if(contextTop >= rectTop && contextTop <= rectBottom){
-
-                                switch ($(ev.target).attr("id")) {
-                                    case "kin-item":
-										var oldTypeTemp = currentFrame[cubeIndex]["type"];
-                                        menuIsOpen = false;
-                                        document.getElementById("context-menu").classList.remove("active");
-                                        currentFrame[cubeIndex]["type"] = "kinetic";
-                                        currentFrame[cubeIndex]["label"] = "KE";
-                                        currentFrame[cubeIndex]["color"] = "lightblue";
-										updateChartYByOne(frame+1, "kinetic", oldTypeTemp);
-                                        drawCubes();
-                                        break;
-  
-                                    case "therm-item":
-                                        var oldTypeTemp = currentFrame[cubeIndex]["type"];
-										menuIsOpen = false;
-                                        document.getElementById("context-menu").classList.remove("active");
-                                        currentFrame[cubeIndex]["type"] = "thermal";
-                                        currentFrame[cubeIndex]["label"] = "TE";
-                                        currentFrame[cubeIndex]["color"] = "pink";
-										updateChartYByOne(frame+1, "thermal", oldTypeTemp);
-                                        drawCubes();
-                                        break;
-
-                                    case "grav-item":
-                                        var oldTypeTemp = currentFrame[cubeIndex]["type"];
-										menuIsOpen = false;
-                                        document.getElementById("context-menu").classList.remove("active");
-                                        currentFrame[cubeIndex]["type"] = "gravitational";
-                                        currentFrame[cubeIndex]["label"] = "GE";
-                                        currentFrame[cubeIndex]["color"] = "lightgreen";
-										updateChartYByOne(frame+1, "gravitational", oldTypeTemp);
-                                        drawCubes();
-                                        break;
-
-                                    case "chem-item":
-                                        var oldTypeTemp = currentFrame[cubeIndex]["type"];
-										menuIsOpen = false;
-                                        document.getElementById("context-menu").classList.remove("active");
-                                        currentFrame[cubeIndex]["type"] = "chemical";
-                                        currentFrame[cubeIndex]["label"] = "CE";
-                                        currentFrame[cubeIndex]["color"] = "yellow";
-										updateChartYByOne(frame+1, "chemical", oldTypeTemp);
-                                        drawCubes();
-                                        break;
-
-                                }
-                                return false;
-                            }
-                        }
-                        cubeIndex++;
-                        return true;
-                    });
-                    
-                               
-                });
-
-            }
-
-
-             //conculates which object each cube is "in"
-            function initMoveableCubes(){
+            //updates the accociated object, radians, and radius of the cube in the frame data
+            document.getElementById("cube" + count).addEventListener("mouseout", function (e) {
+                e.preventDefault();
+                var currentFrame = frameData[frame - 1];
+                var targ = e.target;
+                var cubeIndex = 0;
                 var cubeList = document.getElementsByClassName("cube");
-                var cubeArray = Array.prototype.slice.call(cubeList);
+                const cubeArray = Array.prototype.slice.call(cubeList);
 
-                for(var i = 0; i < cubeArray.length; i++){
-                    var cube = document.getElementById("cube" + i);
-                    cube.addEventListener("mouseup", function(e){
-                        //$(e.target).attr("object") = calculateQuadrant(document.getElementById("main-canvas"), e);
-                        //alert("quad changed");
-                    });
-                }
+                cubeArray.every(cube => {
+                    var rect = cube.getBoundingClientRect();
+                    var rectLeft = rect.left;
+                    var rectRight = rect.right;
+                    var rectTop = rect.top;
+                    var rectBottom = rect.bottom;
+                    if (e.clientX >= rectLeft - 2 && e.clientX <= rectRight + 2) {
+                        if (e.clientY >= rectTop - 2 && e.clientY <= rectBottom + 2) {
+                            calculateQuadrant(canvas, e);
+                            currentFrame[cubeIndex]["radians"] = newestRadians;
+                            calculateRadius(rectLeft, rectTop);
+                            currentFrame[cubeIndex]["radius"] = newestRadius;
+                            currentFrame[cubeIndex]["object"] = newestObj;
+                            return;
+                        }
+                    }
+                    cubeIndex++;
+                    return true;
+                });
+            });
+            count++;
+        });
+        initMoveableCubes();
+        Draggable.create(".cube", {
+            // commented code below and clipAtRadius() method are for keeping objects contained in the circle (instead of just in the square around it), but not finished
+            /*liveSnap:{
+                points: clipper
+            },*/
+            bounds: "#maincircle",
+            onDragEnd: function (e) {
+                updateDataPosition(e);
             }
+        });
+        if (frameData.length == 1) {
+            addDropdownListener();
+        }
 
+    }
 
-            //hides drop-down context menu when an option is selected
-            document.getElementById("context-menu").addEventListener("click", function(){
-                if(menuIsOpen == true){
-                    document.getElementById("context-menu").classList.remove("active");
-                    menuIsOpen = false;
+    //updates a given cubes position on the data side
+    function updateDataPosition(e) {
+        //vector containing center point of x and y
+        var center = [(canvas.width / 2), (canvas.height / 2)];
+
+        //dictionary was changed last minute to an array, have to do this to work around it
+        var cubeID = e.target.id;
+        cubeID = cubeID.replace("cube", '');
+        var cubeIndex = parseInt(cubeID);
+
+        const rect = canvas.getBoundingClientRect()
+        const relx = (e.clientX - rect.left);
+        const rely = (e.clientY - rect.top);
+        const x = relx - (canvas.width) / 2;
+        const y = (rely - (canvas.height) / 2) * -1;
+        const polarDistance = Math.sqrt((x * x) + (y * y));
+        const polarRadians = Math.atan2(y, x);
+        const objRadians = polarToObjectRadians(polarRadians);
+
+        console.log(frameData[frame - 1][cubeIndex]);
+        frameData[frame - 1][cubeIndex]["radians"] = objRadians;
+        frameData[frame - 1][cubeIndex]["radius"] = polarDistance / center[0];
+
+    }
+
+    //adds a context-menu listener to each cube.
+    function addDropdownListener() {
+        document.getElementById("context-menu").addEventListener("mousedown", function (ev) {
+            var currentFrame = frameData[frame - 1];
+            var contexElement = document.getElementById("context-menu");
+            var contextTop = contexElement.offsetTop;
+            var contextLeft = contexElement.offsetLeft;
+            var targ = ev.target;
+            var cubeIndex = 0;
+            var cubeList = document.getElementsByClassName("cube");
+            const cubeArray = Array.prototype.slice.call(cubeList);
+
+            cubeArray.every(cube => {
+                var rect = cube.getBoundingClientRect();
+                var rectLeft = rect.left;
+                var rectRight = rect.right;
+                var rectTop = rect.top;
+                var rectBottom = rect.bottom;
+                if (contextLeft >= rectLeft && contextLeft <= rectRight) {
+                    if (contextTop >= rectTop && contextTop <= rectBottom) {
+
+                        switch ($(ev.target).attr("id")) {
+                            case "kin-item":
+                                var oldTypeTemp = currentFrame[cubeIndex]["type"];
+                                menuIsOpen = false;
+                                document.getElementById("context-menu").classList.remove("active");
+                                currentFrame[cubeIndex]["type"] = "kinetic";
+                                currentFrame[cubeIndex]["label"] = "KE";
+                                currentFrame[cubeIndex]["color"] = "lightblue";
+                                updateChartYByOne(frame + 1, "kinetic", oldTypeTemp);
+                                drawCubes();
+                                break;
+
+                            case "therm-item":
+                                var oldTypeTemp = currentFrame[cubeIndex]["type"];
+                                menuIsOpen = false;
+                                document.getElementById("context-menu").classList.remove("active");
+                                currentFrame[cubeIndex]["type"] = "thermal";
+                                currentFrame[cubeIndex]["label"] = "TE";
+                                currentFrame[cubeIndex]["color"] = "pink";
+                                updateChartYByOne(frame + 1, "thermal", oldTypeTemp);
+                                drawCubes();
+                                break;
+
+                            case "grav-item":
+                                var oldTypeTemp = currentFrame[cubeIndex]["type"];
+                                menuIsOpen = false;
+                                document.getElementById("context-menu").classList.remove("active");
+                                currentFrame[cubeIndex]["type"] = "gravitational";
+                                currentFrame[cubeIndex]["label"] = "GE";
+                                currentFrame[cubeIndex]["color"] = "lightgreen";
+                                updateChartYByOne(frame + 1, "gravitational", oldTypeTemp);
+                                drawCubes();
+                                break;
+
+                            case "chem-item":
+                                var oldTypeTemp = currentFrame[cubeIndex]["type"];
+                                menuIsOpen = false;
+                                document.getElementById("context-menu").classList.remove("active");
+                                currentFrame[cubeIndex]["type"] = "chemical";
+                                currentFrame[cubeIndex]["label"] = "CE";
+                                currentFrame[cubeIndex]["color"] = "yellow";
+                                updateChartYByOne(frame + 1, "chemical", oldTypeTemp);
+                                drawCubes();
+                                break;
+
+                        }
+                        return false;
+                    }
                 }
+                cubeIndex++;
+                return true;
             });
 
-            //if canvis is clicked then cube context menu dissapears
-            window.addEventListener("mousedown", function(){
-                if(menuIsOpen == true){
-                    document.getElementById("context-menu").classList.remove("active");
-                    menuIsOpen = false;
-                }
+
+        });
+
+    }
+
+
+    //conculates which object each cube is "in"
+    function initMoveableCubes() {
+        var cubeList = document.getElementsByClassName("cube");
+        var cubeArray = Array.prototype.slice.call(cubeList);
+
+        for (var i = 0; i < cubeArray.length; i++) {
+            var cube = document.getElementById("cube" + i);
+            cube.addEventListener("mouseup", function (e) {
+                //$(e.target).attr("object") = calculateQuadrant(document.getElementById("main-canvas"), e);
+                //alert("quad changed");
             });
+        }
+    }
 
-            $("head").append('<style id="style_changer" type="text/css"></style>');
-            function updateCubeSize() {
-                var maxHeight = (canvas.height)/30;
-                if(maxHeight > 20) {
-                    maxHeight = 20;
-                }
-                $('#style_changer').html('.cube{height:'+maxHeight+'px; width:'+maxHeight+'px;}');
+
+    //hides drop-down context menu when an option is selected
+    document.getElementById("context-menu").addEventListener("click", function () {
+        if (menuIsOpen == true) {
+            document.getElementById("context-menu").classList.remove("active");
+            menuIsOpen = false;
+        }
+    });
+
+    //if canvis is clicked then cube context menu dissapears
+    window.addEventListener("mousedown", function () {
+        if (menuIsOpen == true) {
+            document.getElementById("context-menu").classList.remove("active");
+            menuIsOpen = false;
+        }
+    });
+
+    $("head").append('<style id="style_changer" type="text/css"></style>');
+
+    function updateCubeSize() {
+        var maxHeight = (canvas.height) / 30;
+        if (maxHeight > 20) {
+            maxHeight = 20;
+        }
+        $('#style_changer').html('.cube{height:' + maxHeight + 'px; width:' + maxHeight + 'px;}');
+    }
+
+    window.addEventListener("resize", function () {
+        context = canvas.getContext('2d');
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+        var centerx = getOffset(document.getElementById('circlecenter')).left;
+        var centery = getOffset(document.getElementById('circlecenter')).top;
+        var clipper = clipAtRadius((canvas.width) / 2, 0, 0);
+        divideCircle();
+        drawCubes();
+        updateCubeSize();
+    });
+
+    //removes object based on key
+    function removeObject(key) {
+        let first = frameData[0];
+        if (first) {
+            delete first[key];
+        }
+    }
+
+    //adds new frame with previous state
+    function addFrame() {
+        let newFrame;
+
+        if (frameData < 0) {
+            newFrame = JSON.parse(JSON.stringify(frameStateTemplate)); //deep copy our frame state
+        } else {
+            console.log(frameData);
+            console.log(frame);
+            newFrame = JSON.parse(JSON.stringify(frameData[frameData.length - 1])); //deep copy our frame state
+        }
+
+        frameData.push(newFrame);
+        frame = frameData.length - 1;
+    }
+
+    //removes the last frame
+    function removeLastFrame() {
+        frameData.pop();
+        frame = frameData.length - 1;
+    }
+
+    //clamps a number to specific range
+    //source : https://stackoverflow.com/questions/11409895/whats-the-most-elegant-way-to-cap-a-number-to-a-segment
+    function clampNumber(number, min, max) {
+        return Math.max(min, Math.min(number, max));
+    }
+
+    //handles changing playback speed
+    function speedChanged(e) {
+        let speedVal = Number(e.target.value);
+
+        //make sure we have a valid speed value, and that its not zero
+        if (speedVal && speedVal > 0.1) {
+            playbackSpeed = 25000 / speedVal;
+            togglePlayback(true);
+        }
+    }
+
+    //annimation = document.getElementById("physics-annimation");
+    function playPause() {
+
+        if (playbackActive == true) {
+
+            //stop playback
+            togglePlayback(false);
+        } else {
+
+            //begin playback
+            togglePlayback(true);
+        }
+    }
+
+    //walks through existing frames, stops at end
+    function playback() {
+        if (frame < frames.length - 1) {
+            stepForward();
+        } else {
+            togglePlayback(false);
+        }
+    }
+
+    //toggles interval that steps through frames
+    function togglePlayback(start) {
+        if (start === true) {
+            if (frame >= frameData.length - 1) {
+                frame = 0;
             }
+            //handles starting current playback
+            playPauseButton.innerHTML = "Pause";
 
-            window.addEventListener("resize", function() {
-                context = canvas.getContext('2d');
-                canvas.width  = canvas.offsetWidth;
-                canvas.height = canvas.offsetHeight;
-                var centerx = getOffset( document.getElementById('circlecenter') ).left;
-                var centery = getOffset( document.getElementById('circlecenter') ).top;
-                var clipper = clipAtRadius((canvas.width)/2, 0, 0);
-                divideCircle();
-                drawCubes();
-                updateCubeSize();
-            });
+            //stop the current playback interval, then restart it
+            clearInterval(intervalTimer);
+            intervalTimer = setInterval(playback, playbackSpeed);
+            playbackActive = true;
+        } else {
+            //handles pausing current playback
+            playPauseButton.innerHTML = "Play";
 
-            //removes object based on key
-            function removeObject(key) { 
-                let first = frameData[0];
-                if (first){
-                    delete first[key];
-                }
+            clearInterval(intervalTimer);
+            playbackActive = false;
+        }
+    }
+
+    //updates the current cubes and states to render properly on the canvas
+    function drawFrame(toFrame) {
+        frame = toFrame;
+        drawCubes();
+    }
+
+    //allows us to step forwards and backwards in our simulation (frame to frame)
+    function stepForward(reverse) {
+        var nextFrame = 0;
+
+        if (reverse) {
+            nextFrame = frame - 1;
+        } else {
+            nextFrame = frame + 1;
+        }
+
+        //make sure our target frame is in range of our actual frame data
+        clampNumber(nextFrame, 0, frameData.length);
+        drawFrame(nextFrame);
+    }
+
+    //Adds object to object table when add-object button is clicked
+    function addObjectButton() {
+        numObjectButtons++;
+        var currentIndex = numObjectButtons - 1;
+        expand[currentIndex] = 0;
+
+        // addEntity
+
+        tableSize = document.getElementById("objects-table").rows.length;
+
+        var newRow = table.insertRow(tableSize);
+        var newCell1 = newRow.insertCell(0);
+
+        var tableSize = document.getElementById("objects-table").rows.length;
+        document.getElementById("objects-table").deleteRow(tableSize - 1);
+
+        var newRow = table.insertRow(tableSize - 2);
+        var newCell1 = newRow.insertCell(0);
+        newCell1.innerHTML = createNewObject(nextObjectID);
+
+        //Adds object and increments nextObjectID
+        addObject("");
+
+    }
+
+    //Removes object from object table when remove-object button is clicked
+
+    function removeObjectButton() {
+        if (numObjectButtons == 0) {
+            return;
+        }
+        numObjectButtons--;
+        var currentIndex = numObjectButtons - 1;
+        expand[currentIndex] = 0;
+
+        var tableSize = document.getElementById("objects-table").rows.length;
+        document.getElementById("objects-table").deleteRow(tableSize - 2);
+        nextObjectID--;
+        divideCircle();
+    }
+
+    //Adds another energy type to an object
+    function addEnergy(i) {
+        if (energySpinnerIndexes[i] == 3) {
+            return;
+        }
+        energySpinnerIndexes[i]++;
+        var energyTable = document.getElementById("energy-table" + i);
+        var energyTableSize = document.getElementById("energy-table" + i).rows.length;
+        var newRow = energyTable.insertRow(energyTableSize);
+        var newCellContent = "<select name=\"energy-names\" class=\"energy-type\" id=\"energy-type\" text-align=\"center\">";
+        newCellContent = newCellContent + "<option hidden=\"\">Energy Type</option><option value=\"kinetic\">Kinetic</option><option value=\"thermal\">Thermal</option><option value=\"gravitational\">Gravitational</option><option value=\"chemical\">Chemical</option></select>";
+        newCellContent = newCellContent + "<input placeholder=\"1\" required type=\"number\" value=\"1\" min=\"0\" max=\"10\"/ id=\"energy-spin" + energySpinnerIndexes[i] + "\"></div>";
+        var newCell = newRow.insertCell(0);
+        newCell.innerHTML = newCellContent;
+    }
+
+    //removes an energy-type spinner and selector from energy menu on a specicified object table cell
+    function removeEnergy(i) {
+        if (energySpinnerIndexes[i] == 0) {
+            return;
+        }
+        energySpinnerIndexes[i]--;
+        var energyTable = document.getElementById("energy-table" + i);
+        var energyTableSize = document.getElementById("energy-table" + i).rows.length;
+        energyTable.deleteRow(energyTableSize - 1);
+
+
+    }
+
+    //Adds new object table cell
+    function createNewObject(objID) {
+        var returnString;
+        var currentIndex = numObjectButtons - 1;
+        returnString = "<input type=\"text\" class=\"obj_name_box\" id=\"object" + currentIndex + "\" placeholder=\"Object Name\"></input> ";
+        returnString = returnString + "<div class=\"text-right\"><button id=\"expand" + currentIndex + "\" class=\"btn btn-primary\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#collapseExample" + currentIndex + "\" aria-expanded=\"false\" aria-controls=\"collapseExample\" >Expand</button></div>";
+        returnString = returnString + "<div class=\"collapse\" id=\"collapseExample" + currentIndex + "\"><div class=\"card card-body\">" + newEnergyMenu(objID) + "</div></div>";
+        return returnString;
+    }
+
+    //Adds new energy menu to new object table cell
+    function newEnergyMenu(objID) {
+        var returnString;
+        var currentIndex = numObjectButtons - 1;
+        energySpinnerIndexes[currentIndex] = 0;
+
+        returnString = "<div id=\"energy-menu\" align=\"center\"><table id=\"energy-table" + currentIndex + "\"><tr><td>";
+        returnString = returnString + "<select name=\"energy-names\" class=\"energy-type\" id=\"energy-type\" text-align=\"center\">";
+        returnString = returnString + "<option hidden=\"\">Energy Type</option><option value=\"kinetic\">Kinetic</option><option value=\"thermal\">Thermal</option><option value=\"gravitational\">Gravitational</option><option value=\"chemical\">Chemical</option></select>";
+        returnString = returnString + "<input placeholder=\"1\" required type=\"number\" value=\"\" min=\"0\" max=\"10\"/ id=\"energy-spin" + energySpinnerIndexes[currentIndex] + "\"></div>"
+        returnString = returnString + "</td><td></td></tr></table>";
+        returnString = returnString + "<br><div align=\"center\"><h5>Energy</h5><button id=\"add-energy-button\" class=\"btn btn-success\" onclick=\"addEnergy(" + currentIndex + ")\">Add</button>\ <button id=\"remove-energy-button\" class=\"btn btn-danger\" height=\"2px\" onclick=\"removeEnergy(" + currentIndex + ")\">Remove</button></div>";
+
+        return returnString;
+    }
+
+    //$("input[type='number']").inputSpinner();
+
+    //clears out visual frames so we can refresh for data
+    function clearFrames() {
+        var table = document.getElementById("frames-table");
+        for (var j = 0; j < table.rows[0].cells.length; j++) {
+            table.rows[0].deleteCell(j);
+        }
+        table.rows[0].innerHTML = "";
+    }
+
+    function addFrameButton(fromLoad = false) {
+        var table = document.getElementById("frames-table");
+        var tableSize = document.getElementById("frames-table").rows[0].cells.length;
+        var newCol = table.rows[0].insertCell(tableSize);
+        var tableSize = document.getElementById("frames-table").rows[0].cells.length;
+        newCol.innerHTML = "<button id=\"select-frame-button\" onclick=\"selectFrameButton(" + tableSize + ")\">" + (tableSize) + "</button>";
+        //hides Object menu and displays playback menu if more than one frame is added
+        if (tableSize == 1) {
+            document.getElementById("object-menu").style.display = "block";
+        }
+        if (tableSize >= 2) {
+            document.getElementById("object-menu").style.display = "none";
+            document.getElementById("playback-controls").style.display = "block";
+            xValues.push(tableSize);
+            myChartVar.update();
+        }
+        if (fromLoad === false) {
+            addFrame();
+        }
+    }
+
+    function removeFrameButton() {
+        var table = document.getElementById("frames-table");
+        var tableSize = (document.getElementById("frames-table").rows[0].cells.length) - 1;
+        if (tableSize === 0) {
+            //do nothing
+        } else {
+            var delCol = table.rows[0].deleteCell(tableSize);
+            xValues.pop();
+            myChartVar.update();
+            //hides playback menu and displays object menu if only one frame exists
+            if (tableSize == 1) {
+                document.getElementById("object-menu").style.display = "block";
+                document.getElementById("playback-controls").style.display = "none";
             }
-
-            //adds new frame with previous state
-            function addFrame(){
-                let newFrame;
-                
-                if (frameData < 0){
-                    newFrame = JSON.parse(JSON.stringify(frameStateTemplate)); //deep copy our frame state
-                }else{
-                    console.log(frameData);
-                    console.log(frame);
-                    newFrame = JSON.parse(JSON.stringify(frameData[frameData.length - 1])); //deep copy our frame state
-                }
-
-                frameData.push(newFrame);
-                frame = frameData.length - 1;
+            //hides main canvas, playback controls, and object menu when no frames exist
+            if (tableSize < 1) {
+                document.getElementById("object-menu").style.display = "none";
+                document.getElementById("playback-controls").style.display = "none";
             }
-            
-            //removes the last frame
-            function removeLastFrame(){
-                frameData.pop();
-                frame = frameData.length - 1;
-            }
-
-            //clamps a number to specific range
-            //source : https://stackoverflow.com/questions/11409895/whats-the-most-elegant-way-to-cap-a-number-to-a-segment
-            function clampNumber(number, min, max) {
-                return Math.max(min, Math.min(number, max));
-            }
-
-            //handles changing playback speed
-            function speedChanged(e){
-                let speedVal = Number(e.target.value);
-
-                //make sure we have a valid speed value, and that its not zero
-                if (speedVal && speedVal > 0.1){
-                    playbackSpeed = 25000/speedVal;
-                    togglePlayback(true);
-                }
-            }
-            
-            //annimation = document.getElementById("physics-annimation");
-            function playPause() { 
-
-                if(playbackActive == true){
-
-                    //stop playback
-                    togglePlayback(false);
-                }
-                else{
-
-                    //begin playback
-                    togglePlayback(true);
-                }
-            } 
-
-            //walks through existing frames, stops at end
-            function playback(){
-                if (frame < frames.length - 1){
-                    stepForward();
-                }else{
-                    togglePlayback(false);
-                }
-            }
-
-            //toggles interval that steps through frames
-            function togglePlayback(start){
-                if(start === true){
-                    if (frame >= frameData.length - 1){
-                        frame = 0;
-                    }
-                    //handles starting current playback
-                    playPauseButton.innerHTML = "Pause";
-
-                    //stop the current playback interval, then restart it
-                    clearInterval(intervalTimer);
-                    intervalTimer = setInterval(playback, playbackSpeed);
-                    playbackActive = true;
-                }else{
-                    //handles pausing current playback
-                    playPauseButton.innerHTML = "Play";
-
-                    clearInterval(intervalTimer);
-                    playbackActive = false;
-                }
-            }
-
-            //updates the current cubes and states to render properly on the canvas
-            function drawFrame(toFrame){
-                frame = toFrame;
-                drawCubes();
-            }
-
-            //allows us to step forwards and backwards in our simulation (frame to frame)
-            function stepForward(reverse){
-                var nextFrame = 0;
-                
-                if (reverse) {
-                    nextFrame = frame - 1;
-                }else{
-                    nextFrame = frame + 1;
-                }
-
-                //make sure our target frame is in range of our actual frame data
-                clampNumber(nextFrame,0,frameData.length);
-                drawFrame(nextFrame);
-            }
-
-            //Adds object to object table when add-object button is clicked
-            function addObjectButton(){
-                numObjectButtons++;
-                var currentIndex = numObjectButtons - 1;
-                expand[currentIndex] = 0;
-                
-                // addEntity
-
-                tableSize = document.getElementById("objects-table").rows.length;
-
-                var newRow = table.insertRow(tableSize);
-                var newCell1 = newRow.insertCell(0);
-
-                var tableSize = document.getElementById("objects-table").rows.length;
-                document.getElementById("objects-table").deleteRow(tableSize - 1);
-
-                var newRow = table.insertRow(tableSize - 2);
-                var newCell1 = newRow.insertCell(0);
-                newCell1.innerHTML = createNewObject(nextObjectID);
-                
-                //Adds object and increments nextObjectID
-                addObject("");
-
-            }
-
-            //Removes object from object table when remove-object button is clicked
-
-            function removeObjectButton(){
-                if(numObjectButtons == 0){
-                    return;
-                }
-                numObjectButtons--;
-                var currentIndex = numObjectButtons - 1;
-                expand[currentIndex] = 0;
-                
-                var tableSize = document.getElementById("objects-table").rows.length;
-                document.getElementById("objects-table").deleteRow(tableSize - 2);
-                nextObjectID--;
-                divideCircle();
-            }
-
-            //Adds another energy type to an object
-            function addEnergy(i){
-                if(energySpinnerIndexes[i] == 3){
-                    return;
-                }
-                energySpinnerIndexes[i]++;
-                var energyTable = document.getElementById("energy-table" + i);
-                var energyTableSize = document.getElementById("energy-table" + i).rows.length;
-                var newRow = energyTable.insertRow(energyTableSize);
-                var newCellContent = "<select name=\"energy-names\" class=\"energy-type\" id=\"energy-type\" text-align=\"center\">";
-                newCellContent = newCellContent + "<option hidden=\"\">Energy Type</option><option value=\"kinetic\">Kinetic</option><option value=\"thermal\">Thermal</option><option value=\"gravitational\">Gravitational</option><option value=\"chemical\">Chemical</option></select>";
-                newCellContent = newCellContent + "<input placeholder=\"1\" required type=\"number\" value=\"1\" min=\"0\" max=\"10\"/ id=\"energy-spin" + energySpinnerIndexes[i] + "\"></div>";
-                var newCell = newRow.insertCell(0);
-                newCell.innerHTML = newCellContent;
-            }
-
-            //removes an energy-type spinner and selector from energy menu on a specicified object table cell
-            function removeEnergy(i){
-                if(energySpinnerIndexes[i] == 0){
-                    return;
-                }
-                energySpinnerIndexes[i]--;
-                var energyTable = document.getElementById("energy-table" + i);
-                var energyTableSize = document.getElementById("energy-table" + i).rows.length;
-                energyTable.deleteRow(energyTableSize - 1);
+        }
+    }
 
 
-            }
+    function hideFrameControls() {
+        if (document.getElementById("frames-table").style.display === "none") { // if not showing, show all frame controls
+            document.getElementById("frames-table").style.display = "flex"; //show using flex, the old preset
+            document.getElementById("hide-frame-controls-button").innerHTML = "Hide Frame Controls"; //change text
+            document.getElementById("add-frame-button").style.display = "inline-block"; //show button
+            document.getElementById("add-frame-button-label").innerHTML = "Add Frame&nbsp;"; //add text again
+            document.getElementById("remove-frame-button").style.display = "inline-block"; // show button
+            document.getElementById("remove-frame-button-label").innerHTML = "Remove Frame"; //add text again
+        } else { // if showing, hide all frame controls
+            document.getElementById("frames-table").style.display = "none"; //hide
+            document.getElementById("hide-frame-controls-button").innerHTML = "Show Frame Controls"; //change text
+            document.getElementById("add-frame-button").style.display = "none"; //hide button
+            document.getElementById("add-frame-button-label").innerHTML = ""; //remove text
+            document.getElementById("remove-frame-button").style.display = "none"; //hide button
+            document.getElementById("remove-frame-button-label").innerHTML = ""; //remove text
+        }
+    }
 
-            //Adds new object table cell
-            function createNewObject(objID){
-                var returnString;
-                var currentIndex = numObjectButtons - 1;
-                returnString = "<input type=\"text\" class=\"obj_name_box\" id=\"object" + currentIndex + "\" placeholder=\"Object Name\"></input> ";
-                returnString = returnString + "<div class=\"text-right\"><button id=\"expand" + currentIndex + "\" class=\"btn btn-primary\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#collapseExample" + currentIndex + "\" aria-expanded=\"false\" aria-controls=\"collapseExample\" >Expand</button></div>";
-                returnString = returnString + "<div class=\"collapse\" id=\"collapseExample" + currentIndex + "\"><div class=\"card card-body\">" + newEnergyMenu(objID) + "</div></div>";
-                return returnString;
-            }
 
-            //Adds new energy menu to new object table cell
-            function newEnergyMenu(objID){
-                var returnString;
-                var currentIndex = numObjectButtons - 1;
-                energySpinnerIndexes[currentIndex] = 0;
+    function showGraphButton() {
+        if (graphClicked === 0) { //show
+            //add some graph stuff here
+            document.getElementById("graph-control-button").innerHTML = "Hide Graph";
+            document.getElementById("myChart").style.display = "flex";
+            graphClicked = 1;
+        } else { //hide
+            document.getElementById("graph-control-button").innerHTML = "Show Graph";
+            document.getElementById("myChart").style.display = "none";
+            graphClicked = 0;
+        }
+    }
 
-                returnString = "<div id=\"energy-menu\" align=\"center\"><table id=\"energy-table" + currentIndex + "\"><tr><td>";
-                returnString = returnString + "<select name=\"energy-names\" class=\"energy-type\" id=\"energy-type\" text-align=\"center\">";
-                returnString = returnString + "<option hidden=\"\">Energy Type</option><option value=\"kinetic\">Kinetic</option><option value=\"thermal\">Thermal</option><option value=\"gravitational\">Gravitational</option><option value=\"chemical\">Chemical</option></select>";
-                returnString = returnString + "<input placeholder=\"1\" required type=\"number\" value=\"\" min=\"0\" max=\"10\"/ id=\"energy-spin" + energySpinnerIndexes[currentIndex] + "\"></div>"
-                returnString = returnString + "</td><td></td></tr></table>";
-                returnString = returnString + "<br><div align=\"center\"><h5>Energy</h5><button id=\"add-energy-button\" class=\"btn btn-success\" onclick=\"addEnergy(" + currentIndex + ")\">Add</button>\ <button id=\"remove-energy-button\" class=\"btn btn-danger\" height=\"2px\" onclick=\"removeEnergy(" + currentIndex + ")\">Remove</button></div>";
+    function selectFrameButton(i) {
+        if (i === 1) {
+            frame = frameData.length - 1;
+            stepForward(false);
+        } else {
+            frame = i - 1;
+            togglePlayback(false);
+            drawCubes(); //should grab frame data, doesnt display yet
+        }
+    }
 
-                return returnString;
-            }
+</script>
 
-            //$("input[type='number']").inputSpinner();
-
-            //clears out visual frames so we can refresh for data
-            function clearFrames(){
-                var table = document.getElementById("frames-table");
-                for (var j = 0; j < table.rows[0].cells.length; j++) {
-                    table.rows[0].deleteCell(j);
-                }
-                table.rows[0].innerHTML = "";
-            }
-
-			function addFrameButton(fromLoad = false) {
-                var table = document.getElementById("frames-table");
-                var tableSize = document.getElementById("frames-table").rows[0].cells.length;
-                var newCol = table.rows[0].insertCell(tableSize);
-                var tableSize = document.getElementById("frames-table").rows[0].cells.length;
-				        newCol.innerHTML = "<button id=\"select-frame-button\" onclick=\"selectFrameButton(" + tableSize + ")\">" + (tableSize) + "</button>";
-                //hides Object menu and displays playback menu if more than one frame is added
-                if(tableSize == 1){
-                    document.getElementById("object-menu").style.display = "block";
-                }
-                if(tableSize >= 2){
-                    document.getElementById("object-menu").style.display = "none";
-                    document.getElementById("playback-controls").style.display = "block";
-					xValues.push(tableSize);
-					myChartVar.update();
-                }
-                if (fromLoad === false){
-                    addFrame();
-                }
-            }
-			
-			function removeFrameButton() {
-				var table = document.getElementById("frames-table");
-				var tableSize = (document.getElementById("frames-table").rows[0].cells.length) - 1;
-				if (tableSize === 0) {
-					//do nothing
-				} else {
-				var delCol = table.rows[0].deleteCell(tableSize);
-				xValues.pop();
-				myChartVar.update();
-                //hides playback menu and displays object menu if only one frame exists
-                    if(tableSize == 1){
-                        document.getElementById("object-menu").style.display = "block";
-                        document.getElementById("playback-controls").style.display = "none";
-                    }
-                    //hides main canvas, playback controls, and object menu when no frames exist
-                    if(tableSize < 1){
-                        document.getElementById("object-menu").style.display = "none";
-                        document.getElementById("playback-controls").style.display = "none";
-                    }
-				}
-			}
-
-			
-			
-			function hideFrameControls() {
-				if (document.getElementById("frames-table").style.display === "none") { // if not showing, show all frame controls
-					document.getElementById("frames-table").style.display="flex"; //show using flex, the old preset
-					document.getElementById("hide-frame-controls-button").innerHTML = "Hide Frame Controls"; //change text
-					document.getElementById("add-frame-button").style.display="inline-block"; //show button
-					document.getElementById("add-frame-button-label").innerHTML = "Add Frame&nbsp;"; //add text again
-					document.getElementById("remove-frame-button").style.display="inline-block"; // show button
-					document.getElementById("remove-frame-button-label").innerHTML = "Remove Frame"; //add text again
-				} else { // if showing, hide all frame controls
-					document.getElementById("frames-table").style.display="none"; //hide
-					document.getElementById("hide-frame-controls-button").innerHTML = "Show Frame Controls"; //change text
-					document.getElementById("add-frame-button").style.display="none"; //hide button
-					document.getElementById("add-frame-button-label").innerHTML = ""; //remove text
-					document.getElementById("remove-frame-button").style.display="none"; //hide button
-					document.getElementById("remove-frame-button-label").innerHTML = ""; //remove text
-				}
-			}
-			
-
-			function showGraphButton() {
-				if (graphClicked === 0) { //show
-					//add some graph stuff here
-					document.getElementById("graph-control-button").innerHTML = "Hide Graph";
-					document.getElementById("myChart").style.display = "flex";
-					graphClicked = 1;
-				} else { //hide
-					document.getElementById("graph-control-button").innerHTML = "Show Graph";
-					document.getElementById("myChart").style.display = "none";
-					graphClicked = 0;
-				}
-			}
-			
-			function selectFrameButton(i) {
-                if (i === 1) {
-					frame = frameData.length - 1;
-					stepForward(false);
-				} else {
-				frame = i - 1;
-                togglePlayback(false);
-				drawCubes(); //should grab frame data, doesnt display yet
-				}
-			}
-		
-        </script>
-        
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-    </body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+</body>
 </html>
