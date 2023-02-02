@@ -16,8 +16,9 @@
 <div id="grid-container">
     <div id="save-load">
         <h4>SIMULATION SAVE/LOAD</h4>
-        <div id="load-save-controls"><input id="load-sim" type="file" style="visibility: hidden;"/><label for="load-sim"
-                                                                                                          class="btn btn-primary">Upload</label>
+        <!-- accept attribute might have compatibility issues with mobile browsers -->
+        <div id="load-save-controls"><input id="load-sim" type="file" accept=".JSON" style="visibility: hidden;"/>
+            <label for="load-sim" class="btn btn-primary">Upload</label>
             <button id="save-button" class="btn btn-primary" onclick="saveCurrentState('simulation.json')">Save</button>
         </div>
     </div>
@@ -332,7 +333,11 @@
     canvas.width = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
 
-    //handles uploading a simulation to be displayed
+    /**
+     * handles uploading a simulation to be displayed
+     *
+     * @param event
+     */
     function onUploadSim(event) {
         //creating new reader and assigning a callback
         var reader = new FileReader();
@@ -340,9 +345,14 @@
         reader.readAsText(event.target.files[0]);
     }
 
-    //once our file is uploaded, we convert it to a usable structure here
+    /**
+     * once our file is uploaded, we convert it to a usable structure here
+     *
+     * @param event
+     */
     function onReaderLoad(event) {
         console.log(event.target.result);
+
         var obj = JSON.parse(event.target.result);
 
         frameData = obj['frames'];
@@ -353,7 +363,6 @@
         for (var i = 0; i < frameData.length; i++) {
             addFrameButton(true); //handles from load so we don't add new frames to the data side.
         }
-        ;
 
         var objects = obj['objs'];
         objects.forEach(ob => addObject(ob['name']));
