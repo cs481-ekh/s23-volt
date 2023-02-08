@@ -122,9 +122,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/Draggable.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/MotionPathPlugin.min.js"></script>
+<script src="https://unpkg.com/ajv@6.12.2/dist/ajv.min.js"></script>
 
 <script>
-
 
     var cubeEditingRelations = [
         {
@@ -334,6 +334,8 @@
     canvas.width = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
 
+    let valid = false;
+
     /**
      * handles uploading a simulation to be displayed
      *
@@ -346,7 +348,50 @@
         reader.readAsText(event.target.files[0]);
     }
 
+    /**
+     * Loads a file from project folders given the file path
+     *
+     * @param filePath - file path
+     * @returns {Promise<any>}
+     */
+    async function loadJson(filePath) {
+        try {
+            const resp = await fetch(filePath);
+            return await resp.json();
+        } catch (error) {
+            console.error("Failed to load JSON file.")
+        }
+    }
+
     // TODO implement security checks
+    async function validateJson(event) {
+        const ajv = new Ajv();
+
+        // load schema
+        const schema = await loadJson("schema.json");
+        // Get uploaded file ID
+        const fileInput = document.getElementById("load-sim");
+
+        /**
+         * validate file
+         */
+        fileInput.addEventListener("change", async function (event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = async function () {
+                reader.readAsText(file);
+                const upload = JSON.parse(event.target.result);
+                const validate = ajv.validate(schema, upload);
+                if (!validate) {
+                    console.error(ajv.errors);
+                    valid = false;
+                } else {
+                    console.log("User JSON file is valid.");
+                    valid = true;
+                }
+            };
+        });
+    }
 
     /**
      * once our file is uploaded, we convert it to a usable structure here
@@ -355,111 +400,30 @@
      */
     function onReaderLoad(event) {
         console.log(event.target.result);
+        validateJson()
 
-        try {
-            const obj = JSON.parse(event.target.result);
+        if (valid) {
+            try {
+                const obj = JSON.parse(event.target.result);
 
-            frameData = obj['frames'];
+                frameData = obj['frames'];
 
-            //resetting frame to 0 and drawing
-            frame = 0;
-            clearFrames();
-            for (let i = 0; i < frameData.length; i++) {
-                addFrameButton(true); //handles from load so we don't add new frames to the data side.
+                //resetting frame to 0 and drawing
+                frame = 0;
+                clearFrames();
+                for (let i = 0; i < frameData.length; i++) {
+                    addFrameButton(true); //handles from load so we don't add new frames to the data side.
+                }
+
+                const objects = obj['objs'];
+                objects.forEach(ob => addObject(ob['name']));
+
+                drawFrame(frame);
+            } catch (e) {
+                console.error("JSON file invalid.");
             }
-
-            const objects = obj['objs'];
-            objects.forEach(ob => addObject(ob['name']));
-
-            drawFrame(frame);
-        } catch (e) {
-            console.error("JSON file invalid.");
         }
     }
-
-    /**
-     * TODO JSON Schema
-     */
-    const schemaJson = @"\"$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
-        "  \"type\": \"object\",\n" +
-        "  \"properties\": {\n" +
-        "    \"objs\": {\n" +
-        "      \"type\": \"array\",\n" +
-        "      \"items\": {\n" +
-        "        \"type\": \"object\",\n" +
-        "        \"properties\": {\n" +
-        "          \"name\": {\n" +
-        "            \"type\": \"string\"\n" +
-        "          },\n" +
-        "          \"startingRad\": {\n" +
-        "            \"type\": \"number\"\n" +
-        "          },\n" +
-        "          \"endingRad\": {\n" +
-        "            \"type\": \"number\"\n" +
-        "          }\n" +
-        "        },\n" +
-        "        \"required\": [\n" +
-        "          \"name\",\n" +
-        "          \"startingRad\",\n" +
-        "          \"endingRad\"\n" +
-        "        ]\n" +
-        "      }\n" +
-        "    },\n" +
-        "    \"frames\": {\n" +
-        "      \"type\": \"array\",\n" +
-        "      \"items\": {\n" +
-        "        \"type\": \"object\",\n" +
-        "        \"patternProperties\": {\n" +
-        "          \"^[0-9]+$\": {\n" +
-        "            \"type\": \"object\",\n" +
-        "            \"properties\": {\n" +
-        "              \"type\": {\n" +
-        "                \"type\": \"string\",\n" +
-        "                \"enum\": [\n" +
-        "                  \"thermal\",\n" +
-        "                  \"gravitational\",\n" +
-        "                  \"chemical\",\n" +
-        "                  \"kinetic\"\n" +
-        "                ]\n" +
-        "              },\n" +
-        "              \"radians\": {\n" +
-        "                \"type\": \"number\"\n" +
-        "              },\n" +
-        "              \"radius\": {\n" +
-        "                \"type\": \"number\"\n" +
-        "              },\n" +
-        "              \"color\": {\n" +
-        "                \"type\": \"string\"\n" +
-        "              },\n" +
-        "              \"label\": {\n" +
-        "                \"type\": \"string\"\n" +
-        "              },\n" +
-        "              \"edited\": {\n" +
-        "                \"type\": \"boolean\"\n" +
-        "              },\n" +
-        "              \"object\": {\n" +
-        "                \"type\": \"integer\"\n" +
-        "              }\n" +
-        "            },\n" +
-        "            \"required\": [\n" +
-        "              \"type\",\n" +
-        "              \"radians\",\n" +
-        "              \"radius\",\n" +
-        "              \"color\",\n" +
-        "              \"label\",\n" +
-        "              \"edited\",\n" +
-        "              \"object\"\n" +
-        "            ]\n" +
-        "          }\n" +
-        "        }\n" +
-        "      }\n" +
-        "    }\n" +
-        "  },\n" +
-        "  \"required\": [\n" +
-        "    \"objs\",\n" +
-        "    \"frames\"\n" +
-        "  ]\n" +
-        "}"
 
     document.getElementById('load-sim').addEventListener('change', onUploadSim);
 
