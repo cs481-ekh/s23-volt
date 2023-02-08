@@ -17,14 +17,15 @@
     <div id="save-load">
         <h4>SIMULATION SAVE/LOAD</h4>
         <!-- accept attribute might have compatibility issues with mobile browsers -->
-        <div id="load-save-controls"><input id="load-sim" type="file" accept=".JSON" style="visibility: hidden;"/>
+        <div id="load-save-controls">
+            <input id="load-sim" type="file" accept=".JSON" style="visibility: hidden;"/>
             <label for="load-sim" class="btn btn-primary">Upload</label>
             <button id="save-button" class="btn btn-primary" onclick="saveCurrentState('simulation.json')">Save</button>
         </div>
     </div>
     <div id="main-canvas">
 
-        <!-- below objects are for testing, will be changed/removed later -->
+        <!-- TODO below objects are for testing, will be changed/removed later -->
         <!-- <div class="cube dragtest" style="background-color:rgb(128, 255, 43)"></div> -->
         <!-- <div class="cube pathtest" style="background-color: rgb(204, 127, 255)"></div> -->
         <div class="outercircle" id="outercircle">
@@ -340,10 +341,12 @@
      */
     function onUploadSim(event) {
         //creating new reader and assigning a callback
-        var reader = new FileReader();
+        const reader = new FileReader();
         reader.onload = onReaderLoad;
         reader.readAsText(event.target.files[0]);
     }
+
+    // TODO implement security checks
 
     /**
      * once our file is uploaded, we convert it to a usable structure here
@@ -353,25 +356,112 @@
     function onReaderLoad(event) {
         console.log(event.target.result);
 
-        var obj = JSON.parse(event.target.result);
+        try {
+            const obj = JSON.parse(event.target.result);
 
-        frameData = obj['frames'];
+            frameData = obj['frames'];
 
-        //resetting frame to 0 and drawing
-        frame = 0;
-        clearFrames();
-        for (var i = 0; i < frameData.length; i++) {
-            addFrameButton(true); //handles from load so we don't add new frames to the data side.
+            //resetting frame to 0 and drawing
+            frame = 0;
+            clearFrames();
+            for (let i = 0; i < frameData.length; i++) {
+                addFrameButton(true); //handles from load so we don't add new frames to the data side.
+            }
+
+            const objects = obj['objs'];
+            objects.forEach(ob => addObject(ob['name']));
+
+            drawFrame(frame);
+        } catch (e) {
+            console.error("JSON file invalid.");
         }
-
-        var objects = obj['objs'];
-        objects.forEach(ob => addObject(ob['name']));
-
-        drawFrame(frame);
     }
 
-    document.getElementById('load-sim').addEventListener('change', onUploadSim);
+    /**
+     * TODO JSON Schema
+     */
+    const schemaJson = @"\"$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
+        "  \"type\": \"object\",\n" +
+        "  \"properties\": {\n" +
+        "    \"objs\": {\n" +
+        "      \"type\": \"array\",\n" +
+        "      \"items\": {\n" +
+        "        \"type\": \"object\",\n" +
+        "        \"properties\": {\n" +
+        "          \"name\": {\n" +
+        "            \"type\": \"string\"\n" +
+        "          },\n" +
+        "          \"startingRad\": {\n" +
+        "            \"type\": \"number\"\n" +
+        "          },\n" +
+        "          \"endingRad\": {\n" +
+        "            \"type\": \"number\"\n" +
+        "          }\n" +
+        "        },\n" +
+        "        \"required\": [\n" +
+        "          \"name\",\n" +
+        "          \"startingRad\",\n" +
+        "          \"endingRad\"\n" +
+        "        ]\n" +
+        "      }\n" +
+        "    },\n" +
+        "    \"frames\": {\n" +
+        "      \"type\": \"array\",\n" +
+        "      \"items\": {\n" +
+        "        \"type\": \"object\",\n" +
+        "        \"patternProperties\": {\n" +
+        "          \"^[0-9]+$\": {\n" +
+        "            \"type\": \"object\",\n" +
+        "            \"properties\": {\n" +
+        "              \"type\": {\n" +
+        "                \"type\": \"string\",\n" +
+        "                \"enum\": [\n" +
+        "                  \"thermal\",\n" +
+        "                  \"gravitational\",\n" +
+        "                  \"chemical\",\n" +
+        "                  \"kinetic\"\n" +
+        "                ]\n" +
+        "              },\n" +
+        "              \"radians\": {\n" +
+        "                \"type\": \"number\"\n" +
+        "              },\n" +
+        "              \"radius\": {\n" +
+        "                \"type\": \"number\"\n" +
+        "              },\n" +
+        "              \"color\": {\n" +
+        "                \"type\": \"string\"\n" +
+        "              },\n" +
+        "              \"label\": {\n" +
+        "                \"type\": \"string\"\n" +
+        "              },\n" +
+        "              \"edited\": {\n" +
+        "                \"type\": \"boolean\"\n" +
+        "              },\n" +
+        "              \"object\": {\n" +
+        "                \"type\": \"integer\"\n" +
+        "              }\n" +
+        "            },\n" +
+        "            \"required\": [\n" +
+        "              \"type\",\n" +
+        "              \"radians\",\n" +
+        "              \"radius\",\n" +
+        "              \"color\",\n" +
+        "              \"label\",\n" +
+        "              \"edited\",\n" +
+        "              \"object\"\n" +
+        "            ]\n" +
+        "          }\n" +
+        "        }\n" +
+        "      }\n" +
+        "    }\n" +
+        "  },\n" +
+        "  \"required\": [\n" +
+        "    \"objs\",\n" +
+        "    \"frames\"\n" +
+        "  ]\n" +
+        "}"
 
+    document.getElementById('load-sim').addEventListener('change', onUploadSim);
 
     function saveCurrentState(filename) {
         const dataStruct = {objs: objectData, frames: frameData};
@@ -391,7 +481,7 @@
 
         link.dispatchEvent(evt);
         link.remove()
-    };
+    }
 
     // method to redraw separating lines in circle
     function divideCircle() {
@@ -933,7 +1023,7 @@
     //annimation = document.getElementById("physics-annimation");
     function playPause() {
 
-        if (playbackActive == true) {
+        if (playbackActive === true) {
 
             //stop playback
             togglePlayback(false);
@@ -1110,7 +1200,7 @@
         var tableSize = document.getElementById("frames-table").rows[0].cells.length;
         newCol.innerHTML = "<button id=\"select-frame-button\" onclick=\"selectFrameButton(" + tableSize + ")\">" + (tableSize) + "</button>";
         //hides Object menu and displays playback menu if more than one frame is added
-        if (tableSize == 1) {
+        if (tableSize === 1) {
             document.getElementById("object-menu").style.display = "block";
         }
         if (tableSize >= 2) {
@@ -1134,7 +1224,7 @@
             xValues.pop();
             myChartVar.update();
             //hides playback menu and displays object menu if only one frame exists
-            if (tableSize == 1) {
+            if (tableSize === 1) {
                 document.getElementById("object-menu").style.display = "block";
                 document.getElementById("playback-controls").style.display = "none";
             }
