@@ -334,7 +334,6 @@
     canvas.width = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
 
-    let valid = false;
 
     /**
      * handles uploading a simulation to be displayed
@@ -346,6 +345,8 @@
         const reader = new FileReader();
         reader.onload = onReaderLoad;
         reader.readAsText(event.target.files[0]);
+
+        validateJson(event);
     }
 
     /**
@@ -364,6 +365,11 @@
     }
 
     // TODO implement security checks
+    /**
+     * Validate Uploaded JSON file by comparing it with the schema
+     * @param event
+     * @returns {Promise<void>}
+     */
     async function validateJson(event) {
         const ajv = new Ajv();
 
@@ -384,10 +390,8 @@
                 const validate = ajv.validate(schema, upload);
                 if (!validate) {
                     console.error(ajv.errors);
-                    valid = false;
                 } else {
                     console.log("User JSON file is valid.");
-                    valid = true;
                 }
             };
         });
@@ -400,29 +404,23 @@
      */
     function onReaderLoad(event) {
         console.log(event.target.result);
-        validateJson()
 
-        if (valid) {
-            try {
-                const obj = JSON.parse(event.target.result);
+        const obj = JSON.parse(event.target.result);
 
-                frameData = obj['frames'];
+        frameData = obj['frames'];
 
-                //resetting frame to 0 and drawing
-                frame = 0;
-                clearFrames();
-                for (let i = 0; i < frameData.length; i++) {
-                    addFrameButton(true); //handles from load so we don't add new frames to the data side.
-                }
-
-                const objects = obj['objs'];
-                objects.forEach(ob => addObject(ob['name']));
-
-                drawFrame(frame);
-            } catch (e) {
-                console.error("JSON file invalid.");
-            }
+        //resetting frame to 0 and drawing
+        frame = 0;
+        clearFrames();
+        for (let i = 0; i < frameData.length; i++) {
+            addFrameButton(true); //handles from load so we don't add new frames to the data side.
         }
+
+        const objects = obj['objs'];
+        objects.forEach(ob => addObject(ob['name']));
+
+        drawFrame(frame);
+
     }
 
     document.getElementById('load-sim').addEventListener('change', onUploadSim);
