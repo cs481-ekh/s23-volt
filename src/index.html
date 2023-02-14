@@ -748,8 +748,30 @@
         frameData[frame - 1][cubeIndex]["radians"] = objRadians;
         frameData[frame - 1][cubeIndex]["radius"] = polarDistance / center[0];
 
+        let cube_Id = 'cube' + cubeID;
+        let cubeEle = document.getElementById(cube_Id);
+        // const context = cubeEle.getContext('2d');
+        let returned_XY = getPositionXY(cubeEle, cube_Id);
+        let elementPosX = returned_XY[0];
+        let elementPosY = returned_XY[1];
+        drawLine(context,elementPosX ,elementPosY,x, y);
     }
-
+    function getPositionXY(element, cube_Id) {
+        let rect = element.getBoundingClientRect();
+        document.getElementById(cube_Id).innerHTML =
+            'X: ' + rect.x + ', ' + 'Y: ' + rect.y
+        return[rect.x, rect.y];
+    }
+    // draws the lines
+    function drawLine(context, x1, y1, x2, y2) {
+        context.beginPath();
+        context.strokeStyle = 'black';
+        context.lineWidth = 1;
+        context.moveTo(x1, y1);
+        context.lineTo(x2, y2);
+        context.stroke();
+        context.closePath();
+    }
     //adds a context-menu listener to each cube.
     function addDropdownListener() {
         document.getElementById("context-menu").addEventListener("mousedown", function (ev) {
