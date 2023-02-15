@@ -5,6 +5,8 @@ sudo apt install npm
 npm install eslint --save-dev
 npx eslint --init
 npm i htmlint@0.0.3
+npm install jsonnet --save
+npm install ajv
 
 
 npx eslint src/*.js
