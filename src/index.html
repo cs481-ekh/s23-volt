@@ -715,25 +715,37 @@
 
             $("#maincircle").append(appendstr);
 
-            //adds context menu listener to each cube
-            document.getElementById("cube" + count).addEventListener("contextmenu", function (e) {
-                if (frameData.length > 1) {
-                    var tableSize = (document.getElementById("frames-table").rows[0].cells.length) - 1;
-                    e.preventDefault();
+            const obj = document.getElementById("cube" + count); // Get the object by its ID
+            const contextMenu = document.getElementById("context-menu"); // Get the context menu by its ID
+
+            // Add event listener for right-click on the object
+            obj.addEventListener("contextmenu", function (e) {
+                if (frameData.length > 1) { // Check if the frame data has more than one frame
+                    var tableSize = document.getElementById("frames-table").rows[0].cells.length - 1; // Get the number of frames
+                    e.preventDefault(); // Prevent the default context menu from showing up
                     if (tableSize < 1) {
-                        //Can't change energy type while on initialization frame
+                        // Can't change energy type while on initialization frame
                     } else {
-                        var contexElement = document.getElementById("context-menu");
-                        contexElement.classList.add("active");
-                        menuIsOpen = true;
-                        var contexElement = document.getElementById("context-menu");
-                        contexElement.style.top = e.clientY + "px";
-                        contexElement.style.left = e.clientX + "px";
+                        contextMenu.classList.add("active"); // Show the custom context menu
+                        contextMenu.style.top = e.clientY + "px"; // Set the top position of the context menu
+                        contextMenu.style.left = e.clientX + "px"; // Set the left position of the context menu
+                        obj.classList.add("disable-animation"); // Add CSS class to disable animation
                     }
                 }
             });
 
-            //updates the accociated object, radians, and radius of the cube in the frame data
+            // Add event listener for mouse leave on the object
+            obj.addEventListener("mouseleave", function () {
+                obj.classList.remove("disable-animation"); // Remove CSS class to enable animation
+            });
+
+            // Add event listener for mouse leave on the context menu
+            contextMenu.addEventListener("mouseleave", function () {
+                contextMenu.classList.remove("active"); // Hide the custom context menu
+                obj.classList.remove("disable-animation"); // Remove CSS class to enable animation
+            });
+
+            //updates the associated object, radians, and radius of the cube in the frame data
             document.getElementById("cube" + count).addEventListener("mouseout", function (e) {
                 e.preventDefault();
                 var currentFrame = frameData[frame - 1];
