@@ -368,7 +368,6 @@
         }
     }
 
-    // TODO implement security checks
     /**
      * Validate Uploaded JSON file by comparing it with the schema
      * @param event
@@ -455,7 +454,7 @@
         var numObjects = nextObjectID;
         var radius = (canvas.width) / 2;
         var slice = Math.PI * (2 / numObjects);
-        if (numObjects == 1) {
+        if (numObjects === 1) {
             return;
         }
         context.beginPath();
@@ -787,7 +786,7 @@
                 updateDataPosition(e);
             }
         });
-        if (frameData.length == 1) {
+        if (frameData.length === 1) {
             addDropdownListener();
         }
 
@@ -915,15 +914,15 @@
 
     //hides drop-down context menu when an option is selected
     document.getElementById("context-menu").addEventListener("click", function () {
-        if (menuIsOpen == true) {
+        if (menuIsOpen === true) {
             document.getElementById("context-menu").classList.remove("active");
             menuIsOpen = false;
         }
     });
 
-    //if canvis is clicked then cube context menu dissapears
+    //if canvas is clicked then cube context menu disappears
     window.addEventListener("mousedown", function () {
-        if (menuIsOpen == true) {
+        if (menuIsOpen === true) {
             document.getElementById("context-menu").classList.remove("active");
             menuIsOpen = false;
         }
@@ -998,7 +997,7 @@
         }
     }
 
-    //annimation = document.getElementById("physics-annimation");
+    // TODO animation = document.getElementById("physics-animation");
     function playPause() {
 
         if (playbackActive === true) {
@@ -1092,7 +1091,7 @@
     //Removes object from object table when remove-object button is clicked
 
     function removeObjectButton() {
-        if (numObjectButtons == 0) {
+        if (numObjectButtons === 0) {
             return;
         }
         numObjectButtons--;
