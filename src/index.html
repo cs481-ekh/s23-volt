@@ -776,13 +776,18 @@
             count++;
         });
         initMoveableCubes();
+
         Draggable.create(".cube", {
+
             // commented code below and clipAtRadius() method are for keeping objects contained in the circle (instead of just in the square around it), but not finished
             /*liveSnap:{
                 points: clipper
             },*/
+
+
             bounds: "#maincircle",
             onDragEnd: function (e) {
+
                 updateDataPosition(e);
             }
         });
@@ -792,7 +797,11 @@
 
     }
 
-    //updates a given cubes position on the data side
+    /**
+     * Updates the cubes' position
+     *
+     * @param e
+     */
     function updateDataPosition(e) {
         //vector containing center point of x and y
         var center = [(canvas.width / 2), (canvas.height / 2)];
@@ -814,7 +823,29 @@
         console.log(frameData[frame - 1][cubeIndex]);
         frameData[frame - 1][cubeIndex]["radians"] = objRadians;
         frameData[frame - 1][cubeIndex]["radius"] = polarDistance / center[0];
+    }
 
+    /**
+     * Creates a hover animation for the cubes
+     *
+     * @param cube
+     */
+    function addHoverAnimation(cube) {
+        // Define the hover animation
+        var fullId = "#" + cube.id;
+        var hoverAnimation = gsap.fromTo(fullId, {scale: 1}, {scale: 1.5, duration: 0.5});
+
+        // Create a timeline and add the hover animation to it
+        var timeline = gsap.timeline({paused: true});
+        timeline.add(hoverAnimation);
+
+        // Add the hover animation to the cube
+        cube.addEventListener("mouseover", function () {
+            timeline.play();
+        });
+        cube.addEventListener("mouseout", function () {
+            timeline.reverse();
+        });
     }
 
     //adds a context-menu listener to each cube.
@@ -908,6 +939,12 @@
                 //$(e.target).attr("object") = calculateQuadrant(document.getElementById("main-canvas"), e);
                 //alert("quad changed");
             });
+        }
+
+        // Add the hover animation to all the cubes initially
+        var cubes = document.querySelectorAll(".cube");
+        for (var i = 0; i < cubes.length; i++) {
+            addHoverAnimation(cubes[i]);
         }
     }
 
