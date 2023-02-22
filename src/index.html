@@ -805,8 +805,11 @@
 
     }
 
-    // TODO energy transform animation
-    //adds a context-menu listener to each cube.
+    // TODO add custom animation depending on which energy it changes to
+    /**
+     * Adds a context-menu listener to each cube. The listener includes the energy state change
+     * and an animation with it.
+     */
     function addDropdownListener() {
         document.getElementById("context-menu").addEventListener("mousedown", function (ev) {
             var currentFrame = frameData[frame - 1];
@@ -832,46 +835,93 @@
                                 var oldTypeTemp = currentFrame[cubeIndex]["type"];
                                 menuIsOpen = false;
                                 document.getElementById("context-menu").classList.remove("active");
-                                currentFrame[cubeIndex]["type"] = "kinetic";
-                                currentFrame[cubeIndex]["label"] = "KE";
-                                currentFrame[cubeIndex]["color"] = "lightblue";
-                                updateChartYByOne(frame + 1, "kinetic", oldTypeTemp);
-                                drawCubes();
+
+                                // Create a new timeline
+                                var timeline = gsap.timeline();
+
+                                // Add animations to the timeline
+                                timeline.to(cube, {rotation: 360, scale: 0.1, duration: 1});
+
+                                // When the animation is complete, update the cube type and redraw the cubes
+                                timeline.eventCallback("onComplete", function () {
+                                    currentFrame[cubeIndex]["type"] = "kinetic";
+                                    currentFrame[cubeIndex]["label"] = "KE";
+                                    currentFrame[cubeIndex]["color"] = "lightblue";
+                                    updateChartYByOne(frame + 1, "kinetic", oldTypeTemp);
+                                    drawCubes();
+                                });
+                                // Play the timeline
+                                timeline.play();
                                 break;
 
                             case "therm-item":
                                 var oldTypeTemp = currentFrame[cubeIndex]["type"];
                                 menuIsOpen = false;
                                 document.getElementById("context-menu").classList.remove("active");
-                                currentFrame[cubeIndex]["type"] = "thermal";
-                                currentFrame[cubeIndex]["label"] = "TE";
-                                currentFrame[cubeIndex]["color"] = "pink";
-                                updateChartYByOne(frame + 1, "thermal", oldTypeTemp);
-                                drawCubes();
+
+                                // Create a new timeline
+                                var timeline = gsap.timeline();
+
+                                // Add animations to the timeline
+                                timeline.to(cube, {rotation: 360, scale: 0.1, duration: 1});
+
+                                // When the animation is complete, update the cube type and redraw the cubes
+                                timeline.eventCallback("onComplete", function () {
+                                    currentFrame[cubeIndex]["type"] = "thermal";
+                                    currentFrame[cubeIndex]["label"] = "TE";
+                                    currentFrame[cubeIndex]["color"] = "pink";
+                                    updateChartYByOne(frame + 1, "thermal", oldTypeTemp);
+                                    drawCubes();
+                                });
+                                // Play the timeline
+                                timeline.play();
                                 break;
 
                             case "grav-item":
                                 var oldTypeTemp = currentFrame[cubeIndex]["type"];
                                 menuIsOpen = false;
                                 document.getElementById("context-menu").classList.remove("active");
-                                currentFrame[cubeIndex]["type"] = "gravitational";
-                                currentFrame[cubeIndex]["label"] = "GE";
-                                currentFrame[cubeIndex]["color"] = "lightgreen";
-                                updateChartYByOne(frame + 1, "gravitational", oldTypeTemp);
-                                drawCubes();
+
+                                // Create a new timeline
+                                var timeline = gsap.timeline();
+
+                                // Add animations to the timeline
+                                timeline.to(cube, {rotation: 360, scale: 0.1, duration: 1});
+
+                                // When the animation is complete, update the cube type and redraw the cubes
+                                timeline.eventCallback("onComplete", function () {
+                                    currentFrame[cubeIndex]["type"] = "gravitational";
+                                    currentFrame[cubeIndex]["label"] = "GE";
+                                    currentFrame[cubeIndex]["color"] = "lightgreen";
+                                    updateChartYByOne(frame + 1, "gravitational", oldTypeTemp);
+                                    drawCubes();
+                                });
+                                // Play the timeline
+                                timeline.play();
                                 break;
 
                             case "chem-item":
                                 var oldTypeTemp = currentFrame[cubeIndex]["type"];
                                 menuIsOpen = false;
                                 document.getElementById("context-menu").classList.remove("active");
-                                currentFrame[cubeIndex]["type"] = "chemical";
-                                currentFrame[cubeIndex]["label"] = "CE";
-                                currentFrame[cubeIndex]["color"] = "yellow";
-                                updateChartYByOne(frame + 1, "chemical", oldTypeTemp);
-                                drawCubes();
-                                break;
 
+                                // Create a new timeline
+                                var timeline = gsap.timeline();
+
+                                // Add animations to the timeline
+                                timeline.to(cube, {rotation: 360, scale: 0.1, duration: 1});
+
+                                // When the animation is complete, update the cube type and redraw the cubes
+                                timeline.eventCallback("onComplete", function () {
+                                    currentFrame[cubeIndex]["type"] = "chemical";
+                                    currentFrame[cubeIndex]["label"] = "CE";
+                                    currentFrame[cubeIndex]["color"] = "yellow";
+                                    updateChartYByOne(frame + 1, "chemical", oldTypeTemp);
+                                    drawCubes();
+                                });
+                                // Play the timeline
+                                timeline.play();
+                                break;
                         }
                         return false;
                     }
@@ -879,10 +929,7 @@
                 cubeIndex++;
                 return true;
             });
-
-
         });
-
     }
 
     //consulates which object each cube is "in"

@@ -118,13 +118,8 @@ canvas {
     height: 20px;
     width: 20px;
     border: 1px solid black;
-    animation: ani 1s ease-in-out;
   }
 
-@keyframes ani {
-    from { transform: rotate(180deg); }
-    to { transform: rotate(360deg); }
-}
 
 #frames-table {
     border: 0px solid black;
