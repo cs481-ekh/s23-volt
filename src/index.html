@@ -840,7 +840,9 @@
                                 var timeline = gsap.timeline();
 
                                 // Add animations to the timeline
-                                timeline.to(cube, {rotation: 360, scale: 0.1, duration: 1});
+                                timeline.to(cube, {rotation: -90, xPercent: -100, duration: 0.5})
+                                    .to(cube, {rotation: -180, yPercent: 100, xPercent: 0, duration: 0.5})
+                                    .to(cube, {rotation: -270, yPercent: 0, duration: 0.5});
 
                                 // When the animation is complete, update the cube type and redraw the cubes
                                 timeline.eventCallback("onComplete", function () {
@@ -850,9 +852,11 @@
                                     updateChartYByOne(frame + 1, "kinetic", oldTypeTemp);
                                     drawCubes();
                                 });
+
                                 // Play the timeline
                                 timeline.play();
                                 break;
+
 
                             case "therm-item":
                                 var oldTypeTemp = currentFrame[cubeIndex]["type"];
@@ -863,7 +867,8 @@
                                 var timeline = gsap.timeline();
 
                                 // Add animations to the timeline
-                                timeline.to(cube, {rotation: 360, scale: 0.1, duration: 1});
+                                timeline.fromTo(cube, {scale: 1, rotation: 0, skewX: 0}, {scale: 1.5, rotation: 45, skewX: 20, duration: 0.5})
+                                    .to(cube, {scale: 0, duration: 0.3});
 
                                 // When the animation is complete, update the cube type and redraw the cubes
                                 timeline.eventCallback("onComplete", function () {
@@ -873,6 +878,7 @@
                                     updateChartYByOne(frame + 1, "thermal", oldTypeTemp);
                                     drawCubes();
                                 });
+
                                 // Play the timeline
                                 timeline.play();
                                 break;
@@ -886,7 +892,8 @@
                                 var timeline = gsap.timeline();
 
                                 // Add animations to the timeline
-                                timeline.to(cube, {rotation: 360, scale: 0.1, duration: 1});
+                                timeline.to(cube, {scale: 0, duration: 1, ease: "power3.inOut"});
+                                timeline.to(cube, {rotation: 360, duration: 1, ease: "none"}, 0);
 
                                 // When the animation is complete, update the cube type and redraw the cubes
                                 timeline.eventCallback("onComplete", function () {
@@ -896,6 +903,7 @@
                                     updateChartYByOne(frame + 1, "gravitational", oldTypeTemp);
                                     drawCubes();
                                 });
+
                                 // Play the timeline
                                 timeline.play();
                                 break;
@@ -909,7 +917,10 @@
                                 var timeline = gsap.timeline();
 
                                 // Add animations to the timeline
-                                timeline.to(cube, {rotation: 360, scale: 0.1, duration: 1});
+                                timeline.to(cube, {scaleY: 0.1, duration: 0.5})
+                                    .to(cube, {scaleY: 1, duration: 0.5})
+                                    .to(cube.material, {color: 0xffcc33, duration: 1})
+                                    .to(cube.material, {opacity: 0.5, duration: 0.5});
 
                                 // When the animation is complete, update the cube type and redraw the cubes
                                 timeline.eventCallback("onComplete", function () {
@@ -919,6 +930,7 @@
                                     updateChartYByOne(frame + 1, "chemical", oldTypeTemp);
                                     drawCubes();
                                 });
+
                                 // Play the timeline
                                 timeline.play();
                                 break;
