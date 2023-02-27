@@ -121,6 +121,10 @@ canvas {
     transition: transform 5ms;
   }
 
+svg {
+    width: 100vmin;
+    height: 100vmin;
+}
 
 #frames-table {
     border: 0px solid black;

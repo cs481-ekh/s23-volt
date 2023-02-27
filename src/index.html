@@ -855,19 +855,38 @@
     function addTrailAnimation(cube) {
         // Define the hover animation
         var fullId = "#" + cube.id;
-        fullId.mouseenter(function() {
-            TweenMax.fromTo(fullId, 0.7, {boxShadow:"0px 0px 0px 0px rgba(0,255,0,0.3)"},
-                {
-                    boxShadow: "0px 0px 20px 10px rgba(0,255,0,0.7)",
-                    repeat: -1,
-                    yoyo: true,
-                    ease:Linear.easeNone
-                });
+        console.clear();
+        gsap
+            .timeline({
+                defaults: { duration: 10, ease: "none" },
+                repeat: -10,
+                yoyo: true,
+                repeatDelay: 0.4
+            })
+            // .from(fullId, {
+            //     drawSVG: 0,
+            //     ease: "none"
+            // })
+            //
+            // .to(
+            //     "#dashedPath",
+            //     {
+            //         strokeDasharray: "8 12",
+            //         stroke:"yellow"
+            //     },
+            //     0
+            // );
+
+            var tail  = gsap.fromTo(fullId, {drawSVG: 0, ease: "none"}, {strokeDasharray: "8 12", stroke:"yellow"});
+           // var timeline = gsap.timeline({paused: true});
+           // timeline.add(tail);
+
+        // Add the hover animation to the cube
+        cube.addEventListener("mousedown", function () {
+            timeline.play();
         });
-
-
-        fullId.mouseleave(function() {
-            TweenMax.to(fullId, 0.2, {boxShadow: "0px 0px 0px 0px #000"});
+        cube.addEventListener("mouseout", function () {
+            timeline.reverse();
         });
     }
 
@@ -968,12 +987,13 @@
         var cubes = document.querySelectorAll(".cube");
         for (var i = 0; i < cubes.length; i++) {
             addHoverAnimation(cubes[i]);
-        }
-        // Add the hover animation to all the cubes initially
-        var cubes = document.querySelectorAll(".cube");
-        for (var i = 0; i < cubes.length; i++) {
             addTrailAnimation(cubes[i]);
         }
+        // Add the hover animation to all the cubes initially
+        // var cubes = document.querySelectorAll(".cube");
+        // for (var i = 0; i < cubes.length; i++) {
+        //     addTrailAnimation(cubes[i]);
+        // }
     }
 
 
