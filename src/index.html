@@ -848,32 +848,26 @@
         });
     }
 
-
+    /*
+        Adding a smaller energy block that will follow the inital block with less opacity,
+        it will fade in and out when moved.
+     */
     function addTrailAnimation(cube) {
         // Define the hover animation
         var fullId = "#" + cube.id;
-        /*
-            adding a smaller energy block that will follow the inital block with less opacity,
-            it will fade in and out when moved.
-         */
-        var trailAnimation = gsap.fromTo(fullId, {
-          //  x:
-            //y:
-            scale: 1
-        },
-            {scale: .25, duration: 0.1, opacity:.5}
-        );
-
-        // Create a timeline and add the hover animation to it
-        var timeline = gsap.timeline({paused: true});
-        timeline.add(trailAnimation);
-
-        // Add the hover animation to the cube
-        cube.addEventListener("mouseover", function () {
-            timeline.play();
+        fullId.mouseenter(function() {
+            TweenMax.fromTo(fullId, 0.7, {boxShadow:"0px 0px 0px 0px rgba(0,255,0,0.3)"},
+                {
+                    boxShadow: "0px 0px 20px 10px rgba(0,255,0,0.7)",
+                    repeat: -1,
+                    yoyo: true,
+                    ease:Linear.easeNone
+                });
         });
-        cube.addEventListener("mouseout", function () {
-            timeline.reverse();
+
+
+        fullId.mouseleave(function() {
+            TweenMax.to(fullId, 0.2, {boxShadow: "0px 0px 0px 0px #000"});
         });
     }
 
@@ -974,6 +968,11 @@
         var cubes = document.querySelectorAll(".cube");
         for (var i = 0; i < cubes.length; i++) {
             addHoverAnimation(cubes[i]);
+        }
+        // Add the hover animation to all the cubes initially
+        var cubes = document.querySelectorAll(".cube");
+        for (var i = 0; i < cubes.length; i++) {
+            addTrailAnimation(cubes[i]);
         }
     }
 
