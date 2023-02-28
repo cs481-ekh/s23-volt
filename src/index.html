@@ -919,8 +919,7 @@
                                 // Add animations to the timeline
                                 timeline.to(cube, {scaleY: 0.1, duration: 0.5})
                                     .to(cube, {scaleY: 1, duration: 0.5})
-                                    .to(cube.material, {color: 0xffcc33, duration: 1})
-                                    .to(cube.material, {opacity: 0.5, duration: 0.5});
+                                    .to(cube.material, {color: 0xffcc33, duration: 1});
 
                                 // When the animation is complete, update the cube type and redraw the cubes
                                 timeline.eventCallback("onComplete", function () {
