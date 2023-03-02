@@ -207,7 +207,7 @@
     var potValues = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; //potential energy count
     var chemValues = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; //chemical energy count
 
-    //create a line chart with the x axis of the xValues array and with line data sets of the various energy arrays
+    //create a line chart with the x-axis of the xValues array and with line data sets of the various energy arrays
     var myChartVar = new Chart("myChart", {
         type: "line",
         data: {
@@ -272,7 +272,7 @@
         }
     }
 
-    //update the Y value of an energy type by one, should occur when a cube is right clicked and changed
+    //update the Y value of an energy type by one, should occur when a cube is right-clicked and changed
     function updateChartYByOne(frameValue, energyType, oldEnergyType) {
         var energyTypeArrayValue;
         var realFrameValue = frameValue - 1; //change to 0 based array value
@@ -416,7 +416,7 @@
         frame = 0;
         clearFrames();
         for (let i = 0; i < frameData.length; i++) {
-            addFrameButton(true); //handles from load so we don't add new frames to the data side.
+            addFrameButton(true); //handles from load, so we don't add new frames to the data side.
         }
 
         const objects = obj['objs'];
@@ -493,7 +493,7 @@
         return (radians - (3 * Math.PI) / 2) * (-1);
     }
 
-    // takes in event (eg click) and canvas (html ID "can"), returns object association of event
+    // takes in event (e.g. click) and canvas (html ID "can"), returns object association of event
     function calculateQuadrant(canvas, event) {
         const numObjects = nextObjectID;
         const slice = (2 * Math.PI) / numObjects;
@@ -685,7 +685,7 @@
             var x = relx + (canvas.width) / 2;
             var y = rely + (canvas.height) / 2;
 
-            //On draw call, the cube lables and color are populated in the frame data
+            //On draw call, the cube labels and color are populated in the frame data
             switch (cube["type"]) {
                 case 'kinetic':
                     cube["label"] = "KE";
@@ -733,6 +733,7 @@
                 }
             });
 
+
             // Add event listener for mouse leave on the object
             obj.addEventListener("mouseleave", function () {
                 obj.classList.remove("disable-animation"); // Remove CSS class to enable animation
@@ -775,11 +776,13 @@
             });
             count++;
         });
+
         initMoveableCubes();
 
         Draggable.create(".cube", {
 
             // commented code below and clipAtRadius() method are for keeping objects contained in the circle (instead of just in the square around it), but not finished
+
             /*liveSnap:{
                 points: clipper
             },*/
@@ -848,7 +851,11 @@
         });
     }
 
-    //adds a context-menu listener to each cube.
+    // TODO add custom animation depending on which energy it changes to
+    /**
+     * Adds a context-menu listener to each cube. The listener includes the energy state change
+     * and an animation with it.
+     */
     function addDropdownListener() {
         document.getElementById("context-menu").addEventListener("mousedown", function (ev) {
             var currentFrame = frameData[frame - 1];
@@ -874,46 +881,104 @@
                                 var oldTypeTemp = currentFrame[cubeIndex]["type"];
                                 menuIsOpen = false;
                                 document.getElementById("context-menu").classList.remove("active");
-                                currentFrame[cubeIndex]["type"] = "kinetic";
-                                currentFrame[cubeIndex]["label"] = "KE";
-                                currentFrame[cubeIndex]["color"] = "lightblue";
-                                updateChartYByOne(frame + 1, "kinetic", oldTypeTemp);
-                                drawCubes();
+
+                                // Create a new timeline
+                                var timeline = gsap.timeline();
+
+                                // Add animations to the timeline
+                                timeline.to(cube, {rotation: -90, xPercent: -100, duration: 0.5})
+                                    .to(cube, {rotation: -180, yPercent: 100, xPercent: 0, duration: 0.5})
+                                    .to(cube, {rotation: -270, yPercent: 0, duration: 0.5});
+
+                                // When the animation is complete, update the cube type and redraw the cubes
+                                timeline.eventCallback("onComplete", function () {
+                                    currentFrame[cubeIndex]["type"] = "kinetic";
+                                    currentFrame[cubeIndex]["label"] = "KE";
+                                    currentFrame[cubeIndex]["color"] = "lightblue";
+                                    updateChartYByOne(frame + 1, "kinetic", oldTypeTemp);
+                                    drawCubes();
+                                });
+
+                                // Play the timeline
+                                timeline.play();
                                 break;
+
 
                             case "therm-item":
                                 var oldTypeTemp = currentFrame[cubeIndex]["type"];
                                 menuIsOpen = false;
                                 document.getElementById("context-menu").classList.remove("active");
-                                currentFrame[cubeIndex]["type"] = "thermal";
-                                currentFrame[cubeIndex]["label"] = "TE";
-                                currentFrame[cubeIndex]["color"] = "pink";
-                                updateChartYByOne(frame + 1, "thermal", oldTypeTemp);
-                                drawCubes();
+
+                                // Create a new timeline
+                                var timeline = gsap.timeline();
+
+                                // Add animations to the timeline
+                                timeline.fromTo(cube, {scale: 1, rotation: 0, skewX: 0}, {scale: 1.5, rotation: 45, skewX: 20, duration: 0.5})
+                                    .to(cube, {scale: 0, duration: 0.3});
+
+                                // When the animation is complete, update the cube type and redraw the cubes
+                                timeline.eventCallback("onComplete", function () {
+                                    currentFrame[cubeIndex]["type"] = "thermal";
+                                    currentFrame[cubeIndex]["label"] = "TE";
+                                    currentFrame[cubeIndex]["color"] = "pink";
+                                    updateChartYByOne(frame + 1, "thermal", oldTypeTemp);
+                                    drawCubes();
+                                });
+
+                                // Play the timeline
+                                timeline.play();
                                 break;
 
                             case "grav-item":
                                 var oldTypeTemp = currentFrame[cubeIndex]["type"];
                                 menuIsOpen = false;
                                 document.getElementById("context-menu").classList.remove("active");
-                                currentFrame[cubeIndex]["type"] = "gravitational";
-                                currentFrame[cubeIndex]["label"] = "GE";
-                                currentFrame[cubeIndex]["color"] = "lightgreen";
-                                updateChartYByOne(frame + 1, "gravitational", oldTypeTemp);
-                                drawCubes();
+
+                                // Create a new timeline
+                                var timeline = gsap.timeline();
+
+                                // Add animations to the timeline
+                                timeline.to(cube, {scale: 0, duration: 1, ease: "power3.inOut"});
+                                timeline.to(cube, {rotation: 360, duration: 1, ease: "none"}, 0);
+
+                                // When the animation is complete, update the cube type and redraw the cubes
+                                timeline.eventCallback("onComplete", function () {
+                                    currentFrame[cubeIndex]["type"] = "gravitational";
+                                    currentFrame[cubeIndex]["label"] = "GE";
+                                    currentFrame[cubeIndex]["color"] = "lightgreen";
+                                    updateChartYByOne(frame + 1, "gravitational", oldTypeTemp);
+                                    drawCubes();
+                                });
+
+                                // Play the timeline
+                                timeline.play();
                                 break;
 
                             case "chem-item":
                                 var oldTypeTemp = currentFrame[cubeIndex]["type"];
                                 menuIsOpen = false;
                                 document.getElementById("context-menu").classList.remove("active");
-                                currentFrame[cubeIndex]["type"] = "chemical";
-                                currentFrame[cubeIndex]["label"] = "CE";
-                                currentFrame[cubeIndex]["color"] = "yellow";
-                                updateChartYByOne(frame + 1, "chemical", oldTypeTemp);
-                                drawCubes();
-                                break;
 
+                                // Create a new timeline
+                                var timeline = gsap.timeline();
+
+                                // Add animations to the timeline
+                                timeline.to(cube, {scaleY: 0.1, duration: 0.5})
+                                    .to(cube, {scaleY: 1, duration: 0.5})
+                                    .to(cube.material, {color: 0xffcc33, duration: 1});
+
+                                // When the animation is complete, update the cube type and redraw the cubes
+                                timeline.eventCallback("onComplete", function () {
+                                    currentFrame[cubeIndex]["type"] = "chemical";
+                                    currentFrame[cubeIndex]["label"] = "CE";
+                                    currentFrame[cubeIndex]["color"] = "yellow";
+                                    updateChartYByOne(frame + 1, "chemical", oldTypeTemp);
+                                    drawCubes();
+                                });
+
+                                // Play the timeline
+                                timeline.play();
+                                break;
                         }
                         return false;
                     }
@@ -921,15 +986,11 @@
                 cubeIndex++;
                 return true;
             });
-
-
         });
-
     }
 
-
-    //conculates which object each cube is "in"
-    function initMoveableCubes() {
+    //consulates which object each cube is "in"
+    function initMovableCubes() {
         var cubeList = document.getElementsByClassName("cube");
         var cubeArray = Array.prototype.slice.call(cubeList);
 
@@ -947,7 +1008,6 @@
             addHoverAnimation(cubes[i]);
         }
     }
-
 
     //hides drop-down context menu when an option is selected
     document.getElementById("context-menu").addEventListener("click", function () {
@@ -1027,7 +1087,7 @@
     function speedChanged(e) {
         let speedVal = Number(e.target.value);
 
-        //make sure we have a valid speed value, and that its not zero
+        //make sure we have a valid speed value, and that it's not zero
         if (speedVal && speedVal > 0.1) {
             playbackSpeed = 25000 / speedVal;
             togglePlayback(true);
@@ -1157,9 +1217,9 @@
         newCell.innerHTML = newCellContent;
     }
 
-    //removes an energy-type spinner and selector from energy menu on a specicified object table cell
+    //removes an energy-type spinner and selector from energy menu on a specified object table cell
     function removeEnergy(i) {
-        if (energySpinnerIndexes[i] == 0) {
+        if (energySpinnerIndexes[i] === 0) {
             return;
         }
         energySpinnerIndexes[i]--;
