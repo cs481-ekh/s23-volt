@@ -86,7 +86,7 @@ canvas {
 
 
 #grid-container > #frame-controls {
-    font-size:x-small;
+    font-size:small;
     text-align: center;
     grid-column: 1/4;
     grid-row: 3/4;
