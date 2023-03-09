@@ -1,5 +1,42 @@
-html,
-body { height: 100%;
+
+/* TODO might need to change images for outer space background animation */
+.stars, .twinkling, .clouds {
+    position:absolute;
+    display:block;
+    top:0; bottom:0;
+    left:0; right:0;
+    width:100%; height:100%;
+}
+
+.stars {
+    z-index: 0;
+    background: #000 url('https://i.imgur.com/YKY28eT.png') repeat top center;
+}
+
+.twinkling{
+    z-index: 1;
+    background:transparent url('https://i.imgur.com/XYMF4ca.png') repeat top center;
+    animation: move-twink-back 200s linear infinite;
+}
+
+.clouds{
+    z-index: 2;
+    background:transparent url('https://i.imgur.com/mHbScrQ.png') repeat top center;
+    animation: move-clouds-back 200s linear infinite;
+}
+
+@keyframes move-twink-back {
+    from {background-position:0 0;}
+    to {background-position:-10000px 5000px;}
+}
+
+@keyframes move-clouds-back {
+    from {background-position:0 0;}
+    to {background-position:10000px 0;}
+}
+
+html, body {
+    height: 100%;
 }
 
 canvas {
@@ -19,7 +56,7 @@ canvas {
 #grid-container > #main-canvas {
     display: flex;
     justify-content: center;
-    font-size:x-small;
+    font-size: x-small;
     text-align: center;
     grid-column: 1/3;
     grid-row: 1/3;
@@ -27,9 +64,16 @@ canvas {
     padding: 20px;
     overflow: auto;
 }
+
+@media (min-width: 1200px) {
+    .container{
+        max-width: 1440px;
+    }
+}
+
 #grid-container > #playback-controls {
     display: none;
-    font-size:x-small;
+    font-size: x-small;
     text-align: center;
     grid-column: 3/4;
     grid-row: 1/2;
@@ -54,7 +98,7 @@ canvas {
 #grid-container .chart-container {
     display: block;
     position: relative;
-    font-size:x-small;
+    font-size: x-small;
     text-align: center;
     grid-column: 3/4;
     grid-row: 1/3;
@@ -67,7 +111,7 @@ canvas {
 #grid-container > #object-menu {
     display: block;
     position: relative;
-    font-size:x-small;
+    font-size: x-small;
     text-align: center;
     grid-column: 3/4;
     grid-row: 1/3;
@@ -86,7 +130,7 @@ canvas {
 
 
 #grid-container > #frame-controls {
-    font-size:small;
+    font-size: small;
     text-align: center;
     grid-column: 1/4;
     grid-row: 3/4;
@@ -95,21 +139,21 @@ canvas {
     background-color: darkgray;
 }
 
-#init-cubes-button  {
-  border-radius: 6px;
-  border-width: 0;
-  box-shadow: rgba(50, 50, 93, .1) 0 0 0 1px inset,rgba(50, 50, 93, .1) 0 2px 5px 0,rgba(0, 0, 0, .07) 0 1px 1px 0;
-  color: #fff;
-  cursor: pointer;
-  font-size: 175%;
-  height: 44px;
-  line-height: 1.15;
-  margin: 12px 0 0;
-  outline: none;
-  padding: 0 25px;
-  position: relative;
-  text-align: center;
-  width: 50%;
+#init-cubes-button {
+    border-radius: 6px;
+    border-width: 0;
+    box-shadow: rgba(50, 50, 93, .1) 0 0 0 1px inset, rgba(50, 50, 93, .1) 0 2px 5px 0, rgba(0, 0, 0, .07) 0 1px 1px 0;
+    color: #fff;
+    cursor: pointer;
+    font-size: 175%;
+    height: 44px;
+    line-height: 1.15;
+    margin: 12px 0 0;
+    outline: none;
+    padding: 0 25px;
+    position: relative;
+    text-align: center;
+    width: 50%;
 }
 
 
@@ -119,15 +163,15 @@ canvas {
     width: 20px;
     border: 1px solid black;
     transition: transform 5ms;
-  }
+}
 
 
 #frames-table {
     border: 0px solid black;
     width: 100%;
-	display: flex;
-	justify-content: center;
-	align-items: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .circlecenter {
@@ -142,11 +186,11 @@ canvas {
     align-items: center;
     justify-content: center;
     align-self: center;
-    background-color:#fff;
-    border:1px solid black;
-    border-radius:50%;
-    width:90%;
-    height:0;
+    background-color: #fff;
+    border: 1px solid black;
+    border-radius: 50%;
+    width: 90%;
+    height: 0;
     padding: 45% 0;
 }
 
@@ -156,7 +200,7 @@ canvas {
     align-items: center;
     justify-content: center;
     align-self: center;
-    width:70%;
+    width: 90%;
     /* height:70%; */
 }
 
@@ -187,7 +231,7 @@ canvas {
     color: #eee;
 }
 
-#context-menu .item:hover{
+#context-menu .item:hover {
     background: #555;
 }
 
@@ -201,11 +245,11 @@ canvas {
     border-color: #555;
 }
 
-
 .chart-container {
-	height: 500px;
-	width: 500px;
+    height: 500px;
+    width: 500px;
 }
+
 #save-load {
     grid-column: 1;
     grid-row: 1;
@@ -224,6 +268,10 @@ canvas {
 }
 
 @keyframes thermal {
-    from { transform: scale(1); }
-    to { transform: scale(2); }
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(2);
+    }
 }
