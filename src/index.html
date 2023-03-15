@@ -26,7 +26,7 @@
     </div>
     <div id="main-canvas">
 
-        <!-- TODO below objects are for testing, will be changed/removed later -->
+        <!-- below objects are for testing, will be changed/removed later -->
         <!-- <div class="cube dragtest" style="background-color:rgb(128, 255, 43)"></div> -->
         <!-- <div class="cube pathtest" style="background-color: rgb(204, 127, 255)"></div> -->
         <div class="outercircle" id="outercircle">
@@ -118,6 +118,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/Draggable.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/MotionPathPlugin.min.js"></script>
 <script src="https://unpkg.com/ajv@6.12.2/dist/ajv.min.js"></script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
 
 <script>
 
@@ -336,7 +337,7 @@
      * @param event
      */
     function onUploadSim(event) {
-        // TODO might allow for larger files
+        //  might allow for larger files
         const maxFileSize = 1024 * 1024; // 1 MB
         const file = event.target.files[0];
 
@@ -778,26 +779,80 @@
         });
         initMovableCubes();
 
+        // An array to hold the points for the path
+        let points = [];
 
-        Draggable.create(".cube", {
+        // Flag to indicate if the mouse button is currently pressed down
+        let isMouseDown = false;
 
-            // commented code below and clipAtRadius() method are for keeping objects contained in the circle (instead of just in the square around it), but not finished
+        // Get all elements with the class "cube"
+        var cube = $(".cube");
 
-            /*liveSnap:{
-                points: clipper
-            },*/
+        // Loop through each element and create a new draggable instance for it
+        cube.each(function (index, element) {
+            var draggable = new Draggable(element, {
+                bounds: "#maincircle", // Limit dragging to a circular area
+                onPress: onPress,
+                onDrag: onDrag,
+            });
 
+            // Log the draggable instance when the press event fires
+            draggable.addEventListener("press", function () {
+                console.log("instance: ", this);
+            }.bind(draggable));
 
-            bounds: "#maincircle",
-            onDragEnd: function (e) {
-
-                updateDataPosition(e);
-            }
+            // Log the draggable index when the press event fires
+            draggable.addEventListener("press", function () {
+                console.log("Cube #" + index);
+            });
         });
+        var color;
+        // Function to run when the draggable is pressed
+        function onPress() {
+            isMouseDown = true;
+            points = [];
+            console.log("This is my instance:", this);
+        }
+
+        // Function to run while the draggable is being dragged
+        function onDrag(event) {
+            console.log("Dragging");
+            color = $(this.target).css('background-color');
+            console.log("color: " + color);
+            if (isMouseDown) {
+                updatePath(color, event);
+            }
+         //   updateDataPosition(event);
+        }
+
+        // Function to update the canvas path with the current mouse position
+        function updatePath(color, event) {
+            console.log("Updating path");
+            const canvas = document.getElementById("can");
+            const ctx = canvas.getContext("2d");
+
+            // Add the current mouse position to the points array
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            points.push({x: x, y: y});
+
+            // Create a new path and draw it
+            const path = new Path2D();
+            path.moveTo(points[0].x, points[0].y); // Move to the first point in the array
+            for (let i = 1; i < points.length; i++) {
+                path.lineTo(points[i].x, points[i].y); // Draw a line to each subsequent point in the array
+            }
+
+            // Set the stroke color and width, and stroke the path onto the canvas
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.stroke(path);
+        }
+
         if (frameData.length === 1) {
             addDropdownListener();
         }
-
     }
 
     /**
@@ -851,7 +906,6 @@
         });
     }
 
-    // TODO add custom animation depending on which energy it changes to
     /**
      * Adds a context-menu listener to each cube. The listener includes the energy state change
      * and an animation with it.
@@ -913,7 +967,12 @@
                                 var timeline = gsap.timeline();
 
                                 // Add animations to the timeline
-                                timeline.fromTo(cube, {scale: 1, rotation: 0, skewX: 0}, {scale: 1.5, rotation: 45, skewX: 20, duration: 0.5})
+                                timeline.fromTo(cube, {scale: 1, rotation: 0, skewX: 0}, {
+                                    scale: 1.5,
+                                    rotation: 45,
+                                    skewX: 20,
+                                    duration: 0.5
+                                })
                                     .to(cube, {scale: 0, duration: 0.3});
 
                                 // When the animation is complete, update the cube type and redraw the cubes
