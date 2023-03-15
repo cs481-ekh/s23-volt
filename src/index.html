@@ -793,7 +793,7 @@
             var draggable = new Draggable(element, {
                 bounds: "#maincircle", // Limit dragging to a circular area
                 onPress: onPress,
-                onDrag: onDrag
+                onDrag: onDrag,
             });
 
             // Log the draggable instance when the press event fires
@@ -811,18 +811,18 @@
         function onPress() {
             isMouseDown = true;
             points = [];
-            color = cube.css('backgroundColor');
             console.log("This is my instance:", this);
         }
 
         // Function to run while the draggable is being dragged
         function onDrag(event) {
             console.log("Dragging");
+            color = $(this.target).css('background-color');
             console.log("color: " + color);
             if (isMouseDown) {
                 updatePath(color, event);
-                // color = 'blue';
             }
+         //   updateDataPosition(event);
         }
 
         // Function to update the canvas path with the current mouse position
@@ -881,10 +881,6 @@
         console.log(frameData[frame - 1][cubeIndex]);
         frameData[frame - 1][cubeIndex]["radians"] = objRadians;
         frameData[frame - 1][cubeIndex]["radius"] = polarDistance / center[0];
-    }
-
-    function getID(cube) {
-        return "#" + cube.id;
     }
 
     /**
