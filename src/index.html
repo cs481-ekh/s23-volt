@@ -803,21 +803,25 @@
 
             // Log the draggable index when the press event fires
             draggable.addEventListener("press", function () {
-                console.log("Draggable #" + index);
+                console.log("Cube #" + index);
             });
         });
-
+        var color;
         // Function to run when the draggable is pressed
         function onPress() {
             isMouseDown = true;
+            points = [];
+            color = cube.css('backgroundColor');
             console.log("This is my instance:", this);
         }
 
         // Function to run while the draggable is being dragged
         function onDrag(event) {
             console.log("Dragging");
+            console.log("color: " + color);
             if (isMouseDown) {
-                updatePath("blue", event);
+                updatePath(color, event);
+                // color = 'blue';
             }
         }
 
