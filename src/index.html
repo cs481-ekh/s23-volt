@@ -152,6 +152,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/Draggable.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/MotionPathPlugin.min.js"></script>
 <script src="https://unpkg.com/ajv@6.12.2/dist/ajv.min.js"></script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
 
 <script>
 
@@ -370,7 +371,7 @@
      * @param event
      */
     function onUploadSim(event) {
-        // TODO might allow for larger files
+        //  might allow for larger files
         const maxFileSize = 1024 * 1024; // 1 MB
         const file = event.target.files[0];
 
@@ -812,22 +813,77 @@
         });
         initMovableCubes();
 
+        // An array to hold the points for the path
+        let points = [];
 
-        Draggable.create(".cube", {
+        // Flag to indicate if the mouse button is currently pressed down
+        let isMouseDown = false;
 
-            // commented code below and clipAtRadius() method are for keeping objects contained in the circle (instead of just in the square around it), but not finished
+        // Get all elements with the class "cube"
+        var cube = $(".cube");
 
-            /*liveSnap:{
-                points: clipper
-            },*/
+        // Loop through each element and create a new draggable instance for it
+        cube.each(function (index, element) {
+            var draggable = new Draggable(element, {
+                bounds: "#maincircle", // Limit dragging to a circular area
+                onPress: onPress,
+                onDrag: onDrag,
+            });
 
+            // Log the draggable instance when the press event fires
+            draggable.addEventListener("press", function () {
+                console.log("instance: ", this);
+            }.bind(draggable));
 
-            bounds: "#maincircle",
-            onDragEnd: function (e) {
-
-                updateDataPosition(e);
-            }
+            // Log the draggable index when the press event fires
+            draggable.addEventListener("press", function () {
+                console.log("Cube #" + index);
+            });
         });
+        var color;
+        // Function to run when the draggable is pressed
+        function onPress() {
+            isMouseDown = true;
+            points = [];
+            console.log("This is my instance:", this);
+        }
+
+        // Function to run while the draggable is being dragged
+        function onDrag(event) {
+            console.log("Dragging");
+            color = $(this.target).css('background-color');
+            console.log("color: " + color);
+            if (isMouseDown) {
+                updatePath(color, event);
+            }
+         //   updateDataPosition(event);
+        }
+
+        // Function to update the canvas path with the current mouse position
+        function updatePath(color, event) {
+            console.log("Updating path");
+            const canvas = document.getElementById("can");
+            const ctx = canvas.getContext("2d");
+
+            // Add the current mouse position to the points array
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            points.push({x: x, y: y});
+
+            // Create a new path and draw it
+            const path = new Path2D();
+            path.moveTo(points[0].x, points[0].y); // Move to the first point in the array
+            for (let i = 1; i < points.length; i++) {
+                path.lineTo(points[i].x, points[i].y); // Draw a line to each subsequent point in the array
+            }
+
+            // Set the stroke color and width, and stroke the path onto the canvas
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.stroke(path);
+        }
+
         if (frameData.length === 1) {
             addDropdownListener();
         }
@@ -885,6 +941,7 @@
         });
     }
 
+    // TODO add custom animation depending on which energy it changes to
     /**
      * Adds a context-menu listener to each cube. The listener includes the energy state change
      * and an animation with it.
@@ -1242,7 +1299,7 @@
 
     //Adds another energy type to an object
     function addEnergy(i) {
-        if (energySpinnerIndexes[i] === 3) {
+        if (energySpinnerIndexes[i] == 3) {
             return;
         }
         energySpinnerIndexes[i]++;
@@ -1311,22 +1368,19 @@
         var tableSize = document.getElementById("frames-table").rows[0].cells.length;
         var newCol = table.rows[0].insertCell(tableSize);
         var tableSize = document.getElementById("frames-table").rows[0].cells.length;
-
-        // Limit amount of frames to 40
-        if (tableSize <= 40) {
-            newCol.innerHTML = "<button id=\"select-frame-button\" onclick=\"selectFrameButton(" + tableSize + ")\">" + (tableSize) + "</button>";
-            if (tableSize === 1) {
-                document.getElementById("object-menu").style.display = "block";
-            }
-            if (tableSize >= 2) {
-                document.getElementById("object-menu").style.display = "none";
-                document.getElementById("playback-controls").style.display = "block";
-                xValues.push(tableSize);
-                myChartVar.update();
-            }
-            if (fromLoad === false) {
-                addFrame();
-            }
+        newCol.innerHTML = "<button id=\"select-frame-button\" onclick=\"selectFrameButton(" + tableSize + ")\">" + (tableSize) + "</button>";
+        //hides Object menu and displays playback menu if more than one frame is added
+        if (tableSize === 1) {
+            document.getElementById("object-menu").style.display = "block";
+        }
+        if (tableSize >= 2) {
+            document.getElementById("object-menu").style.display = "none";
+            document.getElementById("playback-controls").style.display = "block";
+            xValues.push(tableSize);
+            myChartVar.update();
+        }
+        if (fromLoad === false) {
+            addFrame();
         }
     }
 
