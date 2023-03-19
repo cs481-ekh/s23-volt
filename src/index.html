@@ -118,6 +118,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/Draggable.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/MotionPathPlugin.min.js"></script>
 <script src="https://unpkg.com/ajv@6.12.2/dist/ajv.min.js"></script>
+<!-- Include the gsap library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+
+<!-- Include the three.js library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
 
 <script>
 
@@ -848,47 +853,67 @@
         });
     }
 
-    /*
-        Adding a smaller energy block that will follow the inital block with less opacity,
-        it will fade in and out when moved.
-     */
-    function addTrailAnimation(cube) {
-        // Define the hover animation
+    function addDragAnimation(cube) {
+        var renderer, scene, camera, particles, particleSystem;
+        var mouseX = 0, mouseY = 0;
+        var windowHalfX = window.innerWidth / 2;
+        var windowHalfY = window.innerHeight / 2;
+
+        // Setup three.js renderer, scene, and camera
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        document.body.appendChild( renderer.domElement );
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
+        camera.position.z = 1000;
+        scene.add( camera );
+
+        // Setup particle system
+        particles = new THREE.Geometry();
+        for (var i = 0; i < 1000; i++) {
+            var particle = new THREE.Vector3(
+                Math.random() * 2000 - 1000,
+                Math.random() * 2000 - 1000,
+                Math.random() * 2000 - 1000
+            );
+            particles.vertices.push(particle);
+        }
+        var particleMaterial = new THREE.PointsMaterial({
+            color: 0xffffff,
+            size: 2,
+            map: new THREE.TextureLoader().load("https://i.imgur.com/UmQ2GhF.png"),
+            blending: THREE.AdditiveBlending,
+            transparent: true
+        });
+        particleSystem = new THREE.Points(particles, particleMaterial);
+        scene.add(particleSystem);
+
+        // Define the drag animation
         var fullId = "#" + cube.id;
-        console.clear();
-        gsap
-            .timeline({
-                defaults: { duration: 10, ease: "none" },
-                repeat: -10,
-                yoyo: true,
-                repeatDelay: 0.4
-            })
-            // .from(fullId, {
-            //     drawSVG: 0,
-            //     ease: "none"
-            // })
-            //
-            // .to(
-            //     "#dashedPath",
-            //     {
-            //         strokeDasharray: "8 12",
-            //         stroke:"yellow"
-            //     },
-            //     0
-            // );
+        var dragAnimation = gsap.to(fullId, {x: mouseX - windowHalfX, y: -mouseY + windowHalfY, duration: 0.5});
 
-            var tail  = gsap.fromTo(fullId, {drawSVG: 0, ease: "none"}, {strokeDasharray: "8 12", stroke:"yellow"});
-           // var timeline = gsap.timeline({paused: true});
-           // timeline.add(tail);
+        // Create a timeline and add the drag animation to it
+        var timeline = gsap.timeline({paused: true});
+        timeline.add(dragAnimation);
 
-        // Add the hover animation to the cube
+        // Add the drag animation to the cube
         cube.addEventListener("mousedown", function () {
             timeline.play();
         });
-        cube.addEventListener("mouseout", function () {
+        cube.addEventListener("mouseup", function () {
             timeline.reverse();
         });
+
+        // Animate particle system
+        function animate() {
+            requestAnimationFrame( animate );
+            particleSystem.rotation.x += 0.005;
+            particleSystem.rotation.y += 0.01;
+            renderer.render( scene, camera );
+        }
+        animate();
     }
+
 
     //adds a context-menu listener to each cube.
     function addDropdownListener() {
@@ -987,13 +1012,8 @@
         var cubes = document.querySelectorAll(".cube");
         for (var i = 0; i < cubes.length; i++) {
             addHoverAnimation(cubes[i]);
-            addTrailAnimation(cubes[i]);
+            addDragAnimation(cubes[i]);
         }
-        // Add the hover animation to all the cubes initially
-        // var cubes = document.querySelectorAll(".cube");
-        // for (var i = 0; i < cubes.length; i++) {
-        //     addTrailAnimation(cubes[i]);
-        // }
     }
 
 
