@@ -50,7 +50,7 @@ canvas {
     grid-gap: 1px;
     grid-template-columns: auto auto 500px;
     grid-template-rows: minmax(75px, 10vh) 69vh minmax(100px, 15vh);
-    background-color: lightgrey;
+    background-color: #bdbbbb;
 }
 
 #grid-container > #main-canvas {
@@ -125,7 +125,7 @@ canvas {
     border: none;
     width: 100%;
     text-align: left;
-    background-color: lightgrey;
+    background-color: #bdbbbb;
 }
 
 
@@ -186,7 +186,7 @@ canvas {
     align-items: center;
     justify-content: center;
     align-self: center;
-    background-color: #fff;
+    background-color: #ffffff;
     border: 1px solid black;
     border-radius: 50%;
     width: 90%;

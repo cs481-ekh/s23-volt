@@ -39,7 +39,7 @@
         </div>
 
         <div class="container">
-            <div id="grid-container">
+            <div id="grid-container" style="opacity: 80%">
                 <div id="save-load">
                     <h4>SIMULATION SAVE/LOAD</h4>
                     <!-- accept attribute might have compatibility issues with mobile browsers -->
@@ -463,6 +463,10 @@
 
     document.getElementById('load-sim').addEventListener('change', onUploadSim);
 
+    /**
+     * Saves the current state of work as a JSON file
+     * @param filename - default name that user can change
+     */
     function saveCurrentState(filename) {
         const dataStruct = {objs: objectData, frames: frameData};
         const blob = new Blob([JSON.stringify(dataStruct)], {type: "text/json"});
@@ -478,7 +482,6 @@
             bubbles: true,
             cancelable: true,
         });
-
         link.dispatchEvent(evt);
         link.remove()
     }
@@ -585,16 +588,16 @@
     var clipper = clipAtRadius((canvas.width) / 2, 0, 0);
 
     // TODO: fix this, to be used for snapping cubes to stay within circle
-    function clipAtRadius(radius, offsetX, offsetY) {
+    function clipAtRadius(radius, offsetX, offsetY, centerx, centery) {
         return point => {
-            let x = centerx - offsetX,
-                y = centery - offsetY,
+            let x = point.x - offsetX,
+                y = point.y - offsetY,
                 length = Math.sqrt(x * x + y * y),
                 angle;
             if (length > radius) {
                 angle = Math.atan2(y, x);
-                centerx = radius * Math.cos(angle);
-                centery = radius * Math.sin(angle);
+                point.x = centerx + radius * Math.cos(angle);
+                point.y = centery + radius * Math.sin(angle);
             }
             return point;
         };
@@ -841,6 +844,7 @@
             });
         });
         var color;
+
         // Function to run when the draggable is pressed
         function onPress() {
             isMouseDown = true;
@@ -855,8 +859,9 @@
             console.log("color: " + color);
             if (isMouseDown) {
                 updatePath(color, event);
+               // clipAtRadius(indCube.radius, indCube.offsetX, indCube.offsetY, centerx, centery);
             }
-         //   updateDataPosition(event);
+            //   updateDataPosition(event);
         }
 
         // Function to update the canvas path with the current mouse position
@@ -941,7 +946,6 @@
         });
     }
 
-    // TODO add custom animation depending on which energy it changes to
     /**
      * Adds a context-menu listener to each cube. The listener includes the energy state change
      * and an animation with it.
@@ -1299,7 +1303,7 @@
 
     //Adds another energy type to an object
     function addEnergy(i) {
-        if (energySpinnerIndexes[i] == 3) {
+        if (energySpinnerIndexes[i] === 3) {
             return;
         }
         energySpinnerIndexes[i]++;
@@ -1368,19 +1372,24 @@
         var tableSize = document.getElementById("frames-table").rows[0].cells.length;
         var newCol = table.rows[0].insertCell(tableSize);
         var tableSize = document.getElementById("frames-table").rows[0].cells.length;
-        newCol.innerHTML = "<button id=\"select-frame-button\" onclick=\"selectFrameButton(" + tableSize + ")\">" + (tableSize) + "</button>";
-        //hides Object menu and displays playback menu if more than one frame is added
-        if (tableSize === 1) {
-            document.getElementById("object-menu").style.display = "block";
-        }
-        if (tableSize >= 2) {
-            document.getElementById("object-menu").style.display = "none";
-            document.getElementById("playback-controls").style.display = "block";
-            xValues.push(tableSize);
-            myChartVar.update();
-        }
-        if (fromLoad === false) {
-            addFrame();
+
+        // Limit amount of frames
+        if (tableSize <= 40) {
+            newCol.innerHTML = "<button id=\"select-frame-button\" onclick=\"selectFrameButton(" + tableSize + ")\">" + (tableSize) + "</button>";
+            //hides Object menu and displays playback menu if more than one frame is added
+
+            if (tableSize === 1) {
+                document.getElementById("object-menu").style.display = "block";
+            }
+            if (tableSize >= 2) {
+                document.getElementById("object-menu").style.display = "none";
+                document.getElementById("playback-controls").style.display = "block";
+                xValues.push(tableSize);
+                myChartVar.update();
+            }
+            if (fromLoad === false) {
+                addFrame();
+            }
         }
     }
 
