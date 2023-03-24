@@ -829,25 +829,38 @@
         function updatePath(color, event) {
             console.log("Updating path");
             const canvas = document.getElementById("can");
-            const ctx = canvas.getContext("2d");
-
-            // Add the current mouse position to the points array
             const rect = canvas.getBoundingClientRect();
             const x = event.clientX - rect.left;
             const y = event.clientY - rect.top;
+            const ctx = canvas.getContext("2d");
             points.push({x: x, y: y});
 
             // Create a new path and draw it
             const path = new Path2D();
-            path.moveTo(points[0].x, points[0].y); // Move to the first point in the array
+            path.moveTo(points[0].x, points[0].y);
             for (let i = 1; i < points.length; i++) {
-                path.lineTo(points[i].x, points[i].y); // Draw a line to each subsequent point in the array
+                path.lineTo(points[i].x, points[i].y);
             }
 
             // Set the stroke color and width, and stroke the path onto the canvas
             ctx.strokeStyle = color;
             ctx.lineWidth = 2;
             ctx.stroke(path);
+            console.log(path.toString());
+            // Create an SVG path string from the Path2D object
+            const svgPath = pathToSVG(path);
+
+            // Update the DrawSVG plugin with the new path string
+            gsap.to("#path", {duration: 0.5, drawSVG: svgPath, stroke: color});
+
+            // Helper function to convert a Path2D object to an SVG path string
+            function pathToSVG(path) {
+                const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                pathEl.setAttribute("d", path.toString());
+                svg.appendChild(pathEl);
+                return pathEl.getAttribute("d");
+            }
         }
 
         if (frameData.length === 1) {
