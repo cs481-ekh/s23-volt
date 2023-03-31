@@ -781,7 +781,10 @@
 
         // An array to hold the points for the path
         let points = [];
-
+        let copiedPoints = [];
+        // hash map
+        let cubesMap = new Map();
+        let currentCubeId = '';
         // Flag to indicate if the mouse button is currently pressed down
         let isMouseDown = false;
 
@@ -804,13 +807,25 @@
             // Log the draggable index when the press event fires
             draggable.addEventListener("press", function () {
                 console.log("Cube #" + index);
+                currentCubeId = "cube" +index;
             });
         });
         var color;
         // Function to run when the draggable is pressed
         function onPress() {
             isMouseDown = true;
-            points = [];
+            currCube = this.target
+
+            if (currCube !== prevCube) {
+                copiedPoints = points
+                points = [];
+                currEqualsPrev = false;
+                printArray(copiedPoints);
+            } else {
+                currEqualsPrev = true;
+            }
+
+            prevCube = currCube;
             console.log("This is my instance:", this);
         }
 
@@ -822,6 +837,9 @@
             if (isMouseDown) {
                 updatePath(color, event);
             }
+            // initialize map for cubes path
+            //console.log("cube" + this.target.id );
+            //storeCubesPath(this.target.id, points)
          //   updateDataPosition(event);
         }
 
@@ -842,6 +860,13 @@
                 path.lineTo(points[i].x, points[i].y);
             }
 
+            /* print copiedPoints */
+           // printArray(copiedPoints);
+
+            //
+            //storeCubesPath(this.target.id, points)
+            storeCubesPath(currentCubeId, points)
+
             // Set the stroke color and width, and stroke the path onto the canvas
             ctx.strokeStyle = color;
             ctx.lineWidth = 2;
@@ -861,6 +886,28 @@
                 svg.appendChild(pathEl);
                 return pathEl.getAttribute("d");
             }
+        }
+
+        function storeCubesPath(cubeId, pointsArray){
+            //map1.set('a', 1);
+            cubesMap.set(cubeId,pointsArray);
+            cubesMap.forEach((keys,values)=>{
+                console.log(keys,values)
+            })
+            // k = cube0, v =[{12,13}},[{3,4}]
+            //const values = cubesPath.from(map.values());
+            //console.log(values); // 👉️ [12,3,4,4]
+            // check if cubeId already has points then we will just add to it
+        }
+
+        /**
+         * print Array points
+         * @param array
+         */
+        function printArray(array) {
+            array.forEach(function (entry) {
+                console.log(entry);
+            });
         }
 
         if (frameData.length === 1) {
