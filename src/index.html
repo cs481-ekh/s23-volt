@@ -1389,7 +1389,9 @@
             }
             if (fromLoad === false) {
                 addFrame();
-            }
+            } else if (fromLoad === true) {
+                addFrame();
+            } // TODO fix this part for weird bug
         }
     }
 
