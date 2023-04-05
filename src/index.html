@@ -847,6 +847,7 @@
          //   updateDataPosition(event);
         }
 
+        var path;
         // Function to update the canvas path with the current mouse position
         function updatePath(color, event) {
             console.log("Updating path");
@@ -858,10 +859,15 @@
             points.push({x: x, y: y});
 
             // Create a new path and draw it
-            const path = new Path2D();
+/*            const path = new Path2D();
             path.moveTo(points[0].x, points[0].y);
             for (let i = 1; i < points.length; i++) {
                 path.lineTo(points[i].x, points[i].y);
+            }*/
+            drawPath(points, color);
+
+            function completePath(begin, end){
+
             }
 
             /* print copiedPoints */
@@ -872,9 +878,9 @@
             storeCubesPath(currentCubeId, points)
 
             // Set the stroke color and width, and stroke the path onto the canvas
-            ctx.strokeStyle = color;
+          /*  ctx.strokeStyle = color;
             ctx.lineWidth = 2;
-            ctx.stroke(path);
+            ctx.stroke(path);*/
             console.log(path.toString());
             // Create an SVG path string from the Path2D object
             const svgPath = pathToSVG(path);
@@ -890,6 +896,25 @@
                 svg.appendChild(pathEl);
                 return pathEl.getAttribute("d");
             }
+        }
+
+        /**
+         *
+         * @param arrayPoints
+         * @param color
+         */
+        function drawPath(arrayPoints, color){
+            //const path = new Path2D();
+            const ctx = canvas.getContext("2d");
+            path.moveTo(arrayPoints[0].x, arrayPoints[0].y);
+            for (let i = 1; i < arrayPoints.length; i++) {
+                path.lineTo(arrayPoints[i].x, arrayPoints[i].y);
+            }
+
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.stroke(path);
+
         }
 
         function storeCubesPath(cubeId, pointsArray){
