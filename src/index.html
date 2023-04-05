@@ -814,18 +814,22 @@
         // Function to run when the draggable is pressed
         function onPress() {
             isMouseDown = true;
-            currCube = this.target
-
-            if (currCube !== prevCube) {
+            //currCube = this.target
+            storeCubesPath(currentCubeId, points);
+            points = [];
+/*            if (currCube !== prevCube) {
+                console.log(currCube + " currentCube +");
+                console.log(prevCube + " prevCube +");
                 copiedPoints = points
                 points = [];
                 currEqualsPrev = false;
                 printArray(copiedPoints);
             } else {
+                console.log(prevCube + " prevCube");
                 currEqualsPrev = true;
             }
 
-            prevCube = currCube;
+            prevCube = currCube;*/
             console.log("This is my instance:", this);
         }
 
@@ -836,7 +840,7 @@
             console.log("color: " + color);
             if (isMouseDown) {
                 updatePath(color, event);
-            }
+            }*/
             // initialize map for cubes path
             //console.log("cube" + this.target.id );
             //storeCubesPath(this.target.id, points)
