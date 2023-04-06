@@ -786,7 +786,15 @@
         let cubesMap = new Map();
         let currentCubeId = '';
         // Flag to indicate if the mouse button is currently pressed down
-        let isMouseDown = false;
+        let isMouseDown = false
+
+        // let currCube = "cube0";
+        // let prevCube = "cube0";
+        let currEqualsPrev = true;
+
+        // Track end point of first path
+        let endOldPathX;
+        let endOldPathY;
 
         // Get all elements with the class "cube"
         var cube = $(".cube");
@@ -807,29 +815,31 @@
             // Log the draggable index when the press event fires
             draggable.addEventListener("press", function () {
                 console.log("Cube #" + index);
-                currentCubeId = "cube" +index;
+                currentCubeId = "cube" + index;
             });
         });
+
         var color;
+
         // Function to run when the draggable is pressed
         function onPress() {
             isMouseDown = true;
             //currCube = this.target
             storeCubesPath(currentCubeId, points);
             points = [];
-/*            if (currCube !== prevCube) {
-                console.log(currCube + " currentCube +");
-                console.log(prevCube + " prevCube +");
-                copiedPoints = points
-                points = [];
-                currEqualsPrev = false;
-                printArray(copiedPoints);
-            } else {
-                console.log(prevCube + " prevCube");
-                currEqualsPrev = true;
-            }
+            /*            if (currCube !== prevCube) {
+                            console.log(currCube + " currentCube +");
+                            console.log(prevCube + " prevCube +");
+                            copiedPoints = points
+                            points = [];
+                            currEqualsPrev = false;
+                            printArray(copiedPoints);
+                        } else {
+                            console.log(prevCube + " prevCube");
+                            currEqualsPrev = true;
+                        }
 
-            prevCube = currCube;*/
+                        prevCube = currCube;*/
             console.log("This is my instance:", this);
         }
 
@@ -838,13 +848,21 @@
             console.log("Dragging");
             color = $(this.target).css('background-color');
             console.log("color: " + color);
-            if (isMouseDown) {
-                updatePath(color, event);
-            }*/
+            storeCubesPath(currentCubeId, points);
+            updatePath(color, event);
+            /*           if (isMouseDown) {
+                           if (currEqualsPrev){
+                               points = copiedPoints;
+                               storeCubesPath(currentCubeId, copiedPoints);
+                           } else {
+                               storeCubesPath(currentCubeId, points);
+                           }
+                           updatePath(color, event);
+                       }*/
             // initialize map for cubes path
             //console.log("cube" + this.target.id );
             //storeCubesPath(this.target.id, points)
-         //   updateDataPosition(event);
+            //   updateDataPosition(event);
         }
 
         var path;
@@ -855,32 +873,33 @@
             const rect = canvas.getBoundingClientRect();
             const x = event.clientX - rect.left;
             const y = event.clientY - rect.top;
-            const ctx = canvas.getContext("2d");
+            path = new Path2D();
+            // const ctx = canvas.getContext("2d");
             points.push({x: x, y: y});
 
             // Create a new path and draw it
-/*            const path = new Path2D();
-            path.moveTo(points[0].x, points[0].y);
-            for (let i = 1; i < points.length; i++) {
-                path.lineTo(points[i].x, points[i].y);
-            }*/
-            drawPath(points, color);
-
-            function completePath(begin, end){
-
-            }
+            /*            const path = new Path2D();
+                        path.moveTo(points[0].x, points[0].y);
+                        for (let i = 1; i < points.length; i++) {
+                            path.lineTo(points[i].x, points[i].y);
+                        }*/
+            drawPath(points, color, currentCubeId);
 
             /* print copiedPoints */
-           // printArray(copiedPoints);
+            // printArray(copiedPoints);
 
             //
             //storeCubesPath(this.target.id, points)
             storeCubesPath(currentCubeId, points)
+            cubesMap.get(currentCubeId);
+            endOldPathX = points[points.length - 1].x;
+            endOldPathY = points[points.length - 1].y;
+
 
             // Set the stroke color and width, and stroke the path onto the canvas
-          /*  ctx.strokeStyle = color;
-            ctx.lineWidth = 2;
-            ctx.stroke(path);*/
+            /*  ctx.strokeStyle = color;
+              ctx.lineWidth = 2;
+              ctx.stroke(path);*/
             console.log(path.toString());
             // Create an SVG path string from the Path2D object
             const svgPath = pathToSVG(path);
@@ -900,23 +919,66 @@
 
         /**
          *
+         * @param prevCubePoints
+         * @param currCubePoints
+         */
+        // function completePath(prevCubePoints, currCubePoints) {
+        //     const ctx = canvas.getContext("2d");
+        //     ctx.beginPath();
+        //     ctx.moveTo(prevCubePoints[1].x, prevCubePoints[1].y);
+        //     ctx.lineTo(currCubePoints[0].x, currCubePoints[0].y);
+        //     ctx.strokeStyle = color;
+        //     ctx.lineWidth = 2;
+        //     ctx.stroke();
+        // }
+
+            // Initialize the ID of the last moved cube as null
+        let lastMovedCubeId = null;
+
+        /**
+         * Draw a path when cubes are moved
+         *
          * @param arrayPoints
          * @param color
+         * @param cubeId
          */
-        function drawPath(arrayPoints, color){
-            //const path = new Path2D();
+        function drawPath(arrayPoints, color, cubeId){
             const ctx = canvas.getContext("2d");
-            path.moveTo(arrayPoints[0].x, arrayPoints[0].y);
-            for (let i = 1; i < arrayPoints.length; i++) {
-                path.lineTo(arrayPoints[i].x, arrayPoints[i].y);
+
+            // Check if this is the first cube being moved or if it's the same cube as the last one
+            if (lastMovedCubeId === cubeId) {
+                // If it's the same cube, continue the previous path
+               // arrayPoints[0] = endOldPath;
+                ctx.beginPath();
+                ctx.moveTo(endOldPathX, endOldPathY);
+                for (let i = 1; i < arrayPoints.length; i++) {
+                    ctx.lineTo(arrayPoints[i].x, arrayPoints[i].y);
+                }
+            } else {
+                // If it's a new cube, start a new path
+                ctx.beginPath();
+                ctx.moveTo(arrayPoints[0].x, arrayPoints[0].y);
+                for (let i = 1; i < arrayPoints.length; i++) {
+                    ctx.lineTo(arrayPoints[i].x, arrayPoints[i].y);
+                }
             }
 
             ctx.strokeStyle = color;
             ctx.lineWidth = 2;
-            ctx.stroke(path);
+            ctx.stroke();
 
+            // storeCubesPath(cubeId, arrayPoints);
+            // cubesMap.get(cubeId);
+
+            // Update the ID of the last moved cube
+            lastMovedCubeId = cubeId;
         }
 
+        /**
+         *
+         * @param cubeId
+         * @param pointsArray
+         */
         function storeCubesPath(cubeId, pointsArray){
             //map1.set('a', 1);
             cubesMap.set(cubeId,pointsArray);
