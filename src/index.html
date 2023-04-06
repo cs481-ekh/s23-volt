@@ -866,9 +866,7 @@
             }*/
             drawPath(points, color);
 
-            function completePath(begin, end){
 
-            }
 
             /* print copiedPoints */
            // printArray(copiedPoints);
@@ -914,7 +912,11 @@
             ctx.strokeStyle = color;
             ctx.lineWidth = 2;
             ctx.stroke(path);
-
+            let beginX = arrayPoints[0].x;
+            let beginY = arrayPoints[0].y;
+            let endX = arrayPoints[length-1].x;
+            let endY = arrayPoints[length-1].y;
+            completePath(beginX,beginY, endX,endY);
         }
 
         function storeCubesPath(cubeId, pointsArray){
