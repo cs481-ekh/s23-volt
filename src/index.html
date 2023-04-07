@@ -609,7 +609,8 @@
 
     // takes the current form values and uses them to populate the objectData and frameData structures
     function initFirstFrame() {
-        $(".obj-update").remove();
+        //TODO: Need to fix,  When this is call the add and remove buttons disappear
+       $(".obj-update").remove();
 
         var objNameBoxes = document.getElementsByClassName("obj_name_box");
         const objNameBoxArray = Array.prototype.slice.call(objNameBoxes);
@@ -1220,6 +1221,7 @@
         drawFrame(nextFrame);
     }
 
+    //TODO: fix addObject and removeObject Button disappearing, bug #46
     //Adds object to object table when add-object button is clicked
     function addObjectButton() {
         numObjectButtons++;
