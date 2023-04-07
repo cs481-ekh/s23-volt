@@ -825,7 +825,7 @@
         function onPress() {
             isMouseDown = true;
             //currCube = this.target
-            storeCubesPath(currentCubeId, points);
+            //storeCubesPath(currentCubeId, points);
             points = [];
             /*            if (currCube !== prevCube) {
                             console.log(currCube + " currentCube +");
@@ -848,7 +848,7 @@
             console.log("Dragging");
             color = $(this.target).css('background-color');
             console.log("color: " + color);
-            storeCubesPath(currentCubeId, points);
+           // storeCubesPath(currentCubeId, points);
             updatePath(color, event);
             /*           if (isMouseDown) {
                            if (currEqualsPrev){
@@ -863,6 +863,7 @@
             //console.log("cube" + this.target.id );
             //storeCubesPath(this.target.id, points)
             //   updateDataPosition(event);
+            //console.log(points);
         }
 
         var path;
@@ -891,7 +892,7 @@
             //
             //storeCubesPath(this.target.id, points)
             storeCubesPath(currentCubeId, points)
-            cubesMap.get(currentCubeId);
+            //cubesMap.get(currentCubeId);
             endOldPathX = points[points.length - 1].x;
             endOldPathY = points[points.length - 1].y;
 
@@ -916,6 +917,7 @@
                 return pathEl.getAttribute("d");
             }
         }
+       // storeCubesPath(currentCubeId, points);
 
         /**
          *
@@ -983,7 +985,8 @@
             //map1.set('a', 1);
             cubesMap.set(cubeId,pointsArray);
             cubesMap.forEach((keys,values)=>{
-                console.log(keys,values)
+                console.log(keys,values + "Key, values")
+                //console.log("storeCubesForEach")
             })
             // k = cube0, v =[{12,13}},[{3,4}]
             //const values = cubesPath.from(map.values());
