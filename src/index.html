@@ -682,6 +682,23 @@
             curCount++;
         });
         console.log(frameData[0]);
+        var energySpinValue = document.getElementById("energy-spin0").value; // get the value of the input field
+        var energyType = document.getElementById("energy-type").value;
+        console.log(energySpinValue);
+        console.log(energyType);
+
+        //alert if no cubes initialized
+        var noCubes = "At least one cube must be initialized :)";
+        var noEnergy = "Please expand menu and select energy type :)";
+
+        if(energyType == "Energy Type" ){
+            alert(noEnergy);
+        }
+        if(energySpinValue < 1){
+            alert(noCubes);
+        }
+
+
         drawCubes();
         updateCubeSize();
     }
@@ -689,6 +706,9 @@
     //Draws cubes on canvas when draw-cubes button is clicked
 
     function drawCubes() {
+        //var energySpinValue = document.getElementById("energy-spin0").value; // get the value of the input field
+        //console.log(energySpinValue); // log the value to the console (for testing purposes)
+
         // add labels to objects
         $(".objlabel").remove();
         var padX = $("#outercircle").width() * 0.04;  // this padding ideally would match the pixel length of the label itself
@@ -1261,7 +1281,6 @@
         drawFrame(nextFrame);
     }
 
-    //TODO: fix addObject and removeObject Button disappearing, bug #46
     //Adds object to object table when add-object button is clicked
     function addObjectButton() {
         numObjectButtons++;
@@ -1354,6 +1373,7 @@
         returnString = returnString + "<input placeholder=\"1\" required type=\"number\" value=\"\" min=\"0\" max=\"10\"/ id=\"energy-spin" + energySpinnerIndexes[currentIndex] + "\"></div>"
         returnString = returnString + "</td><td></td></tr></table>";
         returnString = returnString + "<br><div align=\"center\"><h5>Energy</h5><button id=\"add-energy-button\" class=\"btn btn-success\" onclick=\"addEnergy(" + currentIndex + ")\">Add</button>\ <button id=\"remove-energy-button\" class=\"btn btn-danger\" height=\"2px\" onclick=\"removeEnergy(" + currentIndex + ")\">Remove</button></div>";
+
 
         return returnString;
     }
