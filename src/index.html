@@ -2,15 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="normalize.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
           crossorigin="anonymous">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
-            crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
@@ -19,132 +13,104 @@
     <link href="styles.css" rel="stylesheet">
     <title>Energy Frametasia</title>
 </head>
+<body>
+<div id="grid-container">
+    <div id="save-load">
+        <h4>SIMULATION SAVE/LOAD</h4>
+        <!-- accept attribute might have compatibility issues with mobile browsers -->
+        <div id="load-save-controls">
+            <input id="load-sim" type="file" accept=".JSON" style="visibility: hidden;"/>
+            <label for="load-sim" class="btn btn-primary">Upload</label>
+            <button id="save-button" class="btn btn-primary" onclick="saveCurrentState('simulation.json')">Save</button>
+        </div>
+    </div>
+    <div id="main-canvas">
 
-<!-- First two divs are for background animation -->
-<body class="stars">
-<div class="twinkling">
-    <div class="clouds">
-        <!-- Navigation menu -->
-        <div class="navbar navbar-expand navbar-dark bg-dark">
-            <div class="container-fluid" style="font-size: large">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a href="#" class="nav-link active" aria-current="page">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="https://youtu.be/8OG033GjVak" class="nav-link active" aria-current="page">Tutorial</a>
-                    </li>
-                </ul>
+        <!-- below objects are for testing, will be changed/removed later -->
+        <!-- <div class="cube dragtest" style="background-color:rgb(128, 255, 43)"></div> -->
+        <!-- <div class="cube pathtest" style="background-color: rgb(204, 127, 255)"></div> -->
+        <div class="outercircle" id="outercircle">
+            <div class="circle" id="maincircle">
+                <canvas id="can"></canvas>
+                <div class="circlecenter" id="circlecenter"></div>
             </div>
         </div>
 
-        <div class="container">
-            <div id="grid-container" style="border-radius: 5%; opacity: 80%; scale: 95% ">
-                <div id="save-load">
-                    <h4>SIMULATION SAVE/LOAD</h4>
-                    <!-- accept attribute might have compatibility issues with mobile browsers -->
-                    <div id="load-save-controls">
-                        <input id="load-sim" type="file" accept=".JSON" style="visibility: hidden;"/>
-                        <label for="load-sim" class="btn btn-primary">Upload</label>
-                        <button id="save-button" class="btn btn-primary" onclick="saveCurrentState('simulation.json')">
-                            Save
-                        </button>
-                    </div>
-                </div>
-                <div id="main-canvas">
-
-                    <!-- TODO below objects are for testing, will be changed/removed later -->
-                    <!-- <div class="cube dragtest" style="background-color:rgb(128, 255, 43)"></div> -->
-                    <!-- <div class="cube pathtest" style="background-color: rgb(204, 127, 255)"></div> -->
-                    <div class="outercircle" id="outercircle">
-                        <div class="circle" id="maincircle">
-                            <canvas id="can"></canvas>
-                            <div class="circlecenter" id="circlecenter"></div>
-                        </div>
-                    </div>
-
-                </div>
-                <div id="playback-controls">
-                    <h3>PLAYBACK CONTROLS:</h3>
-                    <div id="playback-grid">
+    </div>
+    <div id="playback-controls">
+        <h3>PLAYBACK CONTROLS:</h3>
+        <div id="playback-grid">
                 <span>
-                    <button class="btn btn-primary" id="play-pause">Play</button> <br style="margin-top: 5px"> <br>
+                    <button id="play-pause">Play</button> <br style="margin-top: 5px">
                     <button id="step-back" onclick="stepForward(true)">&lt&lt</button>
                     <button id="step-forward" onclick="stepForward(false)">&gt&gt</button>
                 </span>
-                        <div id="speed-slider">
-                            <label for="playback-speed">Playback Speed:</label>
-                            <input type="range" min="1" max="10" value="5" class="slider" id="playback-speed">
-                        </div>
-                    </div>
-                </div>
-                <div class="chart-container">
-                    <canvas id="myChart" style="width:100%;max-width:500px;"></canvas>
-                </div>
-                <div id="object-menu">
-                    <h3>OBJECT MENU</h3>
-                    <table id="objects-table">
-                        <tr>
-                            <td>
-
-                                <div class="text-center">
-                                    <h3>Objects</h3>
-                                    <button type="button" id="add-object-button" class="obj-update btn btn-success"
-                                            onclick="addObjectButton()">Add
-                                    </button>
-
-                                    <button type="button" id="remove-object-button" class="obj-update btn btn-danger"
-                                            onclick="removeObjectButton()">Remove
-                                    </button>
-                                </div>
-                            </td>
-                            <td>
-
-                            </td>
-                        </tr>
-                    </table>
-                    <button type="button" id="init-cubes-button" class="btn btn-primary" onclick="initFirstFrame()">Draw
-                        Cubes
-                    </button>
-                </div>
-
-                <div id="frame-controls">
-
-                    <table id="frames-table">
-                        <tr>
-                            <tfoot>
-                            <button style="margin:2px;" id="add-frame-button" onclick="addFrameButton()">+</button>
-                            <label id="add-frame-button-label" for="add-frame-button">Add Frame&nbsp;</label>
-                            <button style="margin:2px;" id="remove-frame-button" onclick="removeFrameButton()">-
-                            </button>
-                            <label id="remove-frame-button-label" for="remove-frame-button">Remove Frame</label>
-                            <button style="margin:2px;" id="hide-frame-controls-button" onclick="hideFrameControls()">
-                                Hide Frame
-                                Controls
-                            </button>
-                            <button style="margin:2px;" id="graph-control-button" onclick="showGraphButton()">Show Graph
-                            </button>
-                            </tfoot>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-
-            <div id="context-menu">
-                <div class="item" id="kin-item">
-                    <i class="fa kin"></i> Kinetic
-                </div>
-                <div class="item" id="therm-item">
-                    <i class="fa grav"></i> Thermal
-                </div>
-                <div class="item" id="grav-item">
-                    <i class="fa kin"></i> Gravitational
-                </div>
-                <div class="item" id="chem-item">
-                    <i class="fa pot"></i> Chemical
-                </div>
+            <div id="speed-slider">
+                <label for="playback-speed">Playback Speed:</label>
+                <input type="range" min="1" max="10" value="5" class="slider" id="playback-speed">
             </div>
         </div>
+    </div>
+    <div class="chart-container">
+        <canvas id="myChart" style="width:100%;max-width:500px"></canvas>
+    </div>
+    <div id="object-menu">
+        <h3>OBJECT MENU</h3>
+        <table id="objects-table">
+            <tr>
+                <td>
+
+                    <div class="text-center">
+                        <h3>Objects</h3>
+                        <button type="button" id="add-object-button" class="obj-update btn btn-success"
+                                onclick="addObjectButton()">Add
+                        </button>
+
+                        <button type="button" id="remove-object-button" class="obj-update btn btn-danger"
+                                onclick="removeObjectButton()">Remove
+                        </button>
+                    </div>
+                </td>
+                <td>
+
+                </td>
+            </tr>
+        </table>
+        <button type="button" id="init-cubes-button" class="btn btn-primary" onclick="initFirstFrame()">Draw Cubes
+        </button>
+    </div>
+
+    <div id="frame-controls">
+
+        <table id="frames-table">
+            <tr>
+                <tfoot>
+                <button style="margin:2px;" id="add-frame-button" onclick="addFrameButton()">+</button>
+                <label id="add-frame-button-label" for="add-frame-button">Add Frame&nbsp;</label>
+                <button style="margin:2px;" id="remove-frame-button" onclick="removeFrameButton()">-</button>
+                <label id="remove-frame-button-label" for="remove-frame-button">Remove Frame</label>
+                <button style="margin:2px;" id="hide-frame-controls-button" onclick="hideFrameControls()">Hide Frame
+                    Controls
+                </button>
+                <button style="margin:2px;" id="graph-control-button" onclick="showGraphButton()">Show Graph</button>
+                </tfoot>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div id="context-menu">
+    <div class="item" id="kin-item">
+        <i class="fa kin"></i> Kinetic
+    </div>
+    <div class="item" id="therm-item">
+        <i class="fa grav"></i> Thermal
+    </div>
+    <div class="item" id="grav-item">
+        <i class="fa kin"></i> Gravitational
+    </div>
+    <div class="item" id="chem-item">
+        <i class="fa pot"></i> Chemical
     </div>
 </div>
 
@@ -463,10 +429,6 @@
 
     document.getElementById('load-sim').addEventListener('change', onUploadSim);
 
-    /**
-     * Saves the current state of work as a JSON file
-     * @param filename - default name that user can change
-     */
     function saveCurrentState(filename) {
         const dataStruct = {objs: objectData, frames: frameData};
         const blob = new Blob([JSON.stringify(dataStruct)], {type: "text/json"});
@@ -589,16 +551,16 @@
     var clipper = clipAtRadius((canvas.width) / 2, 0, 0);
 
     // TODO: fix this, to be used for snapping cubes to stay within circle
-    function clipAtRadius(radius, offsetX, offsetY, centerx, centery) {
+    function clipAtRadius(radius, offsetX, offsetY) {
         return point => {
-            let x = point.x - offsetX,
-                y = point.y - offsetY,
+            let x = centerx - offsetX,
+                y = centery - offsetY,
                 length = Math.sqrt(x * x + y * y),
                 angle;
             if (length > radius) {
                 angle = Math.atan2(y, x);
-                point.x = centerx + radius * Math.cos(angle);
-                point.y = centery + radius * Math.sin(angle);
+                centerx = radius * Math.cos(angle);
+                centery = radius * Math.sin(angle);
             }
             return point;
         };
@@ -826,10 +788,6 @@
         // Flag to indicate if the mouse button is currently pressed down
         let isMouseDown = false
 
-        // let currCube = "cube0";
-        // let prevCube = "cube0";
-        let currEqualsPrev = true;
-
         // Track end point of first path
         let endOldPathX;
         let endOldPathY;
@@ -862,22 +820,7 @@
         // Function to run when the draggable is pressed
         function onPress() {
             isMouseDown = true;
-            //currCube = this.target
-            storeCubesPath(currentCubeId, points);
             points = [];
-            /*            if (currCube !== prevCube) {
-                            console.log(currCube + " currentCube +");
-                            console.log(prevCube + " prevCube +");
-                            copiedPoints = points
-                            points = [];
-                            currEqualsPrev = false;
-                            printArray(copiedPoints);
-                        } else {
-                            console.log(prevCube + " prevCube");
-                            currEqualsPrev = true;
-                        }
-
-                        prevCube = currCube;*/
             console.log("This is my instance:", this);
         }
 
@@ -886,24 +829,12 @@
             console.log("Dragging");
             color = $(this.target).css('background-color');
             console.log("color: " + color);
-            storeCubesPath(currentCubeId, points);
+            // storeCubesPath(currentCubeId, points);
             updatePath(color, event);
-            /*           if (isMouseDown) {
-                           if (currEqualsPrev){
-                               points = copiedPoints;
-                               storeCubesPath(currentCubeId, copiedPoints);
-                           } else {
-                               storeCubesPath(currentCubeId, points);
-                           }
-                           updatePath(color, event);
-                       }*/
-            // initialize map for cubes path
-            //console.log("cube" + this.target.id );
-            //storeCubesPath(this.target.id, points)
-            //   updateDataPosition(event);
         }
 
         var path;
+
         // Function to update the canvas path with the current mouse position
         function updatePath(color, event) {
             console.log("Updating path");
@@ -915,12 +846,6 @@
             // const ctx = canvas.getContext("2d");
             points.push({x: x, y: y});
 
-            // Create a new path and draw it
-            /*            const path = new Path2D();
-                        path.moveTo(points[0].x, points[0].y);
-                        for (let i = 1; i < points.length; i++) {
-                            path.lineTo(points[i].x, points[i].y);
-                        }*/
             drawPath(points, color, currentCubeId);
 
             /* print copiedPoints */
@@ -929,15 +854,10 @@
             //
             //storeCubesPath(this.target.id, points)
             storeCubesPath(currentCubeId, points)
-            cubesMap.get(currentCubeId);
+            //cubesMap.get(currentCubeId);
             endOldPathX = points[points.length - 1].x;
             endOldPathY = points[points.length - 1].y;
 
-
-            // Set the stroke color and width, and stroke the path onto the canvas
-            /*  ctx.strokeStyle = color;
-              ctx.lineWidth = 2;
-              ctx.stroke(path);*/
             console.log(path.toString());
             // Create an SVG path string from the Path2D object
             const svgPath = pathToSVG(path);
@@ -955,22 +875,9 @@
             }
         }
 
-        /**
-         *
-         * @param prevCubePoints
-         * @param currCubePoints
-         */
-        // function completePath(prevCubePoints, currCubePoints) {
-        //     const ctx = canvas.getContext("2d");
-        //     ctx.beginPath();
-        //     ctx.moveTo(prevCubePoints[1].x, prevCubePoints[1].y);
-        //     ctx.lineTo(currCubePoints[0].x, currCubePoints[0].y);
-        //     ctx.strokeStyle = color;
-        //     ctx.lineWidth = 2;
-        //     ctx.stroke();
-        // }
+        // storeCubesPath(currentCubeId, points);
 
-            // Initialize the ID of the last moved cube as null
+        // Initialize the ID of the last moved cube as null
         let lastMovedCubeId = null;
 
         /**
@@ -980,21 +887,38 @@
          * @param color
          * @param cubeId
          */
-        function drawPath(arrayPoints, color, cubeId){
+        function drawPath(arrayPoints, color, cubeId) {
             const ctx = canvas.getContext("2d");
 
-            // Check if this is the first cube being moved or if it's the same cube as the last one
-            if (lastMovedCubeId === cubeId) {
+            if (lastMovedCubeId === cubeId || lastMovedCubeId === null) {
                 // If it's the same cube, continue the previous path
-               // arrayPoints[0] = endOldPath;
+                arrayPoints.unshift({x: endOldPathX, y: endOldPathY});
                 ctx.beginPath();
-                ctx.moveTo(endOldPathX, endOldPathY);
+                ctx.moveTo(arrayPoints[0].x, arrayPoints[0].y);
+                for (let i = 1; i < arrayPoints.length; i++) {
+                    ctx.lineTo(arrayPoints[i].x, arrayPoints[i].y);
+                }
+            } else if (cubesMap.has(cubeId) && lastMovedCubeId !== cubeId) {
+                // If the current cube has a previous path, continue it
+                const prevPath = cubesMap.get(cubeId);
+                const endPoint = prevPath[prevPath.length - 1];
+                arrayPoints.unshift(endPoint);
+                ctx.beginPath();
+                ctx.moveTo(arrayPoints[0].x, arrayPoints[0].y);
                 for (let i = 1; i < arrayPoints.length; i++) {
                     ctx.lineTo(arrayPoints[i].x, arrayPoints[i].y);
                 }
             } else {
                 // If it's a new cube, start a new path
                 ctx.beginPath();
+                let lastCubeArray = cubesMap.get(lastMovedCubeId);
+                let lastCubeLastPoint = lastCubeArray[lastCubeArray.length - 1];
+                let currentCubeFirstPoint = arrayPoints[0];
+                if (lastCubeLastPoint.x === currentCubeFirstPoint.x && lastCubeLastPoint.y === currentCubeFirstPoint.y) {
+                    // If the last point of the last cube's path matches the first point of the current cube's path,
+                    // remove the first point of the current cube's path to avoid connecting them
+                    arrayPoints.shift();
+                }
                 ctx.moveTo(arrayPoints[0].x, arrayPoints[0].y);
                 for (let i = 1; i < arrayPoints.length; i++) {
                     ctx.lineTo(arrayPoints[i].x, arrayPoints[i].y);
@@ -1005,11 +929,13 @@
             ctx.lineWidth = 2;
             ctx.stroke();
 
-            // storeCubesPath(cubeId, arrayPoints);
-            // cubesMap.get(cubeId);
+            // Save the current path for the current cube
+            cubesMap.set(cubeId, arrayPoints);
 
-            // Update the ID of the last moved cube
+            // Update the last moved cube ID
             lastMovedCubeId = cubeId;
+            endOldPathX = arrayPoints[arrayPoints.length - 1].x;
+            endOldPathY = arrayPoints[arrayPoints.length - 1].y;
         }
 
         /**
@@ -1017,11 +943,12 @@
          * @param cubeId
          * @param pointsArray
          */
-        function storeCubesPath(cubeId, pointsArray){
+        function storeCubesPath(cubeId, pointsArray) {
             //map1.set('a', 1);
-            cubesMap.set(cubeId,pointsArray);
-            cubesMap.forEach((keys,values)=>{
-                console.log(keys,values)
+            cubesMap.set(cubeId, pointsArray);
+            cubesMap.forEach((keys, values) => {
+                console.log(keys, values + "Key, values")
+                //console.log("storeCubesForEach")
             })
             // k = cube0, v =[{12,13}},[{3,4}]
             //const values = cubesPath.from(map.values());
@@ -1452,7 +1379,7 @@
 
     //Adds another energy type to an object
     function addEnergy(i) {
-        if (energySpinnerIndexes[i] === 3) {
+        if (energySpinnerIndexes[i] == 3) {
             return;
         }
         energySpinnerIndexes[i]++;
@@ -1521,24 +1448,19 @@
         var tableSize = document.getElementById("frames-table").rows[0].cells.length;
         var newCol = table.rows[0].insertCell(tableSize);
         var tableSize = document.getElementById("frames-table").rows[0].cells.length;
-
-        // Limit amount of frames
-        if (tableSize <= 40) {
-            newCol.innerHTML = "<button id=\"select-frame-button\" onclick=\"selectFrameButton(" + tableSize + ")\">" + (tableSize) + "</button>";
-            //hides Object menu and displays playback menu if more than one frame is added
-
-            if (tableSize === 1) {
-                document.getElementById("object-menu").style.display = "block";
-            }
-            if (tableSize >= 2) {
-                document.getElementById("object-menu").style.display = "none";
-                document.getElementById("playback-controls").style.display = "block";
-                xValues.push(tableSize);
-                myChartVar.update();
-            }
-            if (fromLoad === false) {
-                addFrame();
-            }
+        newCol.innerHTML = "<button id=\"select-frame-button\" onclick=\"selectFrameButton(" + tableSize + ")\">" + (tableSize) + "</button>";
+        //hides Object menu and displays playback menu if more than one frame is added
+        if (tableSize === 1) {
+            document.getElementById("object-menu").style.display = "block";
+        }
+        if (tableSize >= 2) {
+            document.getElementById("object-menu").style.display = "none";
+            document.getElementById("playback-controls").style.display = "block";
+            xValues.push(tableSize);
+            myChartVar.update();
+        }
+        if (fromLoad === false) {
+            addFrame();
         }
     }
 
