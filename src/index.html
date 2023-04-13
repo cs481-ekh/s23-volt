@@ -705,8 +705,6 @@
     // }
 
     function initFirstFrame() {
-        var input = false;
-// Check if energy-type and energy-spin0 have a value
             // Update the frame data
             var objNameBoxes = document.getElementsByClassName("obj_name_box");
             const objNameBoxArray = Array.prototype.slice.call(objNameBoxes);
@@ -722,7 +720,6 @@
             var typeSelectors = document.getElementsByClassName("energy-type");
             const typeSelectorArray = Array.prototype.slice.call(typeSelectors);
             curCount = 0;
-        while(!input){
             var typeSelect = typeSelectorArray[curCount];
             var typeToAdd = $(typeSelect).find(":selected").val();
             console.log(typeToAdd);
@@ -737,28 +734,25 @@
                 return;
             }
             if (typeToAdd === "Energy Type" && countToAdd === "" ) {
-                alert("Please click expand to reveal cubes menu");
+                alert("Click expand and initialize cubes");
                 return;
             }
             var owningObject = parseInt(parentTableID.charAt(parentTableID.length - 1));
-
-             if (typeToAdd === "Energy Type") {
-                alert("Please select an energy type");
-                return;
-            }
-            else if (countToAdd < 1 ) {
-                alert("Please select the number of cubes to add");
-                return;
-            }
-           // input =true;
             for (let i = 0; i < countToAdd; i++) {
                 addEnergyCube(typeToAdd, owningObject);
                 updateChartY(1, typeToAdd);
             }
 
             curCount++;
-        }
 
+        if (typeToAdd === "Energy Type") {
+            alert("Please select an energy type");
+            return;
+        }
+        else if (countToAdd < 1 ) {
+            alert("Please select the number of cubes to add");
+            return;
+        }
 
 
 
