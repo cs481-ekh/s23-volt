@@ -644,11 +644,7 @@
         return {"radius": radius, "radians": radians}
     }
 
-    // takes the current form values and uses them to populate the objectData and frameData structures
     function initFirstFrame() {
-        //When this is called the add and remove buttons disappear in first frame
-       //$(".obj-update").remove();
-
         var objNameBoxes = document.getElementsByClassName("obj_name_box");
         const objNameBoxArray = Array.prototype.slice.call(objNameBoxes);
         var curCount = 0;
@@ -662,33 +658,56 @@
         frameData = [{}];
         var typeSelectors = document.getElementsByClassName("energy-type");
         const typeSelectorArray = Array.prototype.slice.call(typeSelectors);
-        // console.log(typeSelectorArray);
         curCount = 0;
-        typeSelectorArray.forEach(typeSelect => {
-            var typeToAdd = $(typeSelectors[curCount]).find(":selected").val();
-            // console.log(typeToAdd);
+        if (typeSelectorArray < 1){
+            alert("Please click add to expand object menu");
+            return;
+        }
+        var alerted = false;
+        for (var i = 0; i < typeSelectorArray.length; i++) {
+            var typeSelect = typeSelectorArray[i];
+            var typeToAdd = $(typeSelect).find(":selected").val();
             var parentTableID = $(typeSelect).closest('table').attr('id');
-            // console.log(typeSelect);
             var adjacentSpinner = $(typeSelect).next();
             var countToAdd = adjacentSpinner.val();
-            // console.log(countToAdd);
+            if(!alerted){
+                if (typeToAdd === "Energy Type" && countToAdd === "" ) {
+                    alert("No cubes are initialized, click expand and initialize cubes");
+                    alerted = true;
+                    break;
+
+                }
+                if (typeToAdd === "Energy Type") {
+                    alert("Please select an energy type");
+                    alerted = true;
+                    break;
+                }
+                else if (countToAdd < 1 ) {
+                    alert("Please select the number of cubes to add");
+                    alerted = true;
+                    break;
+                }
+            }
             var owningObject = parseInt(parentTableID.charAt(parentTableID.length - 1));
-            for (let i = 0; i < countToAdd; i++) {
+            for (let j = 0; j < countToAdd; j++) {
                 // console.log("at 442, i="+i+", owningObject="+owningObject+", typeToAdd="+typeToAdd);
                 addEnergyCube(typeToAdd, owningObject);
                 updateChartY(1, typeToAdd); //hard coded one because they should be adding energy anywhere else, gg
 
             }
-            curCount++;
-        });
+        }
         console.log(frameData[0]);
         drawCubes();
         updateCubeSize();
     }
 
+
     //Draws cubes on canvas when draw-cubes button is clicked
 
     function drawCubes() {
+        //var energySpinValue = document.getElementById("energy-spin0").value; // get the value of the input field
+        //console.log(energySpinValue); // log the value to the console (for testing purposes)
+
         // add labels to objects
         $(".objlabel").remove();
         var padX = $("#outercircle").width() * 0.04;  // this padding ideally would match the pixel length of the label itself
@@ -1261,7 +1280,6 @@
         drawFrame(nextFrame);
     }
 
-    //TODO: fix addObject and removeObject Button disappearing, bug #46
     //Adds object to object table when add-object button is clicked
     function addObjectButton() {
         numObjectButtons++;
@@ -1354,6 +1372,7 @@
         returnString = returnString + "<input placeholder=\"1\" required type=\"number\" value=\"\" min=\"0\" max=\"10\"/ id=\"energy-spin" + energySpinnerIndexes[currentIndex] + "\"></div>"
         returnString = returnString + "</td><td></td></tr></table>";
         returnString = returnString + "<br><div align=\"center\"><h5>Energy</h5><button id=\"add-energy-button\" class=\"btn btn-success\" onclick=\"addEnergy(" + currentIndex + ")\">Add</button>\ <button id=\"remove-energy-button\" class=\"btn btn-danger\" height=\"2px\" onclick=\"removeEnergy(" + currentIndex + ")\">Remove</button></div>";
+
 
         return returnString;
     }
