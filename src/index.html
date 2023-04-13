@@ -732,8 +732,13 @@
             console.log(adjacentSpinner);
             var countToAdd = adjacentSpinner.val();
             console.log(countToAdd);
-            if (typeof  typeToAdd === "undefined" && typeof countToAdd === "undefined"  ){
-                alert("Please expand menu and initialize cubes");
+            if (typeof  typeToAdd === "undefined" && typeof countToAdd === "undefined"){
+                alert("Please click add to expand object menu");
+                return;
+            }
+            if (typeToAdd === "Energy Type" && countToAdd === "" ) {
+                alert("Please click expand to reveal cubes menu");
+                return;
             }
             var owningObject = parseInt(parentTableID.charAt(parentTableID.length - 1));
 
