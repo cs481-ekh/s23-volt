@@ -817,6 +817,15 @@
 
         var color;
 
+        // let animation = gsap.to("#herman", { duration:6, ease:"none",
+        //     motionPath:{
+        //         path:"#",
+        //         align:currentCubeId
+        //     },
+        //     onUpdate: animationUpdate,
+        //     onComplete: () => pause.innerHTML = "play"
+        // });
+
         // Function to run when the draggable is pressed
         function onPress() {
             isMouseDown = true;
@@ -847,7 +856,7 @@
             points.push({x: x, y: y});
 
             drawPath(points, color, currentCubeId);
-
+            buildDPath(currentCubeId);
             /* print copiedPoints */
             // printArray(copiedPoints);
 
@@ -954,6 +963,22 @@
             //const values = cubesPath.from(map.values());
             //console.log(values); // 👉️ [12,3,4,4]
             // check if cubeId already has points then we will just add to it
+        }
+
+        /**
+         *
+         * @param cubeId
+         */
+        function buildDPath(cubeId){
+            const currentCubeIdArray = cubesMap.get(cubeId);
+            let text = "M" + currentCubeIdArray[0].x + "," + currentCubeIdArray[0].y ;
+            for (let i = 1; i < currentCubeIdArray.length; i++) {
+                text += "l" + currentCubeIdArray[i].x + "," + currentCubeIdArray[i].y ;
+                // if(i%3 ===0){
+                //    text += ",";
+                // }
+            }
+            console.log(text);
         }
 
         /**
