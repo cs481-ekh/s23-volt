@@ -29,9 +29,14 @@
         <!-- below objects are for testing, will be changed/removed later -->
         <!-- <div class="cube dragtest" style="background-color:rgb(128, 255, 43)"></div> -->
         <!-- <div class="cube pathtest" style="background-color: rgb(204, 127, 255)"></div> -->
+        <!-- TODO -->
         <div class="outercircle" id="outercircle">
             <div class="circle" id="maincircle">
-                <canvas id="can"></canvas>
+                <canvas id="can">
+                    <svg id="svg">
+
+                    </svg>
+                </canvas>
                 <div class="circlecenter" id="circlecenter"></div>
             </div>
         </div>
@@ -781,7 +786,7 @@
 
         // An array to hold the points for the path
         let points = [];
-        let copiedPoints = [];
+
         // hash map
         let cubesMap = new Map();
         let currentCubeId = '';
@@ -826,65 +831,45 @@
         //     onComplete: () => pause.innerHTML = "play"
         // });
 
-        // Function to run when the draggable is pressed
+        /**
+         * Function to run when the draggable is pressed
+         */
         function onPress() {
             isMouseDown = true;
             points = [];
             console.log("This is my instance:", this);
         }
 
-        // Function to run while the draggable is being dragged
+        /**
+         * Function to run while the draggable is being dragged
+         * @param event
+         */
         function onDrag(event) {
             console.log("Dragging");
             color = $(this.target).css('background-color');
             console.log("color: " + color);
-            // storeCubesPath(currentCubeId, points);
             updatePath(color, event);
         }
 
-        var path;
-
-        // Function to update the canvas path with the current mouse position
+        /**
+         * Function to update the canvas path with the current mouse position
+         * @param color
+         * @param event
+         */
         function updatePath(color, event) {
             console.log("Updating path");
             const canvas = document.getElementById("can");
             const rect = canvas.getBoundingClientRect();
             const x = event.clientX - rect.left;
             const y = event.clientY - rect.top;
-            path = new Path2D();
-            // const ctx = canvas.getContext("2d");
             points.push({x: x, y: y});
 
             drawPath(points, color, currentCubeId);
-            buildDPath(currentCubeId);
-            /* print copiedPoints */
-            // printArray(copiedPoints);
+            createPathElement(currentCubeId);
 
-            //
-            //storeCubesPath(this.target.id, points)
-            storeCubesPath(currentCubeId, points)
-            //cubesMap.get(currentCubeId);
             endOldPathX = points[points.length - 1].x;
             endOldPathY = points[points.length - 1].y;
-
-            console.log(path.toString());
-            // Create an SVG path string from the Path2D object
-            const svgPath = pathToSVG(path);
-
-            // Update the DrawSVG plugin with the new path string
-            gsap.to("#path", {duration: 0.5, drawSVG: svgPath, stroke: color});
-
-            // Helper function to convert a Path2D object to an SVG path string
-            function pathToSVG(path) {
-                const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-                const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                pathEl.setAttribute("d", path.toString());
-                svg.appendChild(pathEl);
-                return pathEl.getAttribute("d");
-            }
         }
-
-        // storeCubesPath(currentCubeId, points);
 
         // Initialize the ID of the last moved cube as null
         let lastMovedCubeId = null;
@@ -966,19 +951,37 @@
         }
 
         /**
-         *
-         * @param cubeId
+         * Function creates an SVG and path elements
+         * @param cubeID
          */
-        function buildDPath(cubeId){
+        function createPathElement(cubeID) {
+            const path = document.createElement("path");
+            path.setAttribute("d", buildDPath(cubeID));
+
+            const element = document.getElementById("svg");
+            element.appendChild(path);
+        }
+
+        /**
+         * Build d attribute for path from the points in cubesMap
+         *
+         * @param cubeId - current cube
+         * @return string
+         */
+        function buildDPath(cubeId) {
             const currentCubeIdArray = cubesMap.get(cubeId);
-            let text = "M" + currentCubeIdArray[0].x + "," + currentCubeIdArray[0].y ;
+            let text = "M" + currentCubeIdArray[0].x + "," + currentCubeIdArray[0].y;
             for (let i = 1; i < currentCubeIdArray.length; i++) {
-                text += "l" + currentCubeIdArray[i].x + "," + currentCubeIdArray[i].y ;
+                // Remove undefined points from the path
+                if (currentCubeIdArray[i].x !== undefined && currentCubeIdArray[i].y !== undefined) {
+                    text += "l" + currentCubeIdArray[i].x + "," + currentCubeIdArray[i].y;
+                }
                 // if(i%3 ===0){
                 //    text += ",";
                 // }
             }
             console.log(text);
+            return text;
         }
 
         /**
