@@ -29,18 +29,14 @@
         <!-- below objects are for testing, will be changed/removed later -->
         <!-- <div class="cube dragtest" style="background-color:rgb(128, 255, 43)"></div> -->
         <!-- <div class="cube pathtest" style="background-color: rgb(204, 127, 255)"></div> -->
-        <!-- TODO -->
-        <div class="outercircle" id="outercircle">
-            <div class="circle" id="maincircle">
-                <canvas id="can">
-                    <svg id="svg">
-
-                    </svg>
-                </canvas>
-                <div class="circlecenter" id="circlecenter"></div>
+        <!-- TODO might use svg -->
+<!--        <svg id="svg" width="642px" height="644px"></svg>-->
+            <div class="outercircle" id="outercircle">
+                <div class="circle" id="maincircle">
+                    <canvas id="can"></canvas>
+                    <div class="circlecenter" id="circlecenter"></div>
+                </div>
             </div>
-        </div>
-
     </div>
     <div id="playback-controls">
         <h3>PLAYBACK CONTROLS:</h3>
@@ -654,7 +650,6 @@
     }
 
     //Draws cubes on canvas when draw-cubes button is clicked
-
     function drawCubes() {
         // add labels to objects
         $(".objlabel").remove();
@@ -668,7 +663,7 @@
             var objLabelY = ((outerWidth) / 2) + (((outerWidth) / 2) * Math.cos((i + 0.5) * slice)) - padY;
             console.log("obj=" + i + " x=" + objLabelX + " y=" + objLabelY + " name=" + objectData[i].name);
             var appendLabel = "<div id=\"label" + i + "\" class=objlabel style=\"top: " + objLabelY + "px; left: " + objLabelX + "px;\">" + objectData[i].name + "</div>";
-            $("#outercircle").append(appendLabel);
+            $("#maincircle").append(appendLabel);
         }
 
         $(".cube").remove();
@@ -957,8 +952,8 @@
         function createPathElement(cubeID) {
             const path = document.createElement("path");
             path.setAttribute("d", buildDPath(cubeID));
-
-            const element = document.getElementById("svg");
+            // TODO might change back to SVG
+            const element = document.getElementById("maincircle");
             element.appendChild(path);
         }
 
