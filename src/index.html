@@ -1005,12 +1005,23 @@
          * @return string
          */
         function buildDPath(cubeId) {
+
+            let text;
+            let i;
             const currentCubeIdArray = cubesMap.get(cubeId);
-            let text = "M" + currentCubeIdArray[0].x + "," + currentCubeIdArray[0].y;
-            for (let i = 1; i < currentCubeIdArray.length; i++) {
+
+            if (currentCubeIdArray[0].x !== undefined && currentCubeIdArray[0].y !== undefined) {
+                text = "M" + currentCubeIdArray[0].x + "," + currentCubeIdArray[0].y;
+                i = 1;
+            } else {
+                text = "M" + currentCubeIdArray[1].x + "," + currentCubeIdArray[1].y;
+                i = 2;
+            }
+
+            for (i; i < currentCubeIdArray.length; i++) {
                 // Remove undefined points from the path
                 if (currentCubeIdArray[i].x !== undefined && currentCubeIdArray[i].y !== undefined) {
-                    text += "L" + currentCubeIdArray[i].x + "," + currentCubeIdArray[i].y;
+                    text += "l" + currentCubeIdArray[i].x + "," + currentCubeIdArray[i].y;
                 }
             }
             console.log(text);
@@ -1372,13 +1383,13 @@
              * @type {MutationObserver}
              */
             const observer = new MutationObserver(function (mutationsList, observer) {
-               const  path = document.getElementById("cube0_path");
-               let pathLength;
+                path = document.getElementById("cube0_path").getAttribute("d");
+                let pathLength;
 
                 if (path) {
                     observer.disconnect();
                      pathLength = calculatePathLength("cube0");
-                    console.log("path Length");
+                    console.log(pathLength);
                     /**
                      *
                      * @param currentTime
