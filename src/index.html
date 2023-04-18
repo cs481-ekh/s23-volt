@@ -158,6 +158,8 @@
 
 <script>
 
+    let currentCubeId = '';
+
     const cubeEditingRelations = [
         {
             "gravitationalRelation": {
@@ -821,7 +823,7 @@
 
         // hash map
         let cubesMap = new Map();
-        let currentCubeId = '';
+        currentCubeId = '';
         // Flag to indicate if the mouse button is currently pressed down
         let isMouseDown = false
 
@@ -853,15 +855,6 @@
         });
 
         var color;
-
-        // let animation = gsap.to("#herman", { duration:6, ease:"none",
-        //     motionPath:{
-        //         path:"#",
-        //         align:currentCubeId
-        //     },
-        //     onUpdate: animationUpdate,
-        //     onComplete: () => pause.innerHTML = "play"
-        // });
 
         /**
          * Function to run when the draggable is pressed
@@ -897,7 +890,8 @@
             points.push({x: x, y: y});
 
             drawPath(points, color, currentCubeId);
-            playBackPath = createPathElement(currentCubeId);
+            playBackPath = buildDPath(currentCubeId);
+            createPathElement(currentCubeId, playBackPath);
 
             endOldPathX = points[points.length - 1].x;
             endOldPathY = points[points.length - 1].y;
@@ -985,14 +979,25 @@
         /**
          * Function creates an SVG and path elements
          * @param cubeID
+         * @param d
          */
-        function createPathElement(cubeID) {
-            const path = document.createElement("path");
-            path.setAttribute("d", buildDPath(cubeID));
+        function createPathElement(cubeID, d) {
+
+            const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            svg.setAttribute("width", "644");
+            svg.setAttribute("height", "642");
+
+            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            path.setAttribute("d", d);
             path.setAttribute("id", cubeID + "_path");
+            svg.appendChild(path);
+
+            // const path = document.createElement("path");
+            // path.setAttribute("d", buildDPath(cubeID));
+            // path.setAttribute("id", cubeID + "_path");
             // TODO might change back to SVG
             const element = document.getElementById("maincircle");
-            element.appendChild(path);
+            element.appendChild(svg);
             return path.getAttribute("d");
         }
 
@@ -1003,16 +1008,24 @@
          * @return string
          */
         function buildDPath(cubeId) {
+
+            let text;
+            let i;
             const currentCubeIdArray = cubesMap.get(cubeId);
-            let text = "M" + currentCubeIdArray[0].x + "," + currentCubeIdArray[0].y;
-            for (let i = 1; i < currentCubeIdArray.length; i++) {
+
+            if (currentCubeIdArray[0].x !== undefined && currentCubeIdArray[0].y !== undefined) {
+                text = "M" + currentCubeIdArray[0].x + "," + currentCubeIdArray[0].y;
+                i = 1;
+            } else {
+                text = "M" + currentCubeIdArray[1].x + "," + currentCubeIdArray[1].y;
+                i = 2;
+            }
+
+            for (i; i < currentCubeIdArray.length; i++) {
                 // Remove undefined points from the path
                 if (currentCubeIdArray[i].x !== undefined && currentCubeIdArray[i].y !== undefined) {
                     text += "l" + currentCubeIdArray[i].x + "," + currentCubeIdArray[i].y;
                 }
-                // if(i%3 ===0){
-                //    text += ",";
-                // }
             }
             console.log(text);
             return text;
@@ -1333,6 +1346,8 @@
 
 
     // TODO animation = document.getElementById("physics-animation");
+    //  TODO add playPause into DOMLoad event listener
+
     function playPause() {
 
         if (playbackActive === true) {
@@ -1351,41 +1366,8 @@
                 }
             }
 
-            const element = document.getElementsByClassName(".cube");
-            const targetNode = document.body;
 
-            /**
-             *
-             * @type {MutationObserver}
-             */
-            const observer = new MutationObserver(function (mutationsList, observer) {
-               const  path = document.getElementById("cube0_path");
-
-                if (path) {
-                    observer.disconnect();
-                    const pathLength = path.getTotalLength();
-
-                    /**
-                     *
-                     * @param currentTime
-                     */
-                    function moveAlongPath(currentTime) {
-                        const currentOffset = (currentTime / 1000) % pathLength;
-                        const {x, y} = path.getPointAtLength(currentOffset);
-                        element.style.transform = `translateX(${x}px) translateY(${y}px)`;
-                    }
-
-                    requestAnimationFrame(function animate(currentTime) {
-                        moveAlongPath(currentTime);
-                        requestAnimationFrame(animate);
-                    });
-                }
-            });
-
-            // Options for observer
-            const config = { childList: true, subtree: true};
-            // Start observing target node
-            observer.observe(targetNode, config);
+            setupObserver();
 
 
             // element.style.offsetPath = "path(" + playBackPath + ")";
@@ -1394,6 +1376,48 @@
             //begin playback
             togglePlayback(true);
         }
+    }
+
+    /**
+     * Setup Mutation observer and run playback animation
+     */
+    function setupObserver() {
+
+        /**
+         *
+         * @type {MutationObserver}
+         */
+        const observer = new MutationObserver(function (mutationsList, observer) {
+            const path = document.getElementById("cube0_path").getAttribute("d");
+
+            if (path) {
+                observer.disconnect();
+                const pathLength = path.getTotalLength();
+
+                /**
+                 *
+                 * @param currentTime
+                 */
+                function moveAlongPath(currentTime) {
+                    const currentOffset = (currentTime / 1000) % pathLength;
+                    const {x, y} = path.getPointAtLength(currentOffset);
+                    element.style.transform = `translateX(${x}px) translateY(${y}px)`;
+                }
+
+                requestAnimationFrame(function animate(currentTime) {
+                    moveAlongPath(currentTime);
+                    requestAnimationFrame(animate);
+                });
+            }
+        });
+
+        const element = document.getElementById(currentCubeId);
+        const targetNode = document.getElementById("maincircle");
+
+        // Options for observer
+        const config = {childList: true, subtree: true};
+        // Start observing target node
+        observer.observe(targetNode, config);
     }
 
     //walks through existing frames, stops at end
