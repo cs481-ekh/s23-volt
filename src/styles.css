@@ -263,16 +263,20 @@ canvas {
     padding-left: 35px;
 }
 
-/* energy transform animation */
-.animate {
-    animation: thermal 1s ease-in-out;
+/* Playback */
+.cube {
+   /* offset-path: path("M20,20 C20,100 200,0 200,100"); */
+    animation: move 3000ms infinite alternate ease-in-out;
+    width: 40px;
+    height: 40px;
+    background: cyan;
 }
 
-@keyframes thermal {
-    from {
-        transform: scale(1);
+@keyframes move {
+    0% {
+        offset-distance: 0%;
     }
-    to {
-        transform: scale(2);
+    100% {
+        offset-distance: 100%;
     }
 }

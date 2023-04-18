@@ -228,6 +228,8 @@
     var menuIsOpen = false;
     var isInit = false;
 
+    var playBackPath;
+
     var playPauseButton = document.getElementById("play-pause");
     var speedSlider = document.getElementById("playback-speed");
     speedSlider.addEventListener("change", speedChanged);
@@ -895,7 +897,7 @@
             points.push({x: x, y: y});
 
             drawPath(points, color, currentCubeId);
-            createPathElement(currentCubeId);
+            playBackPath = createPathElement(currentCubeId);
 
             endOldPathX = points[points.length - 1].x;
             endOldPathY = points[points.length - 1].y;
@@ -987,9 +989,11 @@
         function createPathElement(cubeID) {
             const path = document.createElement("path");
             path.setAttribute("d", buildDPath(cubeID));
+            path.setAttribute("id", cubeID + "_path");
             // TODO might change back to SVG
             const element = document.getElementById("maincircle");
             element.appendChild(path);
+            return path.getAttribute("d");
         }
 
         /**
@@ -1332,11 +1336,61 @@
     function playPause() {
 
         if (playbackActive === true) {
-
             //stop playback
             togglePlayback(false);
         } else {
 
+            const styleSheet = document.styleSheets[0];
+
+            let keyFrameRule;
+            for (let i = 0; i < styleSheet.cssRules.length; i++) {
+                const rule = styleSheet.cssRules[i];
+                if (rule instanceof CSSKeyframesRule && rule.name === 'move') {
+                    keyFrameRule = rule;
+                    break;
+                }
+            }
+
+            const element = document.getElementsByClassName(".cube");
+            const targetNode = document.body;
+
+            /**
+             *
+             * @type {MutationObserver}
+             */
+            const observer = new MutationObserver(function (mutationsList, observer) {
+               const  path = document.getElementById("cube0_path");
+
+                if (path) {
+                    observer.disconnect();
+                    const pathLength = path.getTotalLength();
+
+                    /**
+                     *
+                     * @param currentTime
+                     */
+                    function moveAlongPath(currentTime) {
+                        const currentOffset = (currentTime / 1000) % pathLength;
+                        const {x, y} = path.getPointAtLength(currentOffset);
+                        element.style.transform = `translateX(${x}px) translateY(${y}px)`;
+                    }
+
+                    requestAnimationFrame(function animate(currentTime) {
+                        moveAlongPath(currentTime);
+                        requestAnimationFrame(animate);
+                    });
+                }
+            });
+
+            // Options for observer
+            const config = { childList: true, subtree: true};
+            // Start observing target node
+            observer.observe(targetNode, config);
+
+
+            // element.style.offsetPath = "path(" + playBackPath + ")";
+            //
+            // const animation = element.animate(keyFrameRule, {duration: 3000, iterations: Infinity});
             //begin playback
             togglePlayback(true);
         }
