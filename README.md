@@ -17,11 +17,16 @@ work within the application.
 
 ### Deployment
 
-deployment instructions
+Energy Frametasia can be deployed using GitHub pages, other hosting sites, or locally. All you have to do for deployment
+is select ````index.html```` as the source.
 
 ### Development Environment
 
-how to setup dev environment
+Steps to Set up:
+1. Clone the repo
+2. Run build.sh in terminal - `````./build.sh````` or ````sh build.sh````  
+    This will install libraries and frameworks being used
+
 
 ### Application Features
 
