@@ -32,7 +32,7 @@
                         <a href="#" class="nav-link active" aria-current="page">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a href="https://youtu.be/8OG033GjVak" class="nav-link active" aria-current="page">Tutorial</a>
+                        <a href="https://youtu.be/ropqdDl7_jA" class="nav-link active" aria-current="page">Tutorial</a>
                     </li>
                 </ul>
             </div>
@@ -53,9 +53,10 @@
                 </div>
                 <div id="main-canvas">
 
-                    <!-- TODO below objects are for testing, will be changed/removed later -->
                     <!-- <div class="cube dragtest" style="background-color:rgb(128, 255, 43)"></div> -->
                     <!-- <div class="cube pathtest" style="background-color: rgb(204, 127, 255)"></div> -->
+                    <!-- TODO might use svg -->
+                    <!--<svg id="svg" width="642px" height="644px"></svg>-->
                     <div class="outercircle" id="outercircle">
                         <div class="circle" id="maincircle">
                             <canvas id="can"></canvas>
@@ -154,7 +155,10 @@
 <script src="https://unpkg.com/ajv@6.12.2/dist/ajv.min.js"></script>
 <script src="https://d3js.org/d3.v7.min.js"></script>
 
+
 <script>
+
+    let currentCubeId = '';
 
     const cubeEditingRelations = [
         {
@@ -225,6 +229,8 @@
     var energySpinnerIndexes = [10];
     var menuIsOpen = false;
     var isInit = false;
+
+    var playBackPath;
 
     var playPauseButton = document.getElementById("play-pause");
     var speedSlider = document.getElementById("playback-speed");
@@ -463,10 +469,6 @@
 
     document.getElementById('load-sim').addEventListener('change', onUploadSim);
 
-    /**
-     * Saves the current state of work as a JSON file
-     * @param filename - default name that user can change
-     */
     function saveCurrentState(filename) {
         const dataStruct = {objs: objectData, frames: frameData};
         const blob = new Blob([JSON.stringify(dataStruct)], {type: "text/json"});
@@ -482,6 +484,7 @@
             bubbles: true,
             cancelable: true,
         });
+
         link.dispatchEvent(evt);
         link.remove()
     }
@@ -588,16 +591,16 @@
     var clipper = clipAtRadius((canvas.width) / 2, 0, 0);
 
     // TODO: fix this, to be used for snapping cubes to stay within circle
-    function clipAtRadius(radius, offsetX, offsetY, centerx, centery) {
+    function clipAtRadius(radius, offsetX, offsetY) {
         return point => {
-            let x = point.x - offsetX,
-                y = point.y - offsetY,
+            let x = centerx - offsetX,
+                y = centery - offsetY,
                 length = Math.sqrt(x * x + y * y),
                 angle;
             if (length > radius) {
                 angle = Math.atan2(y, x);
-                point.x = centerx + radius * Math.cos(angle);
-                point.y = centery + radius * Math.sin(angle);
+                centerx = radius * Math.cos(angle);
+                centery = radius * Math.sin(angle);
             }
             return point;
         };
@@ -703,7 +706,6 @@
 
 
     //Draws cubes on canvas when draw-cubes button is clicked
-
     function drawCubes() {
         //var energySpinValue = document.getElementById("energy-spin0").value; // get the value of the input field
         //console.log(energySpinValue); // log the value to the console (for testing purposes)
@@ -720,7 +722,7 @@
             var objLabelY = ((outerWidth) / 2) + (((outerWidth) / 2) * Math.cos((i + 0.5) * slice)) - padY;
             console.log("obj=" + i + " x=" + objLabelX + " y=" + objLabelY + " name=" + objectData[i].name);
             var appendLabel = "<div id=\"label" + i + "\" class=objlabel style=\"top: " + objLabelY + "px; left: " + objLabelX + "px;\">" + objectData[i].name + "</div>";
-            $("#outercircle").append(appendLabel);
+            $("#maincircle").append(appendLabel);
         }
 
         $(".cube").remove();
@@ -839,8 +841,15 @@
         // An array to hold the points for the path
         let points = [];
 
+        // hash map
+        let cubesMap = new Map();
+        currentCubeId = '';
         // Flag to indicate if the mouse button is currently pressed down
-        let isMouseDown = false;
+        let isMouseDown = false
+
+        // Track end point of first path
+        let endOldPathX;
+        let endOldPathY;
 
         // Get all elements with the class "cube"
         var cube = $(".cube");
@@ -861,58 +870,200 @@
             // Log the draggable index when the press event fires
             draggable.addEventListener("press", function () {
                 console.log("Cube #" + index);
+                currentCubeId = "cube" + index;
             });
         });
+
         var color;
 
-        // Function to run when the draggable is pressed
+        /**
+         * Function to run when the draggable is pressed
+         */
         function onPress() {
             isMouseDown = true;
             points = [];
             console.log("This is my instance:", this);
         }
 
-        // Function to run while the draggable is being dragged
+        /**
+         * Function to run while the draggable is being dragged
+         * @param event
+         */
         function onDrag(event) {
             console.log("Dragging");
             color = $(this.target).css('background-color');
             console.log("color: " + color);
-            if (isMouseDown) {
-                updatePath(color, event);
-               // clipAtRadius(indCube.radius, indCube.offsetX, indCube.offsetY, centerx, centery);
-            }
-            //   updateDataPosition(event);
+            updatePath(color, event);
         }
 
-        // Function to update the canvas path with the current mouse position
+        /**
+         * Function to update the canvas path with the current mouse position
+         * @param color
+         * @param event
+         */
         function updatePath(color, event) {
             console.log("Updating path");
             const canvas = document.getElementById("can");
-            const ctx = canvas.getContext("2d");
-
-            // Add the current mouse position to the points array
             const rect = canvas.getBoundingClientRect();
             const x = event.clientX - rect.left;
             const y = event.clientY - rect.top;
             points.push({x: x, y: y});
 
-            // Create a new path and draw it
-            const path = new Path2D();
-            path.moveTo(points[0].x, points[0].y); // Move to the first point in the array
-            for (let i = 1; i < points.length; i++) {
-                path.lineTo(points[i].x, points[i].y); // Draw a line to each subsequent point in the array
+            drawPath(points, color, currentCubeId);
+            playBackPath = buildDPath(currentCubeId);
+            createPathElement(currentCubeId, playBackPath);
+
+            endOldPathX = points[points.length - 1].x;
+            endOldPathY = points[points.length - 1].y;
+        }
+
+        // Initialize the ID of the last moved cube as null
+        let lastMovedCubeId = null;
+
+        /**
+         * Draw a path when cubes are moved
+         *
+         * @param arrayPoints
+         * @param color
+         * @param cubeId
+         */
+        function drawPath(arrayPoints, color, cubeId) {
+            const ctx = canvas.getContext("2d");
+
+            if (lastMovedCubeId === cubeId || lastMovedCubeId === null) {
+                // If it's the same cube, continue the previous path
+                arrayPoints.unshift({x: endOldPathX, y: endOldPathY});
+                ctx.beginPath();
+                ctx.moveTo(arrayPoints[0].x, arrayPoints[0].y);
+                for (let i = 1; i < arrayPoints.length; i++) {
+                    ctx.lineTo(arrayPoints[i].x, arrayPoints[i].y);
+                }
+            } else if (cubesMap.has(cubeId) && lastMovedCubeId !== cubeId) {
+                // If the current cube has a previous path, continue it
+                const prevPath = cubesMap.get(cubeId);
+                const endPoint = prevPath[prevPath.length - 1];
+                arrayPoints.unshift(endPoint);
+                ctx.beginPath();
+                ctx.moveTo(arrayPoints[0].x, arrayPoints[0].y);
+                for (let i = 1; i < arrayPoints.length; i++) {
+                    ctx.lineTo(arrayPoints[i].x, arrayPoints[i].y);
+                }
+            } else {
+                // If it's a new cube, start a new path
+                ctx.beginPath();
+                let lastCubeArray = cubesMap.get(lastMovedCubeId);
+                let lastCubeLastPoint = lastCubeArray[lastCubeArray.length - 1];
+                let currentCubeFirstPoint = arrayPoints[0];
+                if (lastCubeLastPoint.x === currentCubeFirstPoint.x && lastCubeLastPoint.y === currentCubeFirstPoint.y) {
+                    // If the last point of the last cube's path matches the first point of the current cube's path,
+                    // remove the first point of the current cube's path to avoid connecting them
+                    arrayPoints.shift();
+                }
+                ctx.moveTo(arrayPoints[0].x, arrayPoints[0].y);
+                for (let i = 1; i < arrayPoints.length; i++) {
+                    ctx.lineTo(arrayPoints[i].x, arrayPoints[i].y);
+                }
             }
 
-            // Set the stroke color and width, and stroke the path onto the canvas
             ctx.strokeStyle = color;
             ctx.lineWidth = 2;
-            ctx.stroke(path);
+            ctx.stroke();
+
+            // Save the current path for the current cube
+            cubesMap.set(cubeId, arrayPoints);
+
+            // Update the last moved cube ID
+            lastMovedCubeId = cubeId;
+            endOldPathX = arrayPoints[arrayPoints.length - 1].x;
+            endOldPathY = arrayPoints[arrayPoints.length - 1].y;
+        }
+
+        /**
+         *
+         * @param cubeId
+         * @param pointsArray
+         */
+        function storeCubesPath(cubeId, pointsArray) {
+            //map1.set('a', 1);
+            cubesMap.set(cubeId, pointsArray);
+            cubesMap.forEach((keys, values) => {
+                console.log(keys, values + "Key, values")
+                //console.log("storeCubesForEach")
+            })
+            // k = cube0, v =[{12,13}},[{3,4}]
+            //const values = cubesPath.from(map.values());
+            //console.log(values); // 👉️ [12,3,4,4]
+            // check if cubeId already has points then we will just add to it
+        }
+
+        /**
+         * Function creates an SVG and path elements
+         * @param cubeID
+         * @param d
+         */
+        function createPathElement(cubeID, d) {
+
+            const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            svg.setAttribute("width", "644");
+            svg.setAttribute("height", "642");
+
+            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            path.setAttribute("d", d);
+            path.setAttribute("id", cubeID + "_path");
+            svg.appendChild(path);
+
+            // const path = document.createElement("path");
+            // path.setAttribute("d", buildDPath(cubeID));
+            // path.setAttribute("id", cubeID + "_path");
+            // TODO might change back to SVG
+            const element = document.getElementById("maincircle");
+            element.appendChild(svg);
+            return path.getAttribute("d");
+        }
+
+        /**
+         * Build d attribute for path from the points in cubesMap
+         *
+         * @param cubeId - current cube
+         * @return string
+         */
+        function buildDPath(cubeId) {
+
+            let text;
+            let i;
+            const currentCubeIdArray = cubesMap.get(cubeId);
+
+            if (currentCubeIdArray[0].x !== undefined && currentCubeIdArray[0].y !== undefined) {
+                text = "M" + currentCubeIdArray[0].x + "," + currentCubeIdArray[0].y;
+                i = 1;
+            } else {
+                text = "M" + currentCubeIdArray[1].x + "," + currentCubeIdArray[1].y;
+                i = 2;
+            }
+
+            for (i; i < currentCubeIdArray.length; i++) {
+                // Remove undefined points from the path
+                if (currentCubeIdArray[i].x !== undefined && currentCubeIdArray[i].y !== undefined) {
+                    text += "l" + currentCubeIdArray[i].x + "," + currentCubeIdArray[i].y;
+                }
+            }
+            console.log(text);
+            return text;
+        }
+
+        /**
+         * print Array points
+         * @param array
+         */
+        function printArray(array) {
+            array.forEach(function (entry) {
+                console.log(entry);
+            });
         }
 
         if (frameData.length === 1) {
             addDropdownListener();
         }
-
     }
 
     /**
@@ -1215,17 +1366,78 @@
 
 
     // TODO animation = document.getElementById("physics-animation");
+    //  TODO add playPause into DOMLoad event listener
+
     function playPause() {
 
         if (playbackActive === true) {
-
             //stop playback
             togglePlayback(false);
         } else {
 
+            const styleSheet = document.styleSheets[0];
+
+            let keyFrameRule;
+            for (let i = 0; i < styleSheet.cssRules.length; i++) {
+                const rule = styleSheet.cssRules[i];
+                if (rule instanceof CSSKeyframesRule && rule.name === 'move') {
+                    keyFrameRule = rule;
+                    break;
+                }
+            }
+
+
+            setupObserver();
+
+
+            // element.style.offsetPath = "path(" + playBackPath + ")";
+            //
+            // const animation = element.animate(keyFrameRule, {duration: 3000, iterations: Infinity});
             //begin playback
             togglePlayback(true);
         }
+    }
+
+    /**
+     * Setup Mutation observer and run playback animation
+     */
+    function setupObserver() {
+
+        /**
+         *
+         * @type {MutationObserver}
+         */
+        const observer = new MutationObserver(function (mutationsList, observer) {
+            const path = document.getElementById("cube0_path").getAttribute("d");
+
+            if (path) {
+                observer.disconnect();
+                const pathLength = path.getTotalLength();
+
+                /**
+                 *
+                 * @param currentTime
+                 */
+                function moveAlongPath(currentTime) {
+                    const currentOffset = (currentTime / 1000) % pathLength;
+                    const {x, y} = path.getPointAtLength(currentOffset);
+                    element.style.transform = `translateX(${x}px) translateY(${y}px)`;
+                }
+
+                requestAnimationFrame(function animate(currentTime) {
+                    moveAlongPath(currentTime);
+                    requestAnimationFrame(animate);
+                });
+            }
+        });
+
+        const element = document.getElementById(currentCubeId);
+        const targetNode = document.getElementById("maincircle");
+
+        // Options for observer
+        const config = {childList: true, subtree: true};
+        // Start observing target node
+        observer.observe(targetNode, config);
     }
 
     //walks through existing frames, stops at end
@@ -1323,7 +1535,7 @@
 
     //Adds another energy type to an object
     function addEnergy(i) {
-        if (energySpinnerIndexes[i] === 3) {
+        if (energySpinnerIndexes[i] == 3) {
             return;
         }
         energySpinnerIndexes[i]++;
@@ -1393,24 +1605,19 @@
         var tableSize = document.getElementById("frames-table").rows[0].cells.length;
         var newCol = table.rows[0].insertCell(tableSize);
         var tableSize = document.getElementById("frames-table").rows[0].cells.length;
-
-        // Limit amount of frames
-        if (tableSize <= 40) {
-            newCol.innerHTML = "<button id=\"select-frame-button\" onclick=\"selectFrameButton(" + tableSize + ")\">" + (tableSize) + "</button>";
-            //hides Object menu and displays playback menu if more than one frame is added
-
-            if (tableSize === 1) {
-                document.getElementById("object-menu").style.display = "block";
-            }
-            if (tableSize >= 2) {
-                document.getElementById("object-menu").style.display = "none";
-                document.getElementById("playback-controls").style.display = "block";
-                xValues.push(tableSize);
-                myChartVar.update();
-            }
-            if (fromLoad === false) {
-                addFrame();
-            }
+        newCol.innerHTML = "<button id=\"select-frame-button\" onclick=\"selectFrameButton(" + tableSize + ")\">" + (tableSize) + "</button>";
+        //hides Object menu and displays playback menu if more than one frame is added
+        if (tableSize === 1) {
+            document.getElementById("object-menu").style.display = "block";
+        }
+        if (tableSize >= 2) {
+            document.getElementById("object-menu").style.display = "none";
+            document.getElementById("playback-controls").style.display = "block";
+            xValues.push(tableSize);
+            myChartVar.update();
+        }
+        if (fromLoad === false) {
+            addFrame();
         }
     }
 

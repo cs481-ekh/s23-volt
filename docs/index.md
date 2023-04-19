@@ -1,10 +1,9 @@
-# Physics Learning Tool
+# Energy Frametasia
 
 ## Team Members
- - Madeline Nelson
- - Seth Banta
- - Zarek Sliwoski
- - Andrew Carlson
+ - Abel Almeida
+ - Raymundo Escobedo
+ - Stockton Woodworth
 
 ## Project Abstract
 Science students struggle to understand and model energy effectively, and to relate those models to 
@@ -37,21 +36,27 @@ over time.
 ### How it works
 After loading up the application, the user will be presented with this screen:
 
-![Imgur](https://i.imgur.com/IOUjTuy.png)
+![img.png](start.png)
+
+The top navigation bar has the option for a tutorial. Clicking on it will take the user to a YouTube video
+that shows different ways of using the application.
 
 From this point, they will use the object menu(scene initialization menu) on the right side of the page to
 add the desired objects and their associated initial energy cubes. Then, the "Draw Cubes" button will
 be pressed to initialize the scene:
 
-![Imgur](https://i.imgur.com/46BXuXK.png)
+![img.png](initScene.png)
 
 After the scene is initialized, the user will click the "Add Frame" button that is at the panel at the
 bottom of the page. This will generate a new frame that initializes all energy cubes in the same place as 
-they were in the previous frame. The user will move each frame to the desired new location. 
+they were in the previous frame. The user will move each frame to the desired new location. The user can draw out
+the motion path the energy will take when they move the energy. This will leave behind a colored trail.
 
-After this, the user can right click on each energy cube and select a new energy type from the drop-down menu:
+![img.png](colorTrail.png)
 
-![Imgur](https://i.imgur.com/HZr2hxL.png)
+After this, the user can right-click on each energy cube and select a new energy type from the drop-down menu. Depending
+on which type you swap to, a unique animation will play.  
+![img.png](EType.png)
 
 This process will be repeated until the user has finished generating their scene.
 
@@ -67,5 +72,4 @@ frames. This can be done from the "Simulation Save/Load" menu at the top left of
 
 The user also has access to the ability to display a graph that shows the total amount of each energy type per 
 frame. This can be accessed using the "Show Graph" button on the frame control panel at the bottom of the page:
-
-![Imgur](https://i.imgur.com/QPqqRl6.png)
+![img.png](graph.png)
