@@ -25,7 +25,8 @@ is select ````index.html```` as the source.
 Steps to Set up:
 1. Clone the repo
 2. Run build.sh in terminal - `````./build.sh````` or ````sh build.sh````  
-    This will install libraries and frameworks being used
+    This will install libraries and frameworks being used  
+***Note - if errors occur when running build file try running the commands in ```build.sh``` individually.*** 
 
 
 ### Application Features

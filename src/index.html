@@ -36,6 +36,9 @@
                     </li>
                 </ul>
             </div>
+            <button id="pause">pause</button>
+            <input id="progressSlider" type="range" min="0" max="1" value="0" step="0.001"/>
+            <div id="time">0.00</div>
         </div>
 
         <div class="container">
@@ -159,6 +162,14 @@
 <script>
 
     let currentCubeId = '';
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("width", "644");
+    svg.setAttribute("height", "642");
+
+    // hash map
+    let cubesMap = new Map();
+
+    let coords;
 
     const cubeEditingRelations = [
         {
@@ -662,7 +673,7 @@
         var typeSelectors = document.getElementsByClassName("energy-type");
         const typeSelectorArray = Array.prototype.slice.call(typeSelectors);
         curCount = 0;
-        if (typeSelectorArray < 1){
+        if (typeSelectorArray < 1) {
             alert("Please click add to expand object menu");
             return;
         }
@@ -673,8 +684,8 @@
             var parentTableID = $(typeSelect).closest('table').attr('id');
             var adjacentSpinner = $(typeSelect).next();
             var countToAdd = adjacentSpinner.val();
-            if(!alerted){
-                if (typeToAdd === "Energy Type" && countToAdd === "" ) {
+            if (!alerted) {
+                if (typeToAdd === "Energy Type" && countToAdd === "") {
                     alert("No cubes are initialized, click expand and initialize cubes");
                     alerted = true;
                     break;
@@ -684,8 +695,7 @@
                     alert("Please select an energy type");
                     alerted = true;
                     break;
-                }
-                else if (countToAdd < 1 ) {
+                } else if (countToAdd < 1) {
                     alert("Please select the number of cubes to add");
                     alerted = true;
                     break;
@@ -841,8 +851,6 @@
         // An array to hold the points for the path
         let points = [];
 
-        // hash map
-        let cubesMap = new Map();
         currentCubeId = '';
         // Flag to indicate if the mouse button is currently pressed down
         let isMouseDown = false
@@ -910,12 +918,39 @@
             points.push({x: x, y: y});
 
             drawPath(points, color, currentCubeId);
+
             playBackPath = buildDPath(currentCubeId);
+            coords = pathToCoords(playBackPath);
             createPathElement(currentCubeId, playBackPath);
+
 
             endOldPathX = points[points.length - 1].x;
             endOldPathY = points[points.length - 1].y;
         }
+
+        /**
+         * Converts d attribute from path elements into x and y coordinates
+         * @param path
+         * @return {*[]}
+         */
+        function pathToCoords(path) {
+            const segments = path.split(/[ML]/).filter(Boolean);
+            const coords = [];
+
+            for (const segment of segments) {
+                const [x, y] = segment.trim().split(',');
+                coords.push({x: Math.floor(Number(x)), y: Math.floor(Number(y))});
+            }
+
+            const uniqueCoords = [...new Set(coords.map(({x, y}) => `${x},${y}`))]
+                .map(coordString => {
+                    const [x,y] = coordString.split(',');
+                    return {x: Number(x), y: Number(y)};
+                });
+
+            return uniqueCoords;
+        }
+
 
         // Initialize the ID of the last moved cube as null
         let lastMovedCubeId = null;
@@ -997,15 +1032,12 @@
         }
 
         /**
-         * Function creates an SVG and path elements
+         * TODO Function creates an SVG and path elements
          * @param cubeID
          * @param d
          */
         function createPathElement(cubeID, d) {
 
-            const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-            svg.setAttribute("width", "644");
-            svg.setAttribute("height", "642");
 
             const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
             path.setAttribute("d", d);
@@ -1034,17 +1066,17 @@
             const currentCubeIdArray = cubesMap.get(cubeId);
 
             if (currentCubeIdArray[0].x !== undefined && currentCubeIdArray[0].y !== undefined) {
-                text = "M" + currentCubeIdArray[0].x + "," + currentCubeIdArray[0].y;
+                text = "M " + currentCubeIdArray[0].x + ", " + currentCubeIdArray[0].y;
                 i = 1;
             } else {
-                text = "M" + currentCubeIdArray[1].x + "," + currentCubeIdArray[1].y;
+                text = "M " + currentCubeIdArray[1].x + ", " + currentCubeIdArray[1].y;
                 i = 2;
             }
 
             for (i; i < currentCubeIdArray.length; i++) {
                 // Remove undefined points from the path
                 if (currentCubeIdArray[i].x !== undefined && currentCubeIdArray[i].y !== undefined) {
-                    text += "l" + currentCubeIdArray[i].x + "," + currentCubeIdArray[i].y;
+                    text += " L " + currentCubeIdArray[i].x + ", " + currentCubeIdArray[i].y;
                 }
             }
             console.log(text);
@@ -1364,7 +1396,6 @@
         }
     }
 
-
     // TODO animation = document.getElementById("physics-animation");
     //  TODO add playPause into DOMLoad event listener
 
@@ -1375,69 +1406,29 @@
             togglePlayback(false);
         } else {
 
-            const styleSheet = document.styleSheets[0];
-
-            let keyFrameRule;
-            for (let i = 0; i < styleSheet.cssRules.length; i++) {
-                const rule = styleSheet.cssRules[i];
-                if (rule instanceof CSSKeyframesRule && rule.name === 'move') {
-                    keyFrameRule = rule;
-                    break;
-                }
-            }
+            let cubeIndex = cubesMap.get(currentCubeId)
+            let position = {x: Math.round(cubeIndex[0].x), y: Math.round(cubeIndex[0].y)};
+            let endPos = {x: Math.round(cubeIndex[length].x), y: Math.round(cubeIndex[length].y)};
 
 
-            setupObserver();
+            // map motionPath coordinates and reduce their size by one third
+            let motionPath = coords.map(({x, y}) => ({x: x / 3, y: y / 3}));
+            motionPath.forEach(function (entry){
+                console.log(entry);
+            });
 
 
-            // element.style.offsetPath = "path(" + playBackPath + ")";
-            //
-            // const animation = element.animate(keyFrameRule, {duration: 3000, iterations: Infinity});
-            //begin playback
+            const element = document.getElementById(currentCubeId);
+            const rect = element.getBoundingClientRect();
+            console.log(`X: ${rect.left}, Y: ${rect.top}`);
+
+            gsap.from("#" + currentCubeId, {
+                duration: 5,
+                motionPath
+            });
+
             togglePlayback(true);
         }
-    }
-
-    /**
-     * Setup Mutation observer and run playback animation
-     */
-    function setupObserver() {
-
-        /**
-         *
-         * @type {MutationObserver}
-         */
-        const observer = new MutationObserver(function (mutationsList, observer) {
-            const path = document.getElementById("cube0_path").getAttribute("d");
-
-            if (path) {
-                observer.disconnect();
-                const pathLength = path.getTotalLength();
-
-                /**
-                 *
-                 * @param currentTime
-                 */
-                function moveAlongPath(currentTime) {
-                    const currentOffset = (currentTime / 1000) % pathLength;
-                    const {x, y} = path.getPointAtLength(currentOffset);
-                    element.style.transform = `translateX(${x}px) translateY(${y}px)`;
-                }
-
-                requestAnimationFrame(function animate(currentTime) {
-                    moveAlongPath(currentTime);
-                    requestAnimationFrame(animate);
-                });
-            }
-        });
-
-        const element = document.getElementById(currentCubeId);
-        const targetNode = document.getElementById("maincircle");
-
-        // Options for observer
-        const config = {childList: true, subtree: true};
-        // Start observing target node
-        observer.observe(targetNode, config);
     }
 
     //walks through existing frames, stops at end
