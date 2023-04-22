@@ -32,3 +32,6 @@ Steps to Set up:
 ### Application Features
 
 what the application can do
+1. The ability to create mutiple cubes of Thermal, Chemical, Gravitational and Kinetic
+2. The cubes have the ability to draw a path of their color when moved.
+3. The ability to save and upload simuation. 
