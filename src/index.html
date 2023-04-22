@@ -939,10 +939,16 @@
 
             for (const segment of segments) {
                 const [x, y] = segment.trim().split(',');
-                coords.push({x: Number(x), y: Number(y)});
+                coords.push({x: Math.floor(Number(x)), y: Math.floor(Number(y))});
             }
 
-            return coords;
+            const uniqueCoords = [...new Set(coords.map(({x, y}) => `${x},${y}`))]
+                .map(coordString => {
+                    const [x,y] = coordString.split(',');
+                    return {x: Number(x), y: Number(y)};
+                });
+
+            return uniqueCoords;
         }
 
 
@@ -1406,9 +1412,17 @@
 
 
             // map motionPath coordinates and reduce their size by one third
-            const motionPath = coords.map(({x, y}) => ({x: x / 3, y: y / 3}));
+            let motionPath = coords.map(({x, y}) => ({x: x / 3, y: y / 3}));
+            motionPath.forEach(function (entry){
+                console.log(entry);
+            });
 
-            gsap.to("#" + currentCubeId, {
+
+            const element = document.getElementById(currentCubeId);
+            const rect = element.getBoundingClientRect();
+            console.log(`X: ${rect.left}, Y: ${rect.top}`);
+
+            gsap.from("#" + currentCubeId, {
                 duration: 5,
                 motionPath
             });
